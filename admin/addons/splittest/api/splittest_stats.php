@@ -651,7 +651,7 @@ class Splittest_Stats_API extends API
 			return 0;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		// User timezone offset (seconds).
 		$user_offset = $user->Get('usertimezone'); // "GMT-11:30"

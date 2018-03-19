@@ -343,7 +343,7 @@
 
 			if (selector == '') return;
 
-			$('span.TriggerTime_TimeInterval', document.frmTriggerForm).filter('not:(span#' + selector + ')').hide();
+			$('span.TriggerTime_TimeInterval').hide();
 			$('span#' + selector).show();
 		},
 

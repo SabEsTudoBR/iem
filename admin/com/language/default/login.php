@@ -46,8 +46,7 @@ define('LNG_SendPassword', 'Send Email');
 define('LNG_BadLogin', 'The username or password you provided are incorrect. Please check them and try again.');
 define('LNG_Help_ForgotPassword', 'Fill in the form to generate a new password. An email will be sent to you containing a link which you must click to confirm your password change.');
 define('LNG_Help_Login', 'Login with your username and password below.');
-define('LNG_RememberMe', 'Remember my details');
-define('LNG_ChangePassword_Emailed', 'Before Your Password is Changed...<br /><br />Please check your inbox/junk mail folder for %s. You\'ve just been sent an email that contains a link you must click to change your password.');
+define('LNG_ChangePassword_Emailed', 'Please check your inbox/junk mail folder. You\'ve just been sent an email that contains a link to change your password.');
 define('LNG_ForgotPasswordReminder', '<a href="index.php?Page=Login&Action=ForgotPass" style="font-size: 11px;">Forgot your password?</a>');
 
 define('LNG_TakeMeTo', 'Take Me To');

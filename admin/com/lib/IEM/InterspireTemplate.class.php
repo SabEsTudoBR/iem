@@ -237,7 +237,7 @@ class IEM_InterspireTemplate extends InterspireTemplate
 
 		if (is_null($variables)) {
 			$IEM = array(
-				'User'					=> GetUser(),
+				'User'					=> IEM::getCurrentUser(),
 				'ApplicationTitle'		=> GetLang('ApplicationTitle'),
 				'PageTitle'				=> GetLang('PageTitle'),
 				'CurrentPage'			=> IEM::requestGetGET('Page', IEM::requestGetGET('page', '')),

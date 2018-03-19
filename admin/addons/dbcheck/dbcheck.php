@@ -85,7 +85,7 @@ class Addons_dbcheck extends Interspire_Addons
 	 */
 	static public function GetTextMenuItems(EventData_IEM_SENDSTUDIOFUNCTIONS_GENERATETEXTMENULINKS $data)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->Admin()) {
 			return;
 		}

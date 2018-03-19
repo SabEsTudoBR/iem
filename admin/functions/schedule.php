@@ -67,7 +67,7 @@ class Schedule extends SendStudio_Functions
 			return;
 		}
 		
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Newsletters', 'Send');
 
 		$popup = (in_array($action, $this->PopupWindows)) ? true : false;
@@ -164,7 +164,7 @@ class Schedule extends SendStudio_Functions
 	*/
 	function ManageSchedules()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$jobsApi = $this->GetApi('Jobs');
 
 		$settingsApi = $this->GetApi('Settings');
@@ -441,7 +441,7 @@ class Schedule extends SendStudio_Functions
 		 * -----
 		 */
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$user_lists = $user->GetLists();
 
 		$newslettername = '';
@@ -592,7 +592,7 @@ class Schedule extends SendStudio_Functions
                 if($queueid !== false){
                     $statapi = $this->GetApi('Stats');
                     $subapi = $this->GetApi('Subscribers');
-                    $user = GetUser();
+                    $user = IEM::getCurrentUser();
                     $original_queuesize = $jobinfo['jobdetails']['SendSize'];
                     $real_queuesize = $subapi->QueueSize($queueid, 'send');
                     $check_stats = $statapi->ReCheckUserStats($user, $original_queuesize, $real_queuesize, AdjustTime());
@@ -678,7 +678,7 @@ class Schedule extends SendStudio_Functions
 		 * -----
 		 */
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if (!$user->Admin()) {
 			$GLOBALS['Error'] = GetLang('JobApprovedFail_NotAdmin');
@@ -743,7 +743,7 @@ class Schedule extends SendStudio_Functions
 		 * -----
 		 */
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$stats_api = $this->GetApi('Stats');
 
@@ -908,7 +908,7 @@ class Schedule extends SendStudio_Functions
 		 * -----
 		 */
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$sendtime = $_POST['sendtime'];
 
@@ -1006,7 +1006,7 @@ class Schedule extends SendStudio_Functions
 	 */
 	function CanAccessJobs($jobids)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($user->Admin()) {
 			return true;

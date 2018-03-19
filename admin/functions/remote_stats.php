@@ -101,7 +101,7 @@ class RemoteStats extends SendStudio_Functions
 	*/
 	function Process()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$action = $this->_getGETRequest('Action', '');
 		$statstype = $this->_getGETRequest('statstype', null);
@@ -319,7 +319,7 @@ class RemoteStats extends SendStudio_Functions
 													//$GLOBALS['Total_domain_' . $area] = $this->FormatNumber($domain_totals[$area]);
 												}
 
-												$data_url = SENDSTUDIO_APPLICATION_URL . '/admin/functions/stats_chart.php?Area=list&list='.$listid .'&graph=subscribersummary&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+												$data_url = SENDSTUDIO_APPLICATION_URL . '/admin/functions/stats_chart.php?Area=list&list='.$listid .'&graph=subscribersummary';
 
 												$this->InsertChartImage('SummaryChart', $data_url, array('graph_title' => GetLang("List_Summary_Graph_subscribersummary")));
 
@@ -1723,7 +1723,7 @@ class RemoteStats extends SendStudio_Functions
 	*/
 	function DisplayChart($chartname='', $chart_area='', $statid=0, $type = 'pie', $settings = null)
 	{
-		$data_url = 'stats_chart.php?graph=' . urlencode(strtolower($chartname)) . '&Area='.urlencode(strtolower($chart_area)) . '&statid=' . (int)$statid . '&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+		$data_url = 'stats_chart.php?graph=' . urlencode(strtolower($chartname)) . '&Area='.urlencode(strtolower($chart_area)) . '&statid=' . (int)$statid;
 
 		$this->InsertChartImage($chartname,$data_url);
 	}
@@ -1766,7 +1766,7 @@ class RemoteStats extends SendStudio_Functions
 	 */
 	function CanAccessList($list_id)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$allowed_lists = $user->GetLists();
 		if (is_array($allowed_lists)) {
 			$allowed_lists = array_keys($allowed_lists);
@@ -1788,7 +1788,7 @@ class RemoteStats extends SendStudio_Functions
 	 */
 	function CanAccessStats($stat_id, $type)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$stats_api = $this->GetApi('Stats');
 		$stat_record = $stats_api->FetchStats($stat_id, $type);
 		if (!isset($stat_record['statid'])) {
@@ -1833,7 +1833,7 @@ class RemoteStats extends SendStudio_Functions
 	 */
 	function IsOwner($expected)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$actual = $user->Get('userid');
 		if ($user->Admin()) {
 			return true;
@@ -1851,7 +1851,7 @@ class RemoteStats extends SendStudio_Functions
 	 */
 	function CanAccessAutoresponder($id)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->HasAccess('statistics', 'autoresponder')) {
 			return false;
 		}

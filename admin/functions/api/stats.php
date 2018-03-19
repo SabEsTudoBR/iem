@@ -760,7 +760,7 @@ class Stats_API extends API
 	function CalculateGroupBy($stats_type=false, $fieldname='')
 	{
 		$user_tz = '+0:00';
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (strlen($user->usertimezone)) {
 			if ($user->usertimezone == 'GMT') {
 				$user_tz = '+0:00';
@@ -3368,7 +3368,7 @@ class Stats_API extends API
 	*/
 	function CalculateStatsType($idx=false)
 	{
-		$thisuser = GetUser();
+		$thisuser = IEM::getCurrentUser();
 		$calendar_settings = $thisuser->GetSettings('Calendar');
 
 		if ($idx == true) {

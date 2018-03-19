@@ -27,7 +27,7 @@ class API
 	*
 	* @see API
 	*
-	* @var Object
+	* @var MySQLDb
 	*/
 	var $Db = null;
 
@@ -82,28 +82,29 @@ class API
 	*
 	* @see GetDb
 	*
-	* @return Void Doesn't return anything.
 	*/
-	function API()
+	function __construct()
 	{
 		$this->GetDb();
 	}
 
-	/**
-	* GetDb
-	* Sets up the database object for this and the child objects to use.
-	* If the Db var is already set up and the connection is a valid resource, this will return true straight away.
-	* If the Db var is null or the connection is not valid, it will fetch it and store it for easy reference.
-	* If it's unable to setup the database (or it's null or false) it will trigger an error.
-	*
-	* @see Db
-	* @see IEM::getDatabase()
-	*
-	* @return Boolean True if it works or false if it fails. Failing also triggers a fatal error.
-	*/
+    /**
+     * GetDb
+	 *
+     * Sets up the database object for this and the child objects to use.
+     * If the Db var is already set up and the connection is a valid resource, this will return true straight away.
+     * If the Db var is null or the connection is not valid, it will fetch it and store it for easy reference.
+     * If it's unable to setup the database (or it's null or false) it will trigger an error.
+     *
+     * @see Db
+     * @see IEM::getDatabase()
+     *
+     * @return Boolean True if it works or false if it fails. Failing also triggers a fatal error.
+     * @throws Exception
+     */
 	function GetDb()
 	{
-		if (is_object($this->Db) && is_resource($this->Db->connection)) {
+        if (is_object($this->Db) && $this->Db->connection instanceof mysqli) {
 			return true;
 		}
 
@@ -112,9 +113,10 @@ class API
 			$this->Db = &$Db;
 		}
 
-		if (!is_object($this->Db) || !is_resource($this->Db->connection)) {
+        if (!is_object($this->Db) || !$this->Db->connection instanceof mysqli) {
 			throw new Exception("Unable to connect to the database. Please make sure the database information specified in admin/includes/config.php are correct.");
 		}
+
 		return true;
 	}
 
@@ -309,7 +311,7 @@ class API
 			$recipients = array($recipients);
 		}
 
-		$thisuser = GetUser();
+		$thisuser = IEM::getCurrentUser();
 		$ownerid = $thisuser->userid;
 
 		$queue_sequence_ok = $this->Db->CheckSequence(SENDSTUDIO_TABLEPREFIX . 'queues_sequence');
@@ -378,7 +380,7 @@ class API
 
 		$queuetype = strtolower($queuetype);
 
-		$thisuser = GetUser();
+		$thisuser = IEM::getCurrentUser();
 		$ownerid = $thisuser->userid;
 
 		$sqlProcessTime = 'NULL';
@@ -441,7 +443,7 @@ class API
 			return false;
 		}
 
-		$thisuser = GetUser();
+		$thisuser = IEM::getCurrentUser();
 		$ownerid = $thisuser->userid;
 
 		$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "queues(queueid, queuetype, ownerid, recipient, processed) SELECT " . (int)$queueid . ", '" . $this->Db->Quote($queuetype) . "', '" . (int)$ownerid . "', l.subscriberid, 0 FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l WHERE l.listid='" . (int)$listid . "'";
@@ -477,159 +479,42 @@ class API
 
 		$queueid = intval($queueid);
 		$queuetype = $this->Db->Quote(strtolower($queuetype));
-		$safeguard_counter = 0;
-		$safeguard_max_counter = 0;
 
-		$queryString = '';
-		$queryString_substring = '';
 		$queryString_listid = '';
 
 		if (!empty($listids)) {
 			$queryString_listid .= " AND l.listid IN (" . implode(',', $listids) . ")";
 		}
 
-		// Define a query which will delete duplicate emailaddress out of the queue table
-		switch (SENDSTUDIO_DATABASE_TYPE) {
-			// Since PostgreSQL cannot select columns that are grouped with another column,
-			// we will need to use sub-queries. This replacement query increase query
-			// speed significantly (from ~250 minutes -- guestimating -- to ~7 seconds for a ~400k subscriber list)
-			case 'pgsql':
-				$queryString_substring = "
-					SELECT	DISTINCT ON (emailaddress) subscriberid
-					FROM	[|PREFIX|]list_subscribers AS l,
-							[|PREFIX|]queues AS q
-					WHERE	q.recipient = l.subscriberid
-							AND q.queueid = {$queueid}
-							AND queuetype = '{$queuetype}'
-							{$queryString_listid}
-							AND l.emailaddress IN	(	SELECT		l.emailaddress AS emailaddress
-														FROM		[|PREFIX|]list_subscribers AS l,
-																	[|PREFIX|]queues AS q
-														WHERE		q.recipient = l.subscriberid
-																	AND q.queueid = {$queueid}
-																	AND queuetype = '{$queuetype}'
-																	{$queryString_listid}
-														GROUP BY	l.emailaddress HAVING COUNT(l.emailaddress) > 1
-													)
-				";
-
-				$queryString = "
-					DELETE FROM	[|PREFIX|]queues
-							WHERE		queueid = {$queueid}
-										AND queuetype = '{$queuetype}'
-							            AND recipient IN({$queryString_substring})
-				";
-			break;
-
-			// Since we can now use sub-qeury, I will just refactor the SQL
-			// to use sub-query. The use of double subquery is because MySQL
-			// works faster with temporary table defined
-			case 'mysql':
-				$queryString_substring = "
-					SELECT		l.subscriberid AS subscriberid
+        $queryString = "
+					SELECT		l.subscriberid AS subscriberid,
+								l.emailaddress as emailaddress
 					FROM		[|PREFIX|]list_subscribers AS l,
 								[|PREFIX|]queues AS q
 					WHERE 		q.recipient = l.subscriberid
 								AND q.queueid = {$queueid}
 								AND queuetype = '{$queuetype}'
 								{$queryString_listid}
-					GROUP BY	l.emailaddress HAVING COUNT(l.emailaddress) > 1
 				";
 
-				$queryString = $queryString_substring;
-			break;
+        $recipients_to_remove = [];
+        $recipients = [];
 
-			// No other database types are supported at the moment
-			default:
-				die('Unknown database type');
-			break;
-		}
-
-
-		// We create an endless loop that looks for subscriberid's based on email addresses that are duplicated.
-		// We can't get a full list of all id's that are duplicated, so instead we narrow each email address down one by one.
-		//
-		// Example:
-		// email@domain.com is on list 1, 2 & 3.
-		// email2@domain.com is on list 2 & 3.
-		// email3@domain.com is only on list 1.
-		// and we send to lists 1, 2, & 3.
-		//
-		// The first part of the query will find email2@domain.com and email@domain.com (since they are both duplicated on the send).
-		// Then it will call RemoveFromQueue to remove one instance of each subscriber.
-		// The next loop will only find email@domain.com (since email2@domain.com only has one instance in the queue now)
-		// Then it will call RemoveFromQueue to remove that second instance of the duplicate.
-		// Finally, another loop will happen this time fetching nothing (1 email address per recipient) - and that will return out of the function.
-		//
-		// This relies on the database class returning the correct result from NumAffected() function
-		while (true) {
-			$result = $this->Db->Query($queryString);
-			if (!$result) {
-				trigger_error("Cannot execute: {$queryString} ......\n Reason: " . $this->Db->Error(), E_USER_NOTICE);
-				// Since MOST of the code does NOT check the returned result, it's best if we die here... When ALL of the precedure check the resuturn status
-				// of this function, you can remove the die call.
-				die ('Cannot query database: Database may have been restarted. If you keep getting this error message, please contact your system administrator.');
-				return false;
-			}
-
-			if (SENDSTUDIO_DATABASE_TYPE == 'mysql') {
-				$recipients_to_remove = array();
-				while ($row = $this->Db->Fetch($result)) {
-					$recipients_to_remove[] = $row['subscriberid'];
-				}
-
-				if (empty($recipients_to_remove)) {
-					return true;
-				}
-
-				$this->RemoveFromQueue($queueid, $queuetype, $recipients_to_remove);
+        $result = $this->Db->Query($queryString);
+        while ($row = $this->Db->Fetch($result)) {
+        	$email = strtolower($row['emailaddress']);
+        	if (in_array($email, $recipients)) {
+        		$recipients_to_remove[] = $row['subscriberid'];
 			} else {
-				$count = intval($this->Db->NumAffected($result));
-				if ($count == 0) {
-					return true;
-				}
-			}
+                $recipients[] = $email;
+            }
+        }
 
-			++$safeguard_counter;
-			++$safeguard_max_counter;
+        if (empty($recipients_to_remove)) {
+            return true;
+        }
 
-			// What the query runs 100 times??? Need to check if this is an error
-			if ($safeguard_counter >= 100) {
-				$query = "
-					SELECT	COUNT(1) AS rowcounter
-					FROM	({$queryString_substring}) AS x
-				";
-
-				$result = $this->Db->FetchOne($query, 'rowcounter');
-				if ($result === false) {
-					trigger_error("Cannot execute: {$queryString} ......\n Reason: " . $this->Db->Error(), E_USER_NOTICE);
-					// Since MOST of the code does NOT check the returned result, it's best if we die here... When ALL of the precedure check the resuturn status
-					// of this function, you can remove the die call.
-					die ('Cannot query database: Database may have been restarted. If you keep getting this error message, please contact your system administrator.');
-					return false;
-				}
-
-				if ($result === 0) {
-					return true;
-				}
-
-				// Give it another 20 times leeway since there are still dumplicates in the queue table
-				$safeguard_counter = 80;
-			}
-
-			// Hmmmm, there must be something wrong.... The query haven't stopped looping
-			// for 100,000,000 times.... even that is excessive.... We will need to return false
-			// and log this anomaly
-			if ($safeguard_max_counter >= 100000000) {
-				$error_message = "The query: {$queryString} has been executed for more than 100 million times. Please contact your system administrator to see if there is anything wrong with the system.";
-				trigger_error($error_message, E_USER_NOTICE);
-
-				// Since MOST of the code does NOT check the returned result, it's best if we die here... When ALL of the precedure check the resuturn status
-				// of this function, you can remove the die call.
-				die ($error_message);
-				return false;
-			}
-		}
+        return $this->RemoveFromQueue($queueid, $queuetype, $recipients_to_remove);
 	}
 
 	/**
@@ -893,7 +778,7 @@ class API
         $recipient = (int)$recipient;
 		$query = "UPDATE " . SENDSTUDIO_TABLEPREFIX . "queues SET processed=1, processtime=NOW() WHERE queueid={$queueid} AND queuetype='{$queuetype}' AND recipient={$recipient}";
 		$result = $this->Db->Query($query);
-		if ($result) {return true;}else{trigger_error(mysql_error());}
+		if ($result) {return true;}else{trigger_error(mysqli_error($this->Db->connection));}
         return false;
 	}
 
@@ -947,7 +832,7 @@ class API
 
 		$result = $this->Db->Query($query);
 		if (!$result) {
-                        trigger_error('Problem fetching recipients from queue' . "\n" . mysql_error());
+                        trigger_error('Problem fetching recipients from queue' . "\n" . mysqli_error($this->Db->connection));
 			return false;
 		}
 

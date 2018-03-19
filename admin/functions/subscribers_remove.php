@@ -43,7 +43,7 @@ class Subscribers_Remove extends Subscribers
 	*/
 	function Process($action=null)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Subscribers', 'Delete');
 
 		$this->PrintHeader(false, false, false);
@@ -143,8 +143,9 @@ class Subscribers_Remove extends Subscribers
 				$query = "SELECT jobid FROM [|PREFIX|]jobs_lists WHERE listid = {$listid}";
 				$result = $db->Query($query);
 				if(!$result){
-					trigger_error(mysql_error());
-					FlashMessage(mysql_error(). "<br />Line: ".__LINE__, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+				    $error = mysqli_error($db->connection);
+					trigger_error($error);
+					FlashMessage($error. "<br />Line: ".__LINE__, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 					exit();
 				}
 				while($row = $db->Fetch($result)){
@@ -155,8 +156,9 @@ class Subscribers_Remove extends Subscribers
                     $query = "SELECT jobstatus FROM [|PREFIX|]jobs WHERE jobtype='send' AND jobid IN (" . implode(',', $jobs_to_check) . ")";
 					$result = $db->Query($query);
 					if(!$result){
-						trigger_error(mysql_error());
-						FlashMessage(mysql_error(). "<br />Line: ".__LINE__, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                        $error = mysqli_error($db->connection);
+                        trigger_error($error);
+                        FlashMessage($error. "<br />Line: ".__LINE__, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 						exit();
 					}
 					while($row = $db->Fetch($result)){
@@ -193,7 +195,7 @@ class Subscribers_Remove extends Subscribers
 	*/
 	function RemoveSubscribers($listid=0, $removetype='unsubscribe', $removelist = array())
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Subscribers', 'Manage');
 		if (!$access) {
 			$this->DenyAccess();
@@ -272,7 +274,7 @@ class Subscribers_Remove extends Subscribers
 	*/
 	function RemoveSubscriber_Step2($listid=0)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Subscribers', 'Manage');
 		if (!$access) {
 			$this->DenyAccess();

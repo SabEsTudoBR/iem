@@ -95,7 +95,7 @@ class Addons_splittest_Send extends Addons_splittest
 	 */
 	public function Show_Send_Step_1()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$user_lists = $user->GetLists();
 
 		$user_segments = $user->GetSegmentList();
@@ -272,7 +272,7 @@ class Addons_splittest_Send extends Addons_splittest
 			IEM::sessionSet('SplitTestSend', $send_details);
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		/**
 		 * Re-set these variables.
@@ -834,7 +834,7 @@ class Addons_splittest_Send extends Addons_splittest
 			 */
 			IEM::sessionRemove('SplitTestSend_Cleanup');
 
-			$user = GetUser();
+			$user = IEM::getCurrentUser();
 			$jobApi->ApproveJob($jobid, $user->Get('userid'), $user->Get('userid'));
 		}
 

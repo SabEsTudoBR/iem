@@ -182,20 +182,6 @@ class Subscribers_API extends API
 	var $ValidEventSorts = array('eventsubject','eventtype','lastupdate','username','eventdate');
 
 	/**
-	 * Constructor
-	 * Sets up the database object only. You cannot pass in a subscriber id to load. Loading a subscriber's settings depends on what list they are subscribed to.
-	 *
-	 * @see LoadSubscriberList
-	 *
-	 * @return True Always returns true.
-	 */
-	function Subscribers_API()
-	{
-		$this->GetDb();
-		return true;
-	}
-
-	/**
 	 * LoadSubscriberBasicInformation
 	 * Loads up basic subscriber information for a particular list, which includes the format they are subscribed as, the confirm code and so on. This is used by scheduled sending to check which list(s) a particular email address is on.
 	 * If they are not on a list or they are bounced / unsubscribed from a list, this returns an empty array.
@@ -353,7 +339,7 @@ class Subscribers_API extends API
 
 		$allcustomfields = array();
 
-		$query = "select distinct sd.fieldid AS fieldid, sd.data AS data, c.fieldtype AS fieldtype, c.name AS fieldname FROM ";
+		$query = "select distinct sd.fieldid AS fieldid, sd.data AS data, c.fieldtype AS fieldtype, c.name AS fieldname, fc.fieldorder FROM ";
 		$query .= SENDSTUDIO_TABLEPREFIX . "subscribers_data sd,";
 		$query .= SENDSTUDIO_TABLEPREFIX . "customfield_lists cl,";
 		$query .= SENDSTUDIO_TABLEPREFIX . "form_customfields fc,";
@@ -1404,7 +1390,7 @@ class Subscribers_API extends API
 
 		$result = $this->Db->Query($query);
 		if (!$result) {
-            trigger_error(mysql_error());
+            trigger_error(mysqli_error($this->Db->connection));
 			return false;
 		}
 
@@ -1493,20 +1479,16 @@ class Subscribers_API extends API
 			$query .= " LIMIT 1";
 			$result = $this->Db->Query($query);
 			if (!$result) {
-				trigger_error(mysql_error());
+				trigger_error(mysqli_error($this->Db->connection));
 				return array(true, null);
 			}
-			$row = $this->Db->FetchOne($result);
-			if((int)$row['banid'] > 0){
-				return array(true, null);
-			} else {
-				return array(false, null);
-			}
+			$banId = $this->Db->FetchOne($result, 'banid');
+            return (int) $banId > 0 ? array(true, null) : array(false, null);
 		}
 
 		$result = $this->Db->Query($query);
 		if (!$result) {
-			trigger_error(mysql_error());
+			trigger_error(mysqli_error($this->Db->connection));
 			return array(true, null);
 		}
 
@@ -2851,9 +2833,9 @@ class Subscribers_API extends API
 			$sortdetails = array('SortBy' => 'emailaddress', 'Direction' => 'asc');
 		}
 
-		$queries = $this->GenerateSubscriberSubQuery($searchinfo, $sortdetails);
+        $queries = $this->GenerateSubscriberSubQuery($searchinfo, $sortdetails);
 
-		$count_query = $queries['count_query'];
+        $count_query = $queries['count_query'];
 
 		$count_result = $this->Db->Query($count_query);
 		$count = $this->Db->FetchOne($count_result, 'count');
@@ -4315,7 +4297,7 @@ class Subscribers_API extends API
 
 		$userid = $specificuser;
 		if (empty($userid)) {
-			$user = &GetUser();
+			$user = &IEM::getCurrentUser();
 			if ($user) {
 				$userid = $user->userid;
 			}

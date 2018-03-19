@@ -82,7 +82,7 @@ class Forms extends SendStudio_Functions
 		$GLOBALS['Message'] = '';
 
 		$action = (isset($_GET['Action'])) ? strtolower($_GET['Action']) : null;
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$secondary_actions = array('preview', 'gethtml', 'view', 'finish', 'step2', 'step3', 'step4', 'step5', 'manage', 'processpaging');
 		if (in_array($action, $secondary_actions)) {
@@ -639,7 +639,7 @@ class Forms extends SendStudio_Functions
 	function Form_Step1($formid=0)
 	{
 		$formapi = $this->GetApi();
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$lists = $user->GetLists();
 
 		if (count($lists) == 0) {
@@ -917,7 +917,7 @@ class Forms extends SendStudio_Functions
 	*/
 	function ShowConfirmationStep()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$formsession = IEM::sessionGet('Form');
 
@@ -1072,7 +1072,7 @@ class Forms extends SendStudio_Functions
 	*/
 	function ShowThanksStep()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$formsession = IEM::sessionGet('Form');
 
@@ -1229,7 +1229,7 @@ class Forms extends SendStudio_Functions
 	*/
 	function ShowThanksHTML($form_action='Step4')
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$formsession = IEM::sessionGet('Form');
 
@@ -1479,7 +1479,7 @@ class Forms extends SendStudio_Functions
 	*/
 	function ShowFriendStep()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$formsession = IEM::sessionGet('Form');
 
@@ -1547,7 +1547,7 @@ class Forms extends SendStudio_Functions
 			$GLOBALS['Message'] = '';
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$perpage = $this->GetPerPage();
 
 		/**
@@ -1680,7 +1680,7 @@ class Forms extends SendStudio_Functions
 	*/
 	function RemoveForms($forms=array())
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if (!$user->HasAccess('Forms', 'Delete')) {
 			$this->DenyAccess();

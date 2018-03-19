@@ -79,7 +79,7 @@ class Templates extends SendStudio_Functions
 		$GLOBALS['Message'] = '';
 
 		$action = strtolower(IEM::requestGetGET('Action', ''));
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($action == 'processpaging') {
 			$this->SetPerPage($_GET['PerPageDisplay']);
@@ -981,7 +981,7 @@ class Templates extends SendStudio_Functions
 			return;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$delete_ok = $delete_fail = 0;
 		$delete_fail_messages = array();
@@ -1099,7 +1099,7 @@ class Templates extends SendStudio_Functions
 			return;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$update_ok = $update_fail = 0;
 		foreach ($templateids as $p => $templateid) {

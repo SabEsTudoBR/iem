@@ -64,7 +64,7 @@ class Segment extends SendStudio_Functions
 	function Process()
 	{
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Segments');
 		if (!$access) {
 			$this->PrintHeader();
@@ -82,7 +82,7 @@ class Segment extends SendStudio_Functions
 
 
 			$parameters['message']	= '&nbsp;';
-			$parameters['user']		= GetUser();
+			$parameters['user']		= IEM::getCurrentUser();
 			$parameters['action']	= $reqAction;
 		/**
 		 * -----

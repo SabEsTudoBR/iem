@@ -38,7 +38,7 @@ class TokenFactory
 		$user_lang_folder = 'default';
 
 		// ----- Get user language preference
-			$user = GetUser();
+			$user = IEM::getCurrentUser();
 			$temp = $user->user_language;
 
 			if (!empty($temp) && is_dir("{$lang_folder}/{$user_lang_folder}")) {

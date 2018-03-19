@@ -67,7 +67,7 @@ class Subscribers extends SendStudio_Functions
 		$GLOBALS['Message'] = '';
 
 		$action = (isset($_GET['Action'])) ? strtolower($_GET['Action']) : null;
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$permission_action = $action;
 		if ($action == 'remove') {
@@ -179,7 +179,7 @@ class Subscribers extends SendStudio_Functions
 	function ChooseList($action='Manage', $subaction=null)
 	{
 		$action = strtolower($action);
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$lists = $user->GetLists();
 
 		$listids = array_keys($lists);

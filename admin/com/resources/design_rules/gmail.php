@@ -8,11 +8,11 @@
 */
 
 $GLOBALS['Design_Rules']['GMail'] = array (
-	array(
-		'regular_expression' => '%(.*?)<body(.*?)</body>(.*)%',
-		'description' => 'Gmail removes anything before the body tags',
+	array(		
+		'regular_expression' => '%<style(.*?)</\s*?style>(.*?)(?=<body|<style.*?<body)%',
+		'description' => 'Gmail removes style tags before the body tags',
 		'use_preg_replace' => 1,
-		'replacement' => '<body$2</body>',
+		'replacement' => '<body>$2</body>',
 		'match_offset' => 0
 	),
 	array(
@@ -21,7 +21,6 @@ $GLOBALS['Design_Rules']['GMail'] = array (
 		'replacement' => '',
 		'match_offset' => 1
 	),
-
 	array(
 		'regular_expression' => '%<style.*?>%',
 		'description' => 'Gmail doesn\'t show any style tags',
@@ -55,7 +54,7 @@ $GLOBALS['Design_Rules']['GMail'] = array (
 		'use_preg_replace' => 1,
 		'replacement' => '$1$2$3$5',
 		'match_offset' => 4
-	),
+	),	
 	array(
 		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?(?<!border-|margin-)bottom\s*?:.*?)(\2|;)%',
 		'description' => 'Gmail doesn\'t show the CSS style: bottom',
@@ -146,26 +145,74 @@ $GLOBALS['Design_Rules']['GMail'] = array (
 		'use_preg_replace' => 1,
 		'replacement' => '$1$2$3$5',
 		'match_offset' => 4
-	),
+	), 
+	
 	array(
 		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?position\s*?:.*?)(\2|;)%',
 		'description' => 'Gmail doesn\'t show the CSS style: position',
 		'use_preg_replace' => 1,
 		'replacement' => '$1$2$3$5',
 		'match_offset' => 4
-	),
+	),	 
 	array(
 		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?visibility\s*?:.*?)(\2|;)%',
 		'description' => 'Gmail doesn\'t show the CSS style: visibility',
 		'use_preg_replace' => 1,
 		'replacement' => '$1$2$3$5',
 		'match_offset' => 4
-	),
+	), 
 	array(
 		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?z-index\s*?:.*?)(\2|;)%',
 		'description' => 'Gmail doesn\'t show the CSS style: z-index',
 		'use_preg_replace' => 1,
 		'replacement' => '$1$2$3$5',
 		'match_offset' => 4
+	),
+	
+	/*********** New rules added for Gmail ********/
+	array(      
+		'regular_expression' => '%<head>.*?<link .*?/>.*?</head>%',
+		'description' => 'Gmail removes any link elements within head tags',
+		'replacement' => '',
+		'match_offset' => 1
+	),
+	array(      
+		'regular_expression' => '%<body>.*?<link .*?/>.*?</body>%',
+		'description' => 'Gmail removes any link elements within body tags',
+		'replacement' => '',
+		'match_offset' => 1
+	),
+	 array(
+		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?box-shadow\s*?:.*?)(\2|;)%',
+		'description' => 'Gmail doesn\'t show the CSS style: box-shadow',
+		'use_preg_replace' => 1,
+		'replacement' => '$1$2$3$5',
+		'match_offset' => 4
+	),
+		 
+	array(
+		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?resizes*?:.*?)(\2|;)%',
+		'description' => 'Gmail doesn\'t show the CSS style: resize',
+		'use_preg_replace' => 1,
+		'replacement' => '$1$2$3$5',
+		'match_offset' => 4
+	),	  
+	array(      
+		'regular_expression' => '%<canvas.*?</canvas>%',  
+		'description' => 'Gmail removes any canvas elements  tags',
+		'replacement' => '',
+		'match_offset' => 0
+	),
+	array(      
+		'regular_expression' =>'%<audio\s(.*?)</audio>%', 
+		'description' => 'Gmail removes any audio elements  tags',
+		'replacement' => '',
+		'match_offset' => 0
+	),
+	array(      
+		'regular_expression' => '%<video\s(.*?)</video>%',
+		'description' => 'Gmail removes any video elements  tags',
+		'replacement' => '',
+		'match_offset' => 0
 	),
 );

@@ -518,14 +518,7 @@ class SplitTest_API extends API
 
 		$tests = array();
 
-		$pg_campaign_list = "array_to_string(array(SELECT name FROM [|PREFIX|]newsletters n INNER JOIN [|PREFIX|]splittest_campaigns stc ON (n.newsletterid=stc.campaignid) WHERE stc.splitid=st.splitid ORDER BY n.name ASC), ', ') AS campaign_names";
-
-		$mysql_campaign_list = "(SELECT GROUP_CONCAT(name SEPARATOR ', ') FROM [|PREFIX|]newsletters n INNER JOIN [|PREFIX|]splittest_campaigns stc ON (n.newsletterid=stc.campaignid) WHERE stc.splitid=st.splitid ORDER BY n.name ASC) AS campaign_names";
-
-		$campaign_list_query = $mysql_campaign_list;
-		if (SENDSTUDIO_DATABASE_TYPE == 'pgsql') {
-			$campaign_list_query = $pg_campaign_list;
-		}
+        $campaign_list_query = "(SELECT GROUP_CONCAT(name SEPARATOR ', ') FROM [|PREFIX|]newsletters n INNER JOIN [|PREFIX|]splittest_campaigns stc ON (n.newsletterid=stc.campaignid) WHERE stc.splitid=st.splitid ORDER BY n.name ASC) AS campaign_names";
 
 		$count_campaign_query = "(SELECT COUNT(campaignid) FROM [|PREFIX|]splittest_campaigns c WHERE c.splitid=st.splitid) AS campaigncount";
 

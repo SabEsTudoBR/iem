@@ -17,7 +17,7 @@ class IEM_Installer
 
 	/**
 	 * The application settings that are required to install the software.
-	 * @var Array
+	 * @var array
 	 */
 	private $_settings;
 
@@ -51,29 +51,26 @@ class IEM_Installer
 	 */
 	public function __construct()
 	{
-		$this->_settings = array(
-				'DATABASE_TYPE'		=> null,
-				'LICENSEKEY'		=> null,
-				'APPLICATION_URL'	=> null,
-				'EMAIL_ADDRESS'		=> null,
-				'DATABASE_USER'		=> null,
-				'DATABASE_PASS'		=> null,
-				'DATABASE_HOST'		=> null,
-				'DATABASE_NAME'		=> null,
-				'TABLEPREFIX'		=> null,
-			);
-		if (is_callable(array('IEM', 'getDatabase'))) {
-			$this->_api = IEM::getDatabase();
-		}
-	}
+		$this->_settings = [
+            'DATABASE_TYPE'		=> null,
+            'LICENSEKEY'		=> null,
+            'APPLICATION_URL'	=> null,
+            'EMAIL_ADDRESS'		=> null,
+            'DATABASE_USER'		=> null,
+            'DATABASE_PASS'		=> null,
+            'DATABASE_HOST'		=> null,
+            'DATABASE_NAME'		=> null,
+            'TABLEPREFIX'		=> null,
+        ];
+    }
 
 	/**
 	 * LoadFields
 	 * Loads settings into the object.
 	 *
-	 * @param Array $settings An associative array of the settings required to install the application.
+	 * @param array $settings An associative array of the settings required to install the application.
 	 *
-	 * @return Array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string.
+	 * @return array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string.
 	 */
 	public function LoadRequiredSettings($settings)
 	{
@@ -89,38 +86,33 @@ class IEM_Installer
 	 * SetupDatabase
 	 * Creates a database connection and loads the schema, if it's safe to do so.
 	 *
-	 * @return Array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string or an array of error strings.
+	 * @return array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string or an array of error strings.
 	 */
 	public function SetupDatabase()
 	{
-		// Check the DB type.
-		$type = $this->_settings['DATABASE_TYPE'];
-		if (!$this->validDbType($type)) {
-			return array(self::DB_UNSUPPORTED, null);
-		}
+        try {
+            $db = IEM_DBFACTORY::manufacture(
+                $this->_settings['DATABASE_HOST'],
+                $this->_settings['DATABASE_USER'],
+                $this->_settings['DATABASE_PASS'],
+                $this->_settings['DATABASE_NAME'],
+                [
+                    'charset' => 'utf8',
+                    'tablePrefix' => $this->_settings['TABLEPREFIX'],
+                ]
+            );
+        } catch (exception $e) {
+            return array(self::DB_CONN_FAILED, $e->getMessage());
+        }
 
-		// Check we can connect to it.
-		require_once(IEM_PATH . '/ext/database/' . $type . '.php');
-		$type_api = $type . 'Db';
-		$db = new $type_api();
-		
-		if (!defined(SENDSTUDIO_DEFAULTCHARSET) or SENDSTUDIO_DEFAULTCHARSET == 'UTF-8'){
- 			$db->charset = 'utf8';
- 		}
-						
-		if (!$db->Connect($this->_settings['DATABASE_HOST'], $this->_settings['DATABASE_USER'], $this->_settings['DATABASE_PASS'], $this->_settings['DATABASE_NAME'])) {
-			return array(self::DB_CONN_FAILED, $db->GetErrorMsg());
-		}
-		
 		$this->_db =& $db;
 
 		// Set DB configuration settings needed by other parts of the installer.
-		$this->_db->TablePrefix = $this->_settings['TABLEPREFIX'];
-		define('SENDSTUDIO_DATABASE_TYPE', $this->_settings['DATABASE_TYPE']);
+		define('SENDSTUDIO_DATABASE_TYPE', 'mysql');
 
 		// Check for sufficient version.
 		$version = $this->_db->Version();
-		list($error, $msgs) = self::DbVersionCheck($type, $version);
+		list($error, $msgs) = self::DbVersionCheck('mysql', $version);
 		if ($error) {
 			return array($error, $msgs);
 		}
@@ -152,7 +144,7 @@ class IEM_Installer
 	 * Saves the default settings into the database.
 	 * Note that the database and required system settings must be set up before this is called.
 	 *
-	 * @return Array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string.
+	 * @return array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string.
 	 */
 	public function SaveDefaultSettings()
 	{
@@ -233,14 +225,13 @@ class IEM_Installer
 	 * CheckPermissions
 	 * Checks whether permissions are set correctly for the installation to continue.
 	 *
-	 * @return Array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string or an array of error strings.
+	 * @return array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string or an array of error strings.
 	 */
 	public function CheckPermissions()
 	{
 		$errors = array();
 
 		$folders_to_check = array('admin/temp', 'admin/com/storage');
-		$files_to_check = array('admin/includes/config.php');
 
 		$directory_linux_message = 'Please CHMOD it to 775, 757 or 777.';
 		$file_linux_message = 'Please CHMOD it to 664, 646 or 666.';
@@ -274,23 +265,24 @@ class IEM_Installer
 		
 		if(!file_exists('includes/config.php')){@fopen('includes/config.php','x');}
 
-		foreach ($files_to_check as $file_name) {
-			$fullpath = $basedir . $file_name;
-			if (!self::CheckWritable($fullpath)) {
-				$errors[] = 'The file <strong>' . $file_name . '</strong> is not writable. ' . $file_error_message;
-			}
-		}
-		if (!empty($errors)) {
-			return array(self::FILES_UNWRITABLE, $errors);
-		}
-		return array(self::SUCCESS, null);
+		if(!file_exists('includes/config.php')){
+            $errors[] = 'The file admin/includes/config.php could not be created in the <strong>admin/includes</strong> directory. ' . $directory_linux_message;
+        } else {
+            $fullpath = $basedir . 'admin/includes/config.php';
+            if (!self::CheckWritable($fullpath)) {
+                $errors[] = 'The file <strong>admin/includes/config.php</strong> is not writable. ' . $file_error_message;
+            }
+
+        }
+
+        return !empty($errors) ? array(self::FILES_UNWRITABLE, $errors) : array(self::SUCCESS, null);
 	}
 
 	/**
 	 * CheckServerSettings
 	 * Checks whether some basic server settings are OK (e.g. Safe Mode).
 	 *
-	 * @return Array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string or an array of error strings.
+	 * @return array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string or an array of error strings.
 	 */
 	public function CheckServerSettings()
 	{
@@ -298,15 +290,17 @@ class IEM_Installer
 
 		if (!function_exists('session_id')) {
 			$errors[] = "PHP sessions are not available on this server.";
-			return array(self::SERVER_BAD_CONFIG, $errors);
 		}
 
 		if (self::iniBool('safe_mode')) {
 			$errors[] = "PHP's 'Safe Mode' is currently on and needs to be deactivated.";
-			return array(self::SERVER_BAD_CONFIG, $errors);
 		}
 
-		return array(self::SUCCESS, null);
+		if (!function_exists('simplexml_load_string') || !class_exists('SimpleXMLElement')) {
+            $errors[] = "PHP's XML extension is required to install addons.";
+        }
+
+		return empty($errors) ? array(self::SUCCESS, null) : array(self::SERVER_BAD_CONFIG, $errors);
 	}
 
 	/**
@@ -314,7 +308,7 @@ class IEM_Installer
 	 * Creates a set of 'default' or 'starter' custom fields.
 	 * Note that this function should only be run after the database connection has been established.
 	 *
-	 * @return Array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string.
+	 * @return array The first element is an error code indicating success (0) or failure (> 0). The second element is an error string.
 	 */
 	public function CreateCustomFields()
 	{

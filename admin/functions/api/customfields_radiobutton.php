@@ -31,17 +31,17 @@ class CustomFields_Radiobutton_API extends CustomFields_API
 	*
 	* @var String
 	*/
-	var $fieldtype = 'radiobutton';
+    public $fieldtype = 'radiobutton';
 
 	/**
 	* Options for this custom field type.
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Options = array(
+	public $Options = [
 		'Key' => '',
 		'Value' => ''
-	);
+    ];
 
 	/**
 	* Constructor
@@ -53,20 +53,18 @@ class CustomFields_Radiobutton_API extends CustomFields_API
 	*
 	* @see CustomFields_API::CustomFields_API
 	* @see Db
-	*
-	* @return Boolean Returns the parent's constructor.
 	*/
-	function CustomFields_Radiobutton_API($fieldid=0, $connect_to_db=true)
+	public function __construct($fieldid=0, $connect_to_db=true)
 	{
 		unset($this->SharedOptions['DefaultValue']);
-		return $this->CustomFields_API($fieldid, $connect_to_db);
+		parent::__construct($fieldid, $connect_to_db);
 	}
 
 	/**
 	* CheckData
 	* Checkdata makes sure the data passed in is valid for this field type.
 	*
-	* @param Array $data The data to validate. If it's not an array it gets converted to one.
+	* @param array $data The data to validate. If it's not an array it gets converted to one.
 	*
 	* @see ValidData
 	* @see Settings
@@ -74,14 +72,14 @@ class CustomFields_Radiobutton_API extends CustomFields_API
 	*
 	* @return Boolean If it's a valid option, this returns true. Otherwise false (including if the field hasn't been loaded correctly).
 	*/
-	function CheckData($data=array())
+	function CheckData($data = [])
 	{
 		if (!$this->IsLoaded()) {
 			return false;
 		}
 
 		if (!is_array($data)) {
-			$data = array($data);
+			$data = [$data];
 		}
 
 		$validOptions = $this->Settings['Key'];
@@ -97,7 +95,7 @@ class CustomFields_Radiobutton_API extends CustomFields_API
 	* DisplayFieldOptions
 	* This displays options for the custom field if it is loaded. This will display a list of radio buttons to choose from.
 	*
-	* @param Array $chosen A list of chosen items (keys not values).
+	* @param array $chosen A list of chosen items (keys not values).
 	* @param Boolean $useoptions This isn't used in the function, needed as a parameter placeholder. Set to false.
 	* @param Int $formid The form we are generating the content for. This is used to modify the form id's and javascript slightly to allow multiple forms to be on the same page.
 	*

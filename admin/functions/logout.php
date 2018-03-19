@@ -28,7 +28,7 @@ class Logout extends SendStudio_Functions
 	*
 	* @see Login::Process
 	*
-	* @return Void Doesn't return anything. Unsets session variables, removes the "remember me" cookie if it's set and redirects you back to the login page.
+	* @return Void Doesn't return anything. Unsets session variables and redirects you back to the login page.
 	*/
 	function Process()
 	{
@@ -37,9 +37,6 @@ class Logout extends SendStudio_Functions
 		unset($sessionuser);
 		
 		IEM::userLogout();
-		
-		IEM::requestRemoveCookie('IEM_CookieLogin');
-		IEM::requestRemoveCookie('IEM_LoginPreference');
 
 		$url = SENDSTUDIO_APPLICATION_URL;
 		if (substr($url, -1, 1) != '/') {

@@ -386,7 +386,7 @@ function GetLang($langvar=false, $default = null)
 */
 function AdjustTime($time=0, $convert_to_gmt=true, $date_format='', $from_servertime=false)
 {
-	$user = GetUser();
+	$user = IEM::getCurrentUser();
 
 	if (!is_object($user)) {
 		return false;
@@ -448,22 +448,10 @@ function FixBrokenGMTTime($brokenGMTTIme)
 * @see User
 *
 * @return User_API The user object.
-*
-* @todo deprecate this in favour of IEM::getCurrentUser function
 */
-function GetUser($userid=0)
+function GetUser($userid)
 {
-	if ($userid == 0) {
-		$UserDetails = IEM::getCurrentUser();
-		return $UserDetails;
-	}
-
-	if ($userid == -1) {
-		$user = new User_API();
-	} else {
-		$user = new User_API($userid);
-	}
-	return $user;
+	return new User_API($userid);
 }
 
 /**

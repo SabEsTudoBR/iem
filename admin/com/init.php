@@ -22,24 +22,16 @@
  * @authors David Chandra
  * @authors Yudi Tukiaty
  * @authors Micheline Nakhle
+ * @authors John Tuck
  */
 
 /**
- * IEM autoloading function defined using spl_autoload_register.
+ * IEM auto loading function defined using spl_autoload_register.
  *
- * @param String $classname Class name to load
- * 
- * @return Void Returns nothing
+ * @param string $className
  */
 function __iem_autoload_function($className)
 {
-	/*
-	 * Checking for existings is far faster than just calling require_once. If
-	 * the class already exists, then nothing needs to be done. Whereas
-	 * require_once will have to run file checks to see if the file has already
-	 * been included. This is a moot point since autoloading is only available
-	 * for classes anyways.
-	 */
 	if (class_exists($className, false)) {
 		return;
 	}
@@ -65,8 +57,6 @@ function __iem_autoload_function($className)
 /**
  * Shutdown function
  * Function that will be called when the script finishes execution.
- *
- * @return Void Returns nothing
  */
 function __iem_shutdown_function()
 {
@@ -88,9 +78,6 @@ function __iem_shutdown_function()
  * Function that handle rouge exception
  *
  * @param Exception $e Exception that needs to be handled
- * @return Void Returns nothing
- *
- * @todo handle more exception
  */
 function __iem_exception_handler(Exception $e)
 {
@@ -125,80 +112,6 @@ function __iem_exception_handler(Exception $e)
 	exit(1);
 }
 
-/*
- * Check if date_default_timezone_set is available.
- * 
- * @todo remove this function once our PHP requirement is > PHP 5.2
- */
-if (!function_exists('date_default_timezone_set')) {
-	/**
-	 * date_default_timezone_set
-	 * This function is only available to PHP 5.2 or above
-	 *
-	 * @param string $timezone Timezone to set date.timezone settings to
-	 * @return boolean Returns TRUE if successful, FALSE otherwise
-	 */
-	function date_default_timezone_set($timezone)
-	{
-		static $available_timezone = null;
-
-		// Pupulate timezone cache
-		if (is_null($available_timezone)) {
-			if (function_exists('timezone_identifiers_list')) {
-				$available_timezone = timezone_identifiers_list();
-			} else {
-				$available_timezone = array();
-			}
-		}
-
-		// If available_timezone list is not empty, verify it
-		if (!empty($available_timezone) && !in_array($timezone, $available_timezone)) {
-			return false;
-		}
-
-		ini_set('date.timezone', $timezone);
-		return true;
-	}
-}
-
-/*
- * Check if date_default_timezone_get is available.
- * 
- * @todo remove this function once our PHP requirement is > PHP 5.2
- */
-if (!function_exists('date_default_timezone_get')) {
-	/**
-	 * This function is only available to PHP 5.2 or above
-	 *
-	 * NOTE: This function will NOT query the TZ environment variable nor the 
-	 * system settings. If nothing is found, it will simply return UTC.
-	 *
-	 * @return string Returns current timezone of which date.timezone is set to.
-	 */
-	function date_default_timezone_get()
-	{
-		$temp = ini_get('date.timezone');
-		
-		if (empty($temp)) {
-			$temp = 'UTC';
-		}
-
-		return $temp;
-	}
-}
-
-
-
-/*
- * Pre-check
- * 
- * @todo Should this be checked each time? Re-do how it defines disabled 
- *       functions.
- * @todo For the above todo, if a good conventoin
- * @todo Check whether or not ini_get is available? If possible catch errors for 
- *       it.
- */
-
 define('SENDSTUDIO_DISABLED_FUNCTIONS', ini_get('disable_functions'));
 
 $disabled_functions = explode(',', SENDSTUDIO_DISABLED_FUNCTIONS);
@@ -210,13 +123,8 @@ if (in_array('ini_set', $disabled_functions)) {
 	die(nl2br($turn_off_message));
 }
 
-
-
 // Set up PHP environment
 error_reporting(E_ALL);
-
-// PHP > 5.3 will be deprecating this function
-@set_magic_quotes_runtime(false);
 
 ini_set('short_tags', false);
 $memlimit = ini_get('memory_limit');
@@ -228,8 +136,7 @@ if((int)$memlimit < 64 ){
 ini_set('track_errors', true);
 ini_set('magic_quotes_sybase', false);
 
-// Since we auto-detect the time anyway, we should set up the default time zone to avoid warnings.
-@date_default_timezone_set(@date_default_timezone_get());
+date_default_timezone_set(date_default_timezone_get());
 
 if (!defined('IEM_CLI_MODE')) {
 	define('IEM_CLI_MODE', (defined('IEM_CRON_JOB') || php_sapi_name() == 'cli'));
@@ -270,20 +177,14 @@ if (IEM_CLI_MODE) {
 	}
 }
 
-
-
 // Define a constant path that is available in the application
 // Load any customization made in the whitelabel directory
 $tempFileName = dirname(__FILE__) . '/custom/init-path.php';
-
 if (is_readable($tempFileName)) {
 	include $tempFileName;
 }
-
 unset ($tempFileName);
 
-
-// Defines default constants if they were not already defined
 if (!defined('IEM_PATH')) {
 	define('IEM_PATH', dirname(__FILE__));
 }
@@ -300,257 +201,151 @@ if (!defined('IEM_ADDONS_PATH')) {
 	define('IEM_ADDONS_PATH', IEM_PUBLIC_PATH . '/addons');
 }
 
-
-
 // Set spl_autoload, error and exception handler
 spl_autoload_register('__iem_autoload_function');
-// TODO: set error handler, and deprecate the existing error handler
-// set_error_handler()
 set_exception_handler('__iem_exception_handler');
 
-
-
-// Include file that will provide "Event" support
 require_once IEM_PATH . '/event.php';
-
-
-
-// --------------------------------------------------------------------------------
-// This is the legacy "init" file that needed to be refactored/deprecated gradually
-// as it contains procedure that are obsolete or shouldn't be used anymore.
-// TODO: deprecate
-// --------------------------------------------------------------------------------
 require_once IEM_PATH . '/init-legacy.php';
 
-
-
-// --------------------------------------------------------------------------------
-// Initialize framework and trigger any events that might be listening
-// to the "SYSTEM_STARTUP" (before and after) event
-// --------------------------------------------------------------------------------
 $tempEvent = new EventData_IEM_SYSTEM_STARTUP_BEFORE();
 $tempEvent->trigger();
 unset($tempEvent);
 
-// Initialize the framework
 if(IEM::configGet() !== false){
 	IEM::init();
 }
 
-
-// Register a shutdown function
 register_shutdown_function('__iem_shutdown_function');
 
 $tempEvent = new EventData_IEM_SYSTEM_STARTUP_AFTER();
 $tempEvent->trigger();
 unset($tempEvent);
 
+$useController = false;
+if (!defined('IEM_NO_CONTROLLER') || IEM_NO_CONTROLLER == false) {
+    $useController = true;
+}
 
+if (IEM_CLI_MODE && (!IEM::isInstalled() || IEM::hasUpgrade())) {
+    echo 'Application not installed or requires upgrade';
+    exit(1);
+}
 
-/*
- * Check to see if the applicatin is installed. If not, redirect it to the
- * installation screen.
- */
 if (!IEM::isInstalled() && !IEM::isInstalling()) {
     header('Location: index.php?Page=install');
-    
-    exit;
+    exit();
 }
 
+if (IEM::isInstalling()) {
+    require_once SENDSTUDIO_FUNCTION_DIRECTORY . "/installer.php";
+    $system = new Installer();
+    $system->Process();
+    exit();
+}
 
-
-/*
- * Check to see if the application requires an upgrade. If there are upgrades
- * present, redirect to the upgrade screen.
- */
 if (IEM::hasUpgrade() && !IEM::isUpgrading()) {
     header('Location: index.php?Page=upgradenx');
-    
-    exit;
+    exit();
 }
 
-
-
-// --------------------------------------------------------------------------------
-// Do not invoke the controller when:
-// - IEM_NO_CONTROLLER flag is defined
-// - and the flag is set to TRUE
-//
-// This is useful for "addons" or pages that does not follow the standard
-// convention of the framework model (such as the legacy cods) and for
-// testing purposes.
-//
-// The controller main functionality is to:
-// - re-direct request to the appropriate "function".
-// - Currently also checking "Login" information
-// --------------------------------------------------------------------------------
+if (IEM::isUpgrading()) {
+    require_once SENDSTUDIO_FUNCTION_DIRECTORY . "/upgradenx.php";
+    $system = new UpgradeNX();
+    $system->Process();
+    exit();
+}
 
 ss9O24kwehbehb();
 
-if (!defined('IEM_NO_CONTROLLER') || constant('IEM_NO_CONTROLLER') !== true) {
-	$non_allowable_pages = array('init', 'upgrade', 'sendstudio_functions');
-	$page                = IEM::requestGetGET('Page', '', 'strtolower');
-	$newPage             = false;
-
-    // See whether this is set up or not. If it's not set up, start the installer.
-    if (!IEM::isInstalled()) {
-    	if ($page != 'remote_installer') {
-    		$page = 'installer';
-    	}
-    	// Start up the installer
-    	require_once SENDSTUDIO_FUNCTION_DIRECTORY . "/{$page}.php";
-    	$system = new $page();
-    	$system->Process();
-    	exit();
-    }
-
-    
-
-    // Redirect the application the the URL specified in the configuration file
-    $url_parts = parse_url(SENDSTUDIO_APPLICATION_URL);
-    $host      = $url_parts['host'];
-    
-    if (isset($url_parts['port'])) {
-    	$host .= ':'.$url_parts['port'];
-    }
-    
-    if ($host != $_SERVER['HTTP_HOST']) {
-    	header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/index.php');
-    	exit();
-    }
-
-
-    
-    // Make sure that the pages does not contains undesirable characters
-    // by replacing all of non-word character with an underscore (_)
-    $page = preg_replace('/[^\w]/', '_', $page);
-    
-    // If someone tries to be tricky, redirect them back to the main page.
-    if (!is_file(SENDSTUDIO_FUNCTION_DIRECTORY . '/' . $page . '.php') || in_array($page, $non_allowable_pages)) {
-    	$newPage = IEM::requestGetGET('page', false);
-    	$newPage = preg_replace('/[^\w]/', '_', $newPage);
-    
-    	if (!is_file(IEM_PATH . "/pages/{$newPage}.class.php")) {
-    		$newPage = false;
-    		$page    = 'index';
-    	}
-    }
-
-    // --------------------------------------------------------------------------------
-    // Check whether or not the request is coming from a user that's already logged in.
-    //
-    // If the user have not logged in yet, we need to check for "IEM_CookieLogin"
-    // and "IEM_LoginPreference" cookie. This cookie is used in "remember me" feature.
-    //
-    // TODO refactor this to IEM::login() function
-    // --------------------------------------------------------------------------------
-    $isInstalling = IEM::isCompletingUpgrade() ||
-                    (!IEM::isInstalled() && IEM::isInstalling()) ||
-                    (IEM::hasUpgrade() && IEM::isUpgrading());
-
-    if (!$isInstalling && !IEM::userGetCurrent()) {
-        try {
-            // Get cookie
-            $tempCookie = IEM::requestGetCookie('IEM_CookieLogin', array());
-            if (!is_array($tempCookie) || !isset($tempCookie['user'])) {
-                throw new Exception();
-            }
-
-            // Get user
-            $tempUser = new User_API();
-
-            $tempUser->Load(intval($tempCookie['user']));
-
-            // Check if the user is a valid user
-            if (
-                !isset($tempUser->settings['LoginCheck']) ||
-                !$tempUser->userid ||
-                !$tempUser->Status()
-            ) {
-                throw new Exception();
-            }
-
-            // Check whether or not the random number matches
-            if ($tempUser->settings['LoginCheck'] !== $tempCookie['rand']) {
-                throw new Exception();
-            }
-
-            // The cookie is valid! Update session accordingly
-            IEM::userLogin($tempUser->userid);
-
-            // Check if we have login preferences
-            $tempLoginPref = IEM::requestGetCookie('IEM_LoginPreference', array());
-
-            if (is_array($tempLoginPref) && isset($tempLoginPref['takemeto'])) {
-                header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/' . $tempLoginPref['takemeto']);
-            }
-
-            unset($tempCookie, $tempUser);
-        } catch (Exception $e) {
-            $page = 'login';
-        }
+if ($useController) {
+    if (!IEM::getCurrentUser() instanceOf User_API) {
+        controller('login');
     } else {
-    	$tempUser = GetUser();
-    	
-    	if (!$tempUser->Find($tempUser->username)) {
-    		$page = 'login';
-    	}
-    
-    	unset($tempUser);
+        if (getNewPage() === 'AdminTools') {
+            handleAdminTools();
+        } else {
+            $page = getPage();
+            $non_allowable_pages = [
+                'init',
+                'sendstudio_functions',
+                'install',
+                'installer',
+                'upgrade',
+                'upgradenx',
+                'login',
+            ];
+            if (in_array($page, $non_allowable_pages)) {
+                IEM::redirectTo('index.php');
+            } else {
+                controller($page);
+            }
+        }
     }
-    
-    
-    
-	// Include the 'page' we're working with and process it.
-	// This is getting the page class from functions directory.
-	// Starting from version 5.6, the page structure has been gradually moved.
-	if ($newPage === false) {
-		require_once SENDSTUDIO_FUNCTION_DIRECTORY . "/{$page}.php";
+    checkLogSystem();
+    exit();
+}
 
-		$system = new $page();
-		
-		$system->Process();
-		
-		unset($system);
-	// This is the new page structure
-	} else {
-		require_once IEM_PATH . "/pages/{$newPage}.class.php";
-		
-		$tempClassName  = "page_{$newPage}";
-		$tempAction     = 'page_' . preg_replace('/[^\w]/', '_',IEM::requestGetGET('action', 'index'));
-		$tempPageObject = new $tempClassName();
+//-------------------------------------------------------------------
 
-		// Check if "action" exists
-		if (!is_callable(array($tempPageObject, $tempAction))) {
-			// page_index will alwas exists (albeit only returning a FALSE)
-			$tempAction = 'page_index';
-		}
+function controller($page)
+{
+    $url_parts = parse_url(SENDSTUDIO_APPLICATION_URL);
+    $host = $url_parts['host'];
 
-		// Call the function specified by "action" parameter
-		$tempOutput = $tempPageObject->{$tempAction}();
+    if (isset($url_parts['port'])) {
+        $host .= ':' . $url_parts['port'];
+    }
 
-		// TODO other return value have no effect at the moment.
-		// Currently it only prints out a string
-		if (is_string($tempOutput)) {
-			echo $tempOutput;
-		}
+    if ($host != $_SERVER['HTTP_HOST']) {
+        header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/index.php');
+        return;
+    }
 
-		// Call the page class destructor if it wants to cleanup anything
-		unset($tempPageObject);
-	}
+    handlePage($page);
+}
 
+function getNewPage()
+{
+    $newPage = IEM::requestGetGET('page', '');
+    return preg_replace('/[^\w]/', '_', $newPage);
+}
 
-	// After everything has run, see if we need to keep the "logs" in check.
-	$logsystem = GetLogSystem();
+function getPage()
+{
+    $page = IEM::requestGetGET('Page', '', 'strtolower');
+    $page = preg_replace('/[^\w]/', '_', $page);
+    return is_file(SENDSTUDIO_FUNCTION_DIRECTORY."/{$page}.php") ? $page : 'index';
+}
 
-	if ($logsystem) {
-		$logsystem->PruneSystemLog();
-		$logsystem->PruneAdminLog();
+function handlePage($page)
+{
+    require_once SENDSTUDIO_FUNCTION_DIRECTORY . "/{$page}.php";
+    $system = new $page();
+    $system->Process();
+    unset($system);
+}
 
-		unset($logsystem);
-	}
+function handleAdminTools()
+{
+    require_once IEM_PATH . "/pages/AdminTools.class.php";
 
+    $tempAction = 'page_' . preg_replace('/[^\w]/', '_', IEM::requestGetGET('action', 'index'));
+    $adminTools = new page_AdminTools();
 
-	// The controller should end the request.
-	exit();
+    if (!is_callable([$adminTools, $tempAction])) {
+        $tempAction = 'page_index';
+    }
+
+    $adminTools->{$tempAction}();
+}
+
+function checkLogSystem()
+{
+    $logsystem = GetLogSystem();
+    if ($logsystem) {
+        $logsystem->PruneSystemLog();
+        $logsystem->PruneAdminLog();
+        unset($logsystem);
+    }
 }

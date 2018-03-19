@@ -102,7 +102,7 @@ class DynamicContentTag_Api_Tag {
             . " WHERE dct.tagid = '". $this->db->Quote($tagId) . "'"
         ;
 
-        $user = GetUser();
+        $user = IEM::getCurrentUser();
         if (!$user->isAdmin()) {
         	$query .= " AND dct.ownerid = '{$user->Get('userid')}' ";
         }
@@ -292,7 +292,7 @@ class DynamicContentTag_Api_Tag {
      * save
      * This will save all the items related to dynamic content tags. E.g. Lists and content blocks.
      *
-     * @return void  Return true if everything are saved. Otherwise return false
+     * @return bool  Return true if everything are saved. Otherwise return false
      */
     public function save() {
         if (!sizeof($this->blocks)) {

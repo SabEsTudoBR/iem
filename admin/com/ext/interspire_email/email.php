@@ -2030,9 +2030,7 @@ class Email_API
 			}
 
             if ($starttls) {
-                $this->DebugMemUsage('Trying to put ' . $data);
-
-                $data  = "STARTTLS" . $this->_smtp_newline;
+                $data  = "STARTTLS";
                 $this->DebugMemUsage('Trying to put ' . $data);
 
                 if (!$this->_Put_Smtp_Connection($data, $socket)) {

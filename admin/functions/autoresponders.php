@@ -87,7 +87,7 @@ class Autoresponders extends SendStudio_Functions
 		$GLOBALS['Message'] = '';
 
 		$action = (isset($_GET['Action'])) ? strtolower($_GET['Action']) : null;
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$secondary_actions = array('step2', 'sendpreview', 'view', 'processpaging', 'activate', 'deactivate', 'pause', 'resume', 'change', 'checkspam', 'viewcompatibility');
 		if (in_array($action, $secondary_actions)) {
@@ -1335,7 +1335,7 @@ class Autoresponders extends SendStudio_Functions
 	{
 		$autoresponderapi = $this->GetApi();
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$sessionauto = IEM::sessionGet('Autoresponders');
 		$listid = $sessionauto['list'];
@@ -1511,7 +1511,7 @@ class Autoresponders extends SendStudio_Functions
 
 		$this->DisplayCronWarning();
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$GLOBALS['FromPreviewEmail'] = $user->Get('emailaddress');
 
 		//$GLOBALS['DisplayAttachmentsHeading'] = 'none';
@@ -1590,7 +1590,7 @@ class Autoresponders extends SendStudio_Functions
 		unset($session_autoresponder['Format']);
 		$GLOBALS['MaxFileSize'] = SENDSTUDIO_ATTACHMENT_SIZE*1024;
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if ($user->Get('forcespamcheck')) {
 			$GLOBALS['ForceSpamCheck'] = 1;
 		}
@@ -1611,7 +1611,7 @@ class Autoresponders extends SendStudio_Functions
 	*/
 	function ChooseCreateList()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$lists = $user->GetLists();
 
 		$listids = array_keys($lists);
@@ -1715,7 +1715,7 @@ class Autoresponders extends SendStudio_Functions
 			return;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$max_size = (SENDSTUDIO_EMAILSIZE_MAXIMUM*1024);
 
@@ -1833,7 +1833,7 @@ class Autoresponders extends SendStudio_Functions
 		$listid = (isset($_GET['list'])) ? (int)$_GET['list'] : 0;
 
 		$api = $this->GetApi();
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if (!is_array($autoresponderids)) {
 			$autoresponderids = array($autoresponderids);
@@ -1891,7 +1891,7 @@ class Autoresponders extends SendStudio_Functions
 	 */
 	function CanAccessList($list_id)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($user->Admin()) {
 			return true;

@@ -66,7 +66,7 @@ class ShowCustomFields extends SendStudio_Functions
 
 		$template = $this->ParseTemplate('ShowCustomFields_List_Start', true, false);
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$lists = $user->GetLists();
 

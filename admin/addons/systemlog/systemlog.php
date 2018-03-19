@@ -224,7 +224,7 @@ class Addons_systemlog extends Interspire_Addons
 	 */
 	public static function GetTextMenuItems(EventData_IEM_SENDSTUDIOFUNCTIONS_GENERATETEXTMENULINKS $data)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->Admin()) {
 			return;
 		}

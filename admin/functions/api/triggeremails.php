@@ -677,7 +677,7 @@ class TriggerEmails_API extends API
 	 * @return Boolean Returns TRUE if successful, FALSE otherwise
 	 *
 	 * @uses SendStudio_Functions::CheckIntVars()
-	 * @uses GetUser()
+	 * @uses IEM::getCurrentUser()
 	 * @uses SENDSTUDIO_TABLEPREFIX
 	 * @uses Db::StartTransaction()
 	 * @uses Db::Query()
@@ -693,7 +693,7 @@ class TriggerEmails_API extends API
 		}
 
 		$ids = $this->CheckIntVars($ids);
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$implodedids = implode(',', $ids);
 		$userid = intval($user->userid);

@@ -51,7 +51,7 @@ class Index extends SendStudio_Functions
 	 */
 	function Process()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$action = '';
 		if (isset($_GET['Action'])) {
@@ -293,7 +293,7 @@ class Index extends SendStudio_Functions
 	 */
 	function _CheckVersion()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->Admin() || SENDSTUDIO_WHITE_LABEL) {
 			return '';
 		}
@@ -408,7 +408,7 @@ class Index extends SendStudio_Functions
 	 */
 	function PrintGraph()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$lists = $user->GetLists();
 		$listids = array_keys($lists);
 
@@ -431,13 +431,13 @@ class Index extends SendStudio_Functions
 
 		IEM::sessionSet('IndexSubscriberGraphData', $data);
 
-		$dataUrl = 'stats_chart.php?graph=subscribersummary&Area=list&statid=0&i=1&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+		$dataUrl = 'stats_chart.php?graph=subscribersummary&Area=list&statid=0&i=1';
 
 		echo AmCharts::InsertColumnChart($dataUrl);
 	}
 
 	function PrintCampaignsChart($statId) {
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$statsapi = $this->GetApi('Stats');
 		$statId = ($user->HasAccess('Statistics') && $user->HasAccess('statistics', 'newsletter'))?$statId:0;
 
@@ -449,7 +449,7 @@ class Index extends SendStudio_Functions
 	}
 
 	function PrintCampaign ($listOptions) {
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$noCampaignLang = 'GettingStarted_NoCampaign';
 
 		// Check the user access
@@ -547,7 +547,7 @@ class Index extends SendStudio_Functions
 	}
 
 	function PrintJobs () {
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		// Check the user access
 		$access = $user->HasAccess('newsletters', 'Send');
@@ -613,7 +613,7 @@ class Index extends SendStudio_Functions
 	}
 
 	function PrintCampaignsDropdown() {
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$statsapi = $this->GetApi('Stats');
 		$mystatsSelected['selected'] = 0;
 		$mystats = array();
@@ -659,7 +659,7 @@ class Index extends SendStudio_Functions
 			$unopened = 0;
 		}
 
-		$dataUrl = 'stats_chart.php?Opens='. $opens . '&Unopened=' . $unopened . '&Bounced=' . $total_bounces . '&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+		$dataUrl = 'stats_chart.php?Opens='. $opens . '&Unopened=' . $unopened . '&Bounced=' . $total_bounces;
 
 		// Newsletter Summary Chart
 		$chart = AmCharts::InsertPieChart($dataUrl);
@@ -669,7 +669,7 @@ class Index extends SendStudio_Functions
 
 	function PrintRecentLists($countOnly = false) {
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$perpage = 5;
 		$start = 0;
 		$DisplayPage = 1;

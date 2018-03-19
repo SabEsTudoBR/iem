@@ -14,8 +14,9 @@ class IEM_Request
 	 * Retrieves a request parameter from either GET or POST. If the parameter doesn't exist, then
 	 * $defaultValue is returned.
 	 * 
-	 * @param $name         The name of the request parameter to retrieve.
-	 * @param $defaultValue The value to be returned if the parameter cannot be found.
+	 * @param string $name         The name of the request parameter to retrieve.
+	 * @param mixed $defaultValue The value to be returned if the parameter cannot be found.
+     * @return mixed
 	 */
 	static public function getParam($name, $defaultValue = null)
 	{

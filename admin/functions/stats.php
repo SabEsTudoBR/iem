@@ -751,7 +751,7 @@ class Stats extends SendStudio_Functions
 		// since it's not the browser but the server making this request, it may get a different session id if we don't, which then means it can't load the data properly.
 		// especially applies to windows servers.
 
-		$data_url = 'stats_chart.php?Opens='. $summary['emailopens_unique'] . '&Unopened=' . $unopened . '&Bounced=' . $total_bounces . '&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+		$data_url = 'stats_chart.php?Opens='. $summary['emailopens_unique'] . '&Unopened=' . $unopened . '&Bounced=' . $total_bounces;
 
 		// Newsletter Summary Chart
 
@@ -2224,7 +2224,7 @@ class Stats extends SendStudio_Functions
 		// since it's not the browser but the server making this request, it may get a different session id if we don't, which then means it can't load the data properly.
 		// especially applies to windows servers.
 
-		$dataUrl = 'stats_chart.php?graph=' . urlencode(strtolower($chartname)) . '&Area='.urlencode(strtolower($chart_area)) . '&statid=' . (int)$statid . '&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+		$dataUrl = 'stats_chart.php?graph=' . urlencode(strtolower($chartname)) . '&Area='.urlencode(strtolower($chart_area)) . '&statid=' . (int)$statid;
 
 		$listid = (int)$listid;
 		if ($listid > 0) {
@@ -2469,7 +2469,7 @@ class Stats extends SendStudio_Functions
 			$unopened = 0;
 		}
 
-		$data_url = 'stats_chart.php?Opens='.$summary['emailopens_unique'].'&Unopened='.$unopened.'&Bounced='.$total_bounces.'&Area=autoresponder&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+		$data_url = 'stats_chart.php?Opens='.$summary['emailopens_unique'].'&Unopened='.$unopened.'&Bounced='.$total_bounces.'&Area=autoresponder';
 
 		$GLOBALS['SummaryChart'] = AmCharts::InsertPieChart($data_url);
 
@@ -3328,7 +3328,7 @@ class Stats extends SendStudio_Functions
 
 		IEM::sessionSet('SubscriberGraphData', $data);
 
-		$data_url = 'stats_chart.php?Area=list&list=' . $listid . '&graph=subscribersummary&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
+		$data_url = 'stats_chart.php?Area=list&list=' . $listid . '&graph=subscribersummary';
 
 		$GLOBALS['SummaryChart'] = AmCharts::InsertColumnChart($data_url, GetLang("List_Summary_Graph_subscribersummary"));
 

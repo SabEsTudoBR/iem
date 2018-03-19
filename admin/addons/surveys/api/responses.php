@@ -107,7 +107,7 @@ class Addons_survey_responses_api extends API
 		$query = "SELECT file_value
 				FROM {$this->Db->TablePrefix}" . self::RESPONSEVALUE_TABLE_NAME . "
 				WHERE
-					surveys_response_id = " . $this->id . " AND value = '" . mysql_real_escape_string($filename) . "'";
+					surveys_response_id = " . $this->id . " AND value = '" . mysqli_real_escape_string($this->Db->connection, $filename) . "'";
 
 		$result = $this->Db->Query($query);
 		$row = $this->Db->Fetch($result);

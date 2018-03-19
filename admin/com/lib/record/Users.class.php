@@ -211,7 +211,7 @@ class record_Users extends IEM_baseRecord
 		$result = $db->Query($query);
 		
 		if(!$result){
-			trigger_error(mysql_error(),E_USER_WARNING);
+			trigger_error(mysqli_error($db->connection),E_USER_WARNING);
 		}
 
        	$credits = (int) $db->FetchOne($result);
@@ -235,7 +235,7 @@ class record_Users extends IEM_baseRecord
 			$result = $db->Query($query);
 			
 			if(!$result){
-				trigger_error(mysql_error(),E_USER_WARNING);
+				trigger_error(mysqli_error($db->connection),E_USER_WARNING);
 			}
 						
 			while ($row = $db->Fetch($result)) {
@@ -264,7 +264,7 @@ class record_Users extends IEM_baseRecord
 		$result = $db->Query($query);
 		
 		if(!$result){
-			trigger_error(mysql_error(),E_USER_WARNING);
+			trigger_error(mysqli_error($db->connection),E_USER_WARNING);
 		}
 		
 		$add_credits = (int)$db->FetchOne($result);
@@ -302,7 +302,7 @@ class record_Users extends IEM_baseRecord
 		$result = $db->Query($query);
 		
 		if(!$result){
-			trigger_error(mysql_error(),E_USER_WARNING);
+			trigger_error(mysqli_error($db->connection),E_USER_WARNING);
 		}
 
        	$credits = (int) $db->FetchOne($result);
@@ -322,7 +322,7 @@ class record_Users extends IEM_baseRecord
 		$result = $db->Query($query);
 		
 		if(!$result){
-			trigger_error(mysql_error(),E_USER_WARNING);
+			trigger_error(mysqli_error($db->connection),E_USER_WARNING);
 		}
 		
 		$add_credits = (int)$db->FetchOne($result);

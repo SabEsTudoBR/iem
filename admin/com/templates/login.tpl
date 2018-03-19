@@ -1,14 +1,10 @@
-<style type="text/css">
-	.popupContainer {
-		border: 0px;
-	}
-</style>
 <script>
 	$(function() {
 		$(document.frmLogin.ss_takemeto).val('%%GLOBAL_ss_takemeto%%');
 	});
 </script>
-<form action="index.php?Page=%%PAGE%%&Action=%%GLOBAL_SubmitAction%%" method="post" name="frmLogin" id="frmLogin" autocomplete="off">
+
+<form action="index.php?Page=Login&Action=%%GLOBAL_SubmitAction%%" method="post" name="frmLogin" id="frmLogin" autocomplete="off">
 	<div id="box" class="loginBox">
 		<table><tr><td style="border:solid 2px #DDD; padding:20px; background-color:#FFF; width:300px;">
 		<table>
@@ -103,7 +99,7 @@
 			}
 
 			// Everything is OK
-			f.action = 'index.php?Page=%%PAGE%%&Action=%%GLOBAL_SubmitAction%%';
+			f.action = 'index.php?Page=Login&Action=%%GLOBAL_SubmitAction%%';
 			return true;
 		});
 

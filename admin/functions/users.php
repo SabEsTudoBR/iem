@@ -29,9 +29,9 @@ class Users extends SendStudio_Functions
 	*
 	* @see Process
 	*
-	* @var Array
+	* @var array
 	*/
-	var $PopupWindows = array('sendpreview', 'sendpreviewdisplay', 'generatetoken');
+	var $PopupWindows = ['sendpreview', 'sendpreviewdisplay', 'generatetoken'];
 
 	/**
 	* _DefaultDirection
@@ -44,13 +44,52 @@ class Users extends SendStudio_Functions
 	*/
 	var $_DefaultDirection = 'asc';
 
-	/**
+    /**
+     * This was added, because User's API uses different names than of the HTML form names.
+     * HTML form names should stay the same to keep it consistant throught the application
+     *
+     * This will actually map HTML forms => User's API fields
+     */
+	private static $areaMapping = [
+        'trialuser'                    => 'trialuser',
+        'groupid'                      => 'groupid',
+        'username'                     => 'username',
+        'fullname'                     => 'fullname',
+        'emailaddress'                 => 'emailaddress',
+        'status'                       => 'status',
+        'admintype'                    => 'admintype',
+        'listadmintype'                => 'listadmintype',
+        'segmentadmintype'             => 'segmentadmintype',
+        'templateadmintype'            => 'templateadmintype',
+        'editownsettings'              => 'editownsettings',
+        'usertimezone'                 => 'usertimezone',
+        'textfooter'                   => 'textfooter',
+        'htmlfooter'                   => 'htmlfooter',
+        'infotips'                     => 'infotips',
+        'smtp_server'                  => 'smtpserver',
+        'smtp_u'                       => 'smtpusername',
+        'smtp_p'                       => 'smtppassword',
+        'smtp_port'                    => 'smtpport',
+        'usewysiwyg'                   => 'usewysiwyg',
+        'usexhtml'                     => 'usexhtml',
+        'enableactivitylog'            => 'enableactivitylog',
+        'xmlapi'                       => 'xmlapi',
+        'xmltoken'                     => 'xmltoken',
+        'user_language'                => 'user_language',
+        'adminnotify_email'            => 'adminnotify_email',
+        'adminnotify_send_flag'        => 'adminnotify_send_flag',
+        'adminnotify_send_threshold'   => 'adminnotify_send_threshold',
+        'adminnotify_send_emailtext'   => 'adminnotify_send_emailtext',
+        'adminnotify_import_flag'      => 'adminnotify_import_flag',
+        'adminnotify_import_threshold' => 'adminnotify_import_threshold',
+        'adminnotify_import_emailtext' => 'adminnotify_import_emailtext'
+    ];
+
+    /**
 	* Constructor
 	* Loads the 'users' and 'timezones' language files
-	*
-	* @return Void Doesn't return anything.
 	*/
-	function Users()
+	public function __construct()
 	{
 		$this->LoadLanguageFile('Users');
 		$this->LoadLanguageFile('Timezones');
@@ -80,7 +119,7 @@ class Users extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything, passes control over to the relevant function and prints that functions return message.
 	*/
-	function Process()
+	public function Process()
 	{
 		$action = (isset($_GET['Action'])) ? strtolower($_GET['Action']) : '';
 
@@ -107,35 +146,41 @@ class Users extends SendStudio_Functions
 
 		switch ($action) {
 			case 'generatetoken':
-				$check_fields = array('username', 'fullname', 'emailaddress');
-				foreach ($check_fields as $field) {
+				foreach (['username', 'fullname', 'emailaddress'] as $field) {
 					if (!isset($_POST[$field])) {
 						exit;
 					}
-					$$field = $_POST[$field];
 				}
-				$user = GetUser();
-				echo htmlspecialchars(sha1($username . $fullname . $emailaddress . GetRealIp(true) . time() . microtime()), ENT_QUOTES, SENDSTUDIO_CHARSET);
+				echo htmlspecialchars(
+				    sha1($_POST['username'].$_POST['fullname'].$_POST['emailaddress'].GetRealIp(true).time().microtime()),
+                    ENT_QUOTES,
+                    SENDSTUDIO_CHARSET
+                );
 				exit;
 			break;
 
 			case 'save':
-				$userid = (isset($_GET['UserID']))
-					? $_GET['UserID']
-					: 0;
-				
+                $userid = (isset($_GET['UserID'])) ? $_GET['UserID'] : 0;
+
 				if (empty($_POST)) {
 					$GLOBALS['Error']   = GetLang('UserNotUpdated');
 					$GLOBALS['Message'] = $this->ParseTemplate('ErrorMsg', true, false);
-					
 					$this->PrintEditForm($userid);
-					
 					break;
 				}
 
-				$user     = GetUser($userid);
+                if (
+                    empty($_POST['csrfToken']) ||
+                    $_POST['csrfToken'] !== IEM::sessionGet('csrfToken', false)
+                ) {
+                    $GLOBALS['Error']   = GetLang('UserNotUpdated');
+                    $GLOBALS['Message'] = $this->ParseTemplate('ErrorMsg', true, false);
+                    $this->PrintEditForm($userid);
+                    break;
+                }
+
+                $user     = GetUser($userid);
 				$username = false;
-                $error     = false;
 
                 if (isset($_POST['username'])) {
 					$username = $_POST['username'];
@@ -149,215 +194,148 @@ class Users extends SendStudio_Functions
 				}
 				
 				$userfound = $user->Find($username);
-				$template  = false;
 
-				$duplicate_username = false;
-				
 				if ($userfound && $userfound != $userid) {
-					$duplicate_username = true;
-					$error = GetLang('UserAlreadyExists');
-				}
+                    $GLOBALS['Error'] = GetLang('UserAlreadyExists');
+                    $GLOBALS['Message'] = $this->ParseTemplate('ErrorMsg', true, false);
+                    $this->PrintEditForm($userid);
+                    return;
+                }
 
-				$warnings           = array();
+				$warnings = [];
 				$GLOBALS['Message'] = '';
 
-				if (!$duplicate_username) {
-					$to_check = array();
-					
-					foreach (array('status' => 'isLastActiveUser', 'admintype' => 'isLastSystemAdmin') as $area => $desc) {
-						if (!isset($_POST[$area])) {
-							$to_check[] = $desc;
-						}
-						
-						if (isset($_POST[$area]) && $_POST[$area] == '0') {
-							$to_check[] = $desc;
-						}
-					}
+                $to_check = [];
 
-					if ($user->isAdmin()) {
-						$to_check[] = 'isLastSystemAdmin';
-					}
+                foreach (['status' => 'isLastActiveUser', 'admintype' => 'isLastSystemAdmin'] as $area => $desc) {
+                    if (!isset($_POST[$area])) {
+                        $to_check[] = $desc;
+                    }
 
-					$error = $this->CheckUserSystem($userid, $to_check);
-                    
-					if (!$error) {
-						$smtptype = (isset($_POST['smtptype']))
-							? $_POST['smtptype'] 
-							: 0;
+                    if (isset($_POST[$area]) && $_POST[$area] == '0') {
+                        $to_check[] = $desc;
+                    }
+                }
 
-						// Make sure smtptype is eiter 0 or 1
-						if ($smtptype != 1) {
-							$smtptype = 0;
-						}
+                if ($user->isAdmin()) {
+                    $to_check[] = 'isLastSystemAdmin';
+                }
 
-						/**
-						 * This was added, because User's API uses different names than of the HTML form names.
-						 * HTML form names should stay the same to keep it consistant throught the application
-						 *
-						 * This will actually map HTML forms => User's API fields
-						 */
-						$areaMapping = array(
-							'trialuser'                    => 'trialuser',
-							'groupid'                      => 'groupid',
-							'username'                     => 'username',
-							'fullname'                     => 'fullname',
-							'emailaddress'                 => 'emailaddress',
-							'status'                       => 'status',
-							'admintype'                    => 'admintype',
-							'listadmintype'                => 'listadmintype',
-							'segmentadmintype'             => 'segmentadmintype',
-							'templateadmintype'            => 'templateadmintype',
-							'editownsettings'              => 'editownsettings',
-							'usertimezone'                 => 'usertimezone',
-							'textfooter'                   => 'textfooter',
-							'htmlfooter'                   => 'htmlfooter',
-							'infotips'                     => 'infotips',
-							'smtp_server'                  => 'smtpserver',
-							'smtp_u'                       => 'smtpusername',
-							'smtp_p'                       => 'smtppassword',
-							'smtp_port'                    => 'smtpport',
-							'usewysiwyg'                   => 'usewysiwyg',
-							'usexhtml'                     => 'usexhtml',
-							'enableactivitylog'            => 'enableactivitylog',
-							'xmlapi'                       => 'xmlapi',
-							'xmltoken'                     => 'xmltoken',
-							'user_language'                => 'user_language',
-							'adminnotify_email'            => 'adminnotify_email',
-							'adminnotify_send_flag'        => 'adminnotify_send_flag',
-							'adminnotify_send_threshold'   => 'adminnotify_send_threshold',
-							'adminnotify_send_emailtext'   => 'adminnotify_send_emailtext',
-							'adminnotify_import_flag'      => 'adminnotify_import_flag',
-							'adminnotify_import_threshold' => 'adminnotify_import_threshold',
-							'adminnotify_import_emailtext' => 'adminnotify_import_emailtext'
-						);
-						
-						$group           = API_USERGROUPS::getRecordById($_POST['groupid']);
-						$totalEmails     = (int) $group['limit_totalemailslimit'];
-						$unlimitedEmails = $totalEmails == 0;
-						
-						// set fields
-						foreach ($areaMapping as $p => $area) {
-							$val = (isset($_POST[$p])) ? $_POST[$p] : '';
+                $error = $this->CheckUserSystem($userid, $to_check);
 
-                            if ($area == 'username') {
-                                $match = preg_match("~[^A-z0-9]+~", $val);
-                                if(!empty($match)){
-                                    $error = 'The Username field can only contain alphanumeric characters.';
-                                }
+                if (!$error) {
+                    $smtptype = (isset($_POST['smtptype'])) ? $_POST['smtptype'] : 0;
+
+                    if ($smtptype != 1) {
+                        $smtptype = 0;
+                    }
+
+                    // set fields
+                    foreach (self::$areaMapping as $p => $area) {
+                        $val = (isset($_POST[$p])) ? $_POST[$p] : '';
+
+                        if ($area == 'username') {
+                            $match = preg_match("~[^A-z0-9]+~", $val);
+                            if(!empty($match)){
+                                $error = 'The Username field can only contain alphanumeric characters.';
+                            }
+                        }
+
+                        if ($area == 'fullname') {
+                            $match = preg_match("~[^A-z 0-9]+~", $val);
+                            if(!empty($match)){
+                                $error = 'The Full Name field can only contain alphanumeric characters and spaces.';
+                            }
+                        }
+
+                        if (in_array($area, ['status', 'editownsettings'])) {
+                            if ($userid == $thisuser->userid) {
+                                $val = $thisuser->$area;
+                            }
+                        }
+
+                        $user->Set($area, $val);
+                    }
+
+                    // activity type
+                    $activity = IEM::requestGetPOST('eventactivitytype', '', 'trim');
+
+                    if (!empty($activity)) {
+                        $activity_array = explode("\n", $activity);
+                        for ($i = 0, $j = count($activity_array); $i < $j; ++$i) {
+                            $activity_array[$i] = trim($activity_array[$i]);
+                        }
+                    } else {
+                        $activity_array = [];
+                    }
+
+                    $user->Set('eventactivitytype', $activity_array);
+
+                    foreach (['permonth', 'perhour', 'maxlists'] as $p => $area) {
+                        $limit_check = 'limit' . $area;
+                        $val         = 0;
+
+                        if (!isset($_POST[$limit_check])) {
+                            $val = (isset($_POST[$area])) ? $_POST[$area] : 0;
+                        }
+
+                        $user->Set($area, $val);
+                    }
+
+                    if (SENDSTUDIO_MAXHOURLYRATE > 0) {
+                        if ($user->Get('perhour') == 0 || ($user->Get('perhour') > SENDSTUDIO_MAXHOURLYRATE)) {
+                            $user_hourly = $this->FormatNumber($user->Get('perhour'));
+
+                            if ($user->Get('perhour') == 0) {
+                                $user_hourly = GetLang('UserPerHour_Unlimited');
                             }
 
-                            if ($area == 'fullname') {
-                                $match = preg_match("~[^A-z 0-9]+~", $val);
-                                if(!empty($match)){
-                                    $error = 'The Full Name field can only contain alphanumeric characters and spaces.';
-                                }
+                            $warnings[] = sprintf(GetLang('UserPerHourOverMaxHourlyRate'), $this->FormatNumber(SENDSTUDIO_MAXHOURLYRATE), $user_hourly);
+                        }
+                    }
+
+                    if ($smtptype == 0) {
+                        $user->Set('smtpserver', '');
+                        $user->Set('smtpusername', '');
+                        $user->Set('smtppassword', '');
+                        $user->Set('smtpport', 25);
+                    }
+
+                    if ($_POST['ss_p'] != '') {
+                        if ($_POST['ss_p_current'] == ''){
+                            $error = GetLang('CurrentPasswordMissing');
+                        } else {
+                            $auth_system = new AuthenticationSystem();
+                            $username = IEM::requestGetPOST('username', '');
+                            $password = IEM::requestGetPOST('ss_p_current', '');
+                            $result = $auth_system->Authenticate($username, $password);
+                            if ($result === -1) {
+                                $error = GetLang('CurrentPasswordError');
+                            } elseif ($result === -2) {
+                                $error = GetLang('CurrentPasswordError');
+                            } elseif (!$result) {
+                                $error = GetLang('CurrentPasswordError');
+                            } elseif ($result && defined('IEM_SYSTEM_ACTIVE') && !IEM_SYSTEM_ACTIVE) {
+                                $error = GetLang('CurrentPasswordError');
                             }
-
-							if (in_array($area, array('status', 'editownsettings'))) {
-								if ($userid == $thisuser->userid) {
-									$val = $thisuser->$area;
-								}
-							}
-							
-							$user->Set($area, $val);
-						}
-
-						// activity type
-						$activity = IEM::requestGetPOST('eventactivitytype', '', 'trim');
-						
-						if (!empty($activity)) {
-							$activity_array = explode("\n", $activity);
-							
-							for ($i = 0, $j = count($activity_array); $i < $j; ++$i) {
-								$activity_array[$i] = trim($activity_array[$i]);
-							}
-						} else {
-							$activity_array = array();
-						}
-						
-						$user->Set('eventactivitytype', $activity_array);
-
-						// the 'limit' things being on actually means unlimited. so check if the value is NOT set.
-						foreach (array('permonth', 'perhour', 'maxlists') as $p => $area) {
-							$limit_check = 'limit' . $area;
-							$val         = 0;
-							
-							if (!isset($_POST[$limit_check])) {
-								$val = (isset($_POST[$area])) 
-									? $_POST[$area]
-									: 0;
-							}
-							
-							$user->Set($area, $val);
-						}
-
-						if (SENDSTUDIO_MAXHOURLYRATE > 0) {
-							if ($user->Get('perhour') == 0 || ($user->Get('perhour') > SENDSTUDIO_MAXHOURLYRATE)) {
-								$user_hourly = $this->FormatNumber($user->Get('perhour'));
-								
-								if ($user->Get('perhour') == 0) {
-									$user_hourly = GetLang('UserPerHour_Unlimited');
-								}
-								
-								$warnings[] = sprintf(GetLang('UserPerHourOverMaxHourlyRate'), $this->FormatNumber(SENDSTUDIO_MAXHOURLYRATE), $user_hourly);
-							}
-						}
-
-						if ($smtptype == 0) {
-							$user->Set('smtpserver', '');
-							$user->Set('smtpusername', '');
-							$user->Set('smtppassword', '');
-							$user->Set('smtpport', 25);
-						}
-
-						if ($_POST['ss_p'] != '') {
-                            if ($_POST['ss_p_current'] == ''){
-                                $error = GetLang('CurrentPasswordMissing');
+                        }
+                        if(!empty($result) && $result > 0){
+                            if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
+                                $user->Set('password', $_POST['ss_p']);
                             } else {
-                                $auth_system = new AuthenticationSystem();
-                                $username = IEM::requestGetPOST('username', '');
-                                $password = IEM::requestGetPOST('ss_p_current', '');
-                                $result = $auth_system->Authenticate($username, $password);
-                                if ($result === -1) {
-                                    $error = GetLang('CurrentPasswordError');
-                                } elseif ($result === -2) {
-                                    $error = GetLang('CurrentPasswordError');
-                                } elseif (!$result) {
-                                    $error = GetLang('CurrentPasswordError');
-                                } elseif ($result && defined('IEM_SYSTEM_ACTIVE') && !IEM_SYSTEM_ACTIVE) {
-                                    $error = GetLang('CurrentPasswordError');
-                                }
+                                $error = GetLang('PasswordsDontMatch');
                             }
-                            if(!empty($result) && $result > 0){
-                                if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
-                                    $user->Set('password', $_POST['ss_p']);
-                                } else {
-                                    $error = GetLang('PasswordsDontMatch');
-                                }
-                            }
-						}
-					}
-
-					if (!$error) {
-						$user->RevokeAccess();
-
-						$temp = array();
-						
-						if (!empty($_POST['permissions'])) {
-							foreach ($_POST['permissions'] as $area => $p) {
-								foreach ($p as $subarea => $k) {
-									$temp[$subarea] = $user->GrantAccess($area, $subarea);
-								}
-							}
-						}
-					}
-				}
+                        }
+                    }
+                }
 
 				if (!$error) {
-					$result = $user->Save();
-
-					if ($result) {
-						FlashMessage(GetLang('UserUpdated'), SS_FLASH_MSG_SUCCESS, IEM::urlFor('Users'));
+					if ($user->Save()) {
+						FlashMessage(
+						    GetLang('UserUpdated'),
+                            SS_FLASH_MSG_SUCCESS,
+                            IEM::urlFor('Users')
+                        );
 					} else {
 						$GLOBALS['Message'] = GetFlashMessages();
 						$GLOBALS['Error'] = GetLang('UserNotUpdated');
@@ -387,7 +365,7 @@ class Users extends SendStudio_Functions
 			break;
 
 			case 'delete':
-				$users = IEM::requestGetPOST('users', array(), 'intval');
+				$users = IEM::requestGetPOST('users', [], 'intval');
 				$deleteData = (IEM::requestGetPOST('deleteData', 0, 'intval') == 1);
 
 				$this->DeleteUsers($users, $deleteData);
@@ -395,8 +373,8 @@ class Users extends SendStudio_Functions
 
 			case 'create':
 				$user     = New User_API();
-				$warnings = array();
-				$fields   = array(
+				$warnings = [];
+				$fields   = [
 					'trialuser', 'username', 'fullname', 'emailaddress',
 					'status', 'admintype', 'editownsettings',
 					'listadmintype', 'segmentadmintype', 'usertimezone',
@@ -407,7 +385,7 @@ class Users extends SendStudio_Functions
 					'adminnotify_email','adminnotify_send_flag','adminnotify_send_threshold',
 					'adminnotify_send_emailtext','adminnotify_import_flag','adminnotify_import_threshold',
 					'adminnotify_import_emailtext'
-				);
+                ];
 
                 $error = false;
 
@@ -442,13 +420,13 @@ class Users extends SendStudio_Functions
 							$activity_array[$i] = trim($activity_array[$i]);
 						}
 					} else {
-						$activity_array = array();
+						$activity_array = [];
 					}
 					
 					$user->Set('eventactivitytype', $activity_array);
 
 					// the 'limit' things being on actually means unlimited. so check if the value is NOT set.
-					foreach (array('permonth', 'perhour', 'maxlists') as $p => $area) {
+					foreach (['permonth', 'perhour', 'maxlists'] as $p => $area) {
 						$limit_check = 'limit' . $area;
 						$val         = 0;
 						
@@ -546,9 +524,9 @@ class Users extends SendStudio_Functions
 				
 				$GLOBALS['Message'] = $this->ParseTemplate('ErrorMsg', true, false);
 
-				$details = array();
+				$details = [];
 				
-				foreach (array('FullName', 'EmailAddress', 'Status', 'AdminType', 'ListAdminType', 'SegmentAdminType', 'TemplateAdminType', 'InfoTips', 'forcedoubleoptin', 'forcespamcheck', 'smtpserver', 'smtpusername', 'smtpport') as $area) {
+				foreach (['FullName', 'EmailAddress', 'Status', 'AdminType', 'ListAdminType', 'SegmentAdminType', 'TemplateAdminType', 'InfoTips', 'forcedoubleoptin', 'forcespamcheck', 'smtpserver', 'smtpusername', 'smtpport'] as $area) {
 					$lower          = strtolower($area);
 					$val            = (isset($_POST[$lower])) ? $_POST[$lower] : '';
 					$details[$area] = $val;
@@ -600,36 +578,31 @@ class Users extends SendStudio_Functions
 	*
 	* @return Void Prints out the list, doesn't return anything.
 	*/
-	function PrintManageUsers()
+	public function PrintManageUsers()
 	{
-		// ----- Sanitize and declare variables that is going to be used in this function
-			$pageRecordPP		= 0;
-			$pageCurrentIndex	= $this->GetCurrentPage();
-			$pageSortInfo		= $this->GetSortDetails();
+        $pageRecordPP = 0;
+        $pageCurrentIndex = $this->GetCurrentPage();
+        $pageSortInfo = $this->GetSortDetails();
 
-			$requestPreserveQuickSearch	= IEM::requestGetGET('PreserveQuickSearch', 0, 'intval');
-			$requestSearch				= IEM::requestGetPOST('QuickSearchString', false);
-			$requestGroupID				= IEM::requestGetGET('GroupID', 0, 'intval');
+        $requestPreserveQuickSearch	= IEM::requestGetGET('PreserveQuickSearch', 0, 'intval');
+        $requestSearch = IEM::requestGetPOST('QuickSearchString', false);
+        $requestGroupID = IEM::requestGetGET('GroupID', 0, 'intval');
 
-			$records			= array();
-			$recordTotal		= 0;
+        $api = $this->GetApi('User');
 
-			$api				= $this->GetApi('User');
+        $currentUser = IEM::getCurrentUser();
 
-			$currentUser		= IEM::getCurrentUser();
+        $page = [
+            'messages' => GetFlashMessages(),
+            'userreport' => '',
+            'currentuserid' => $currentUser->userid
+        ];
 
-			$page = array(
-				'messages'		=> GetFlashMessages(),
-				'userreport'	=> '',
-				'currentuserid'	=> $currentUser->userid
-			);
+        $permissions = [
+            'admin' => $currentUser->isAdmin()
+        ];
 
-			$permissions = array(
-				'admin'				=> $currentUser->UserAdmin()
-			);
-
-			$groupInformation = array();
-		// -----
+        $groupInformation = [];
 
 		// Only admin/user admin able to view these pages
 		if (!$currentUser->isAdmin()) {
@@ -648,11 +621,9 @@ class Users extends SendStudio_Functions
 			IEM::sessionSet('Users_Manage_QuickSearchString', $requestSearch);
 		}
 
-		// ----- Get "Record Per Page"
-			if ($pageRecordPP == 0) {
-				$pageRecordPP = $this->GetPerPage();
-			}
-		// -----
+        if ($pageRecordPP == 0) {
+            $pageRecordPP = $this->GetPerPage();
+        }
 
 		$start = 0;
 		if ($pageRecordPP != 'all') {
@@ -677,24 +648,18 @@ class Users extends SendStudio_Functions
 			$records[$i]['processed_LastLoggedIn'] = ($records[$i]['lastloggedin'] ? $this->PrintDate($records[$i]['lastloggedin']) : '-');
 		}
 
-		// ----- Calculate pagination, this is using the older method of pagination
-			$GLOBALS['PAGE'] = 'Users&PreserveQuickSearch=1' . (!empty($requestGroupID) ? "&GroupID={$requestGroupID}" : '');
-			$GLOBALS['FormAction'] = 'Action=ProcessPaging&PreserveQuickSearch=1' . (!empty($requestGroupID) ? "&GroupID={$requestGroupID}" : '');
+        $GLOBALS['PAGE'] = 'Users&PreserveQuickSearch=1' . (!empty($requestGroupID) ? "&GroupID={$requestGroupID}" : '');
+        $GLOBALS['FormAction'] = 'Action=ProcessPaging&PreserveQuickSearch=1' . (!empty($requestGroupID) ? "&GroupID={$requestGroupID}" : '');
 
-			$this->SetupPaging($recordTotal, $pageCurrentIndex, $pageRecordPP);
-		// -----
+        $this->SetupPaging($recordTotal, $pageCurrentIndex, $pageRecordPP);
+        $tpl = GetTemplateSystem();
+        $tpl->Assign('PAGE', $page);
+        $tpl->Assign('records', $records);
+        $tpl->Assign('permissions', $permissions);
+        $tpl->Assign('quicksearchstring', $requestSearch);
+        $tpl->Assign('groupInformation', $groupInformation);
 
-		// ----- Print out HTML
-			$tpl = GetTemplateSystem();
-			$tpl->Assign('PAGE', $page);
-			$tpl->Assign('records', $records);
-			$tpl->Assign('permissions', $permissions);
-			$tpl->Assign('quicksearchstring', $requestSearch);
-			$tpl->Assign('groupInformation', $groupInformation);
-
-			echo $tpl->ParseTemplate('Users', true);
-		// -----
-
+        echo $tpl->ParseTemplate('Users', true);
 		return;
 	}
 
@@ -703,7 +668,7 @@ class Users extends SendStudio_Functions
 	* Prints a form to edit a user. If you pass in a userid, it will load up that user and print their information. If you pass in the details array, it will prefill the form with that information (eg if you tried to create a user with a duplicate username). Also checks whether you are allowed to edit this user. If you are not an admin, you are only allowed to edit your own account.
 	*
 	* @param Int $userid Userid to load up.
-	* @param Array $details Details to prefill the form with (in case there was a problem creating the user).
+	* @param array $details Details to prefill the form with (in case there was a problem creating the user).
 	*
 	* @see User_API::Admin
 	* @see User_API::Status
@@ -713,31 +678,19 @@ class Users extends SendStudio_Functions
 	*
 	* @return Void Returns nothing. If you don't have access to edit a particular user, it prints an error message and exits. Otherwise it prints the correct form (either edit-own or edit) and then exits.
 	*/
-	function PrintEditForm($userid = 0, $details = array())
+	public function PrintEditForm($userid = 0, $details = [])
 	{
 		$thisuser = IEM::getCurrentUser();
-		if (!$thisuser->UserAdmin()) {
+		if (!$thisuser->isAdmin()) {
 			if ($userid != $thisuser->userid) {
 				$this->DenyAccess();
 			}
-
 			if (!$thisuser->EditOwnSettings()) {
 				$this->DenyAccess();
 			}
 		}
 
 		$user = $this->GetApi('User');
-
-		$listapi = $this->GetApi('Lists');
-		$all_lists = $listapi->GetLists(0, array('SortBy' => 'name', 'Direction' => 'asc'), false, 0, 0);
-
-		$segmentapi = $this->GetApi('Segment');
-		$all_segments = $segmentapi->GetSegments(array('SortBy' => 'segmentname', 'Direction' => 'asc'), false, 0, 'all');
-
-		$templateapi = $this->GetApi('Templates');
-		$all_templates = $templateapi->GetTemplates(0, array('SortBy' => 'name', 'Direction' => 'asc'), false, 0, 0);
-
-		$all_groups = API_USERGROUPS::getRecords(false, false, 0, 0, 'groupname');
 
 		$GLOBALS['CustomSmtpServer_Display'] = '0';
 
@@ -757,7 +710,7 @@ class Users extends SendStudio_Functions
 
 			$activity = $user->GetEventActivityType();
 			if (!is_array($activity)) {
-				$activity = array();
+				$activity = [];
 			}
 			$GLOBALS['EventActivityType'] = implode("\n", $activity);
 
@@ -830,8 +783,7 @@ class Users extends SendStudio_Functions
 
 			$GLOBALS['FormAction'] = 'Action=Save&UserID=' . $user->userid;
 
-			if (!$thisuser->UserAdmin()) {
-
+			if (!$thisuser->isAdmin()) {
 				$smtp_access = $thisuser->HasAccess('User', 'SMTP');
 
 				$GLOBALS['ShowSMTPInfo'] = 'none';
@@ -859,7 +811,7 @@ class Users extends SendStudio_Functions
 			$GLOBALS['InfoTipsChecked'] = ($user->InfoTips()) ? ' CHECKED' : '';
 
 			$editown = '';
-			if ($user->UserAdmin()) {
+			if ($user->isAdmin()) {
 				$editown = ' CHECKED';
 			} else {
 				if ($user->EditOwnSettings()) {
@@ -871,20 +823,6 @@ class Users extends SendStudio_Functions
 			$timezone = $user->usertimezone;
 
 			$GLOBALS['TimeZoneList'] = $this->TimeZoneList($timezone);
-
-			$admintype = $user->AdminType();
-			$listadmintype = $user->ListAdminType();
-			$segmentadmintype = $user->SegmentAdminType();
-			$templateadmintype = $user->TemplateAdminType();
-
-			$admin = $user->Admin();
-			$listadmin = $user->ListAdmin();
-			$segmentadmin = $user->SegmentAdmin();
-			$templateadmin = $user->TemplateAdmin();
-
-			$permissions = $user->Get('permissions');
-			$area_access = $user->Get('access');
-
 			$GLOBALS['Heading'] = GetLang('EditUser');
 			$GLOBALS['Help_Heading'] = GetLang('Help_EditUser');
 
@@ -913,7 +851,6 @@ class Users extends SendStudio_Functions
 				$GLOBALS['ImportLimit'] = 1000;
 			}
 
-			$admin_flag = $user->Get('adminnotify_send_flag');
 			if ($user->Get('adminnotify_send_flag') == 1) {
 				$GLOBALS['AdminNotificationsSend'] = 'CHECKED';
 				$GLOBALS['UseNotifySend'] = '';
@@ -929,17 +866,15 @@ class Users extends SendStudio_Functions
 
 			$GLOBALS['SmtpPort'] = $user->Get('smtpport');
 
-
 			// Log this to "User Activity Log"
-			IEM::logUserActivity(IEM::urlFor('users', array('Action' => 'Edit', 'UserID' => $userid)), 'images/user.gif', $user->username);
-
+			IEM::logUserActivity(IEM::urlFor('users', ['Action' => 'Edit', 'UserID' => $userid]), 'images/user.gif', $user->username);
 		} else {
 			$timezone = (isset($details['timezone'])) ? $details['timezone'] : SENDSTUDIO_SERVERTIMEZONE;
 			$GLOBALS['TimeZoneList'] = $this->TimeZoneList($timezone);
 
 			$activity = $thisuser->defaultEventActivityType;
 			if (!is_array($activity)) {
-				$activity = array();
+				$activity = [];
 			}
 			$GLOBALS['EventActivityType'] = implode("\n", $activity);
 
@@ -952,11 +887,6 @@ class Users extends SendStudio_Functions
 			}
 			$GLOBALS['Heading'] = GetLang('CreateUser');
 			$GLOBALS['Help_Heading'] = GetLang('Help_CreateUser');
-
-			$listadmintype = 'c';
-			$segmentadmintype = 'c';
-			$admintype = 'c';
-			$templateadmintype = 'c';
 
 			$GLOBALS['DisplayMaxLists'] = 'none';
 			$GLOBALS['DisplayEmailsPerHour'] = 'none';
@@ -991,10 +921,6 @@ class Users extends SendStudio_Functions
 			$GLOBALS['Xmlapi'] = '';
 			$GLOBALS['XMLTokenDisplay'] = ' style="display:none;"';
 
-			$admin = $listadmin = $segmentadmin = $templateadmin = false;
-			$permissions = array();
-			$area_access = array('lists' => array(), 'templates' => array(), 'segments' => array());
-
 			$GLOBALS['AdminNotifyEmailAddress'] = constant('SENDSTUDIO_EMAIL_ADDRESS');
 			$GLOBALS['UseNotifySend'] = "style=display:none;";
 			$GLOBALS['UseNotifyImport'] = "style=display:none;";
@@ -1006,7 +932,6 @@ class Users extends SendStudio_Functions
 
 		}
 
-		$agencyid = defined('IEM_SYSTEM_LICENSE_AGENCY') ? IEM_SYSTEM_LICENSE_AGENCY : '';
 		$available_users = $user->AvailableUsers();
 
 		$template = GetTemplateSystem();
@@ -1020,10 +945,11 @@ class Users extends SendStudio_Functions
 		$template->Assign('EditMode', !empty($user->userid));
 		$template->Assign('AvailableNormalUsers', isset($available_users['normal']) ? $available_users['normal'] : 0);
 		$template->Assign('AvailableTrialUsers', isset($available_users['trial']) ? $available_users['trial'] : 0);
-		$template->Assign('AvailableGroups', $all_groups);
+		$template->Assign('AvailableGroups', API_USERGROUPS::getRecords(false, false, 0, 0, 'groupname'));
 		$template->Assign('record_groupid', $user->groupid);
 		$template->Assign('DefaultIdTab', IEM::requestGetPOST('id_tab_num', 1, 'intval'));
 		$template->Assign('showSmtpInfo', (bool) $user->smtpserver);
+		$template->Assign('csrfToken', IEM::generateCSRF());
 
 		$template->ParseTemplate('User_Form');
 	}
@@ -1033,7 +959,7 @@ class Users extends SendStudio_Functions
 	* Checks the user system to make sure that this particular user isn't the last user, last active user or last admin user. This just ensures a bit of system integrity.
 	*
 	* @param Int $userid Userid to check.
-	* @param Array $to_check Which areas you want to check. This can be LastActiveUser, LastUser and/or LastAdminUser.
+	* @param array $to_check Which areas you want to check. This can be LastActiveUser, LastUser and/or LastAdminUser.
 	*
 	* @see GetUser
 	* @see User_API::LastActiveUser
@@ -1042,14 +968,14 @@ class Users extends SendStudio_Functions
 	*
 	* @return False|String Returns false if you are not the last 'X', else it returns an error message about why the user can't be edited/deleted.
 	*/
-	function CheckUserSystem($userid = 0, $to_check = array('LastActiveUser', 'LastUser', 'LastAdminUser'))
+	public function CheckUserSystem($userid = 0, $to_check = ['LastActiveUser', 'LastUser', 'LastAdminUser'])
 	{
 		$return_error = false;
 
 		$user_system = GetUser($userid);
 
 		if (in_array('LastActiveUser', $to_check)) {
-			if ($user_system->LastActiveUser()) {
+			if ($user_system->isLastActiveUser()) {
 				$return_error = GetLang('LastActiveUser');
 			}
 		}
@@ -1061,7 +987,7 @@ class Users extends SendStudio_Functions
 		}
 
 		if (in_array('LastAdminUser', $to_check)) {
-			if (!$return_error && $user_system->LastAdminUser()) {
+			if (!$return_error && $user_system->isLastAdmin()) {
 				$return_error = GetLang('LastAdminUser');
 			}
 		}
@@ -1085,24 +1011,24 @@ class Users extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything. Works out the relevant message about who was/wasn't deleted and prints that out. Returns control to PrintManageUsers.
 	*/
-	function DeleteUsers($users = array(), $deleteData = false)
+	public function DeleteUsers($users = [], $deleteData = false)
 	{
-		$thisuser = GetUser();
-		if (!$thisuser->UserAdmin()) {
+		$thisuser = IEM::getCurrentUser();
+		if (!$thisuser->isAdmin()) {
 			$this->DenyAccess();
 			return;
 		}
 
 		if (!is_array($users)) {
-			$users = array($users);
+			$users = [$users];
 		}
 
-		$not_deleted_list = array();
+		$not_deleted_list = [];
 		$not_deleted = $deleted = 0;
 		foreach ($users as $p => $userid) {
 			if ($userid == $thisuser->Get('userid')) {
 				$not_deleted++;
-				$not_deleted_list[$userid] = array('username' => $thisuser->Get('username'), 'reason' => GetLang('User_CantDeleteOwn'));
+				$not_deleted_list[$userid] = ['username' => $thisuser->Get('username'), 'reason' => GetLang('User_CantDeleteOwn')];
 				continue;
 			}
 
@@ -1116,18 +1042,18 @@ class Users extends SendStudio_Functions
 					$not_deleted++;
 					$user = GetUser($userid);
 					if ($user instanceof User_API) {
-						$not_deleted_list[$userid] = array('username' => $user->Get('username'), 'reason' => '');
+						$not_deleted_list[$userid] = ['username' => $user->Get('username'), 'reason' => ''];
 					} else {
-						$not_deleted_list[$userid] = array('username' => $userid, 'reason' => '');
+						$not_deleted_list[$userid] = ['username' => $userid, 'reason' => ''];
 					}
 				}
 			} else {
 				$not_deleted++;
 				$user = GetUser($userid);
 				if ($user instanceof User_API) {
-					$not_deleted_list[$userid] = array('username' => $user->Get('username'), 'reason' => $error);
+					$not_deleted_list[$userid] = ['username' => $user->Get('username'), 'reason' => $error];
 				} else {
-					$not_deleted_list[$userid] = array('username' => $userid, 'reason' => $error);
+					$not_deleted_list[$userid] = ['username' => $userid, 'reason' => $error];
 				}
 			}
 		}

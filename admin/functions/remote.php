@@ -74,7 +74,7 @@ class RemoteUpload extends SendStudio_Functions
 			return;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if (isset($_POST['what'])) {
 			$what = $_POST['what'];
@@ -403,7 +403,6 @@ class RemoteUpload extends SendStudio_Functions
 				break;
 				case 'imagemanagermanage':
 					$api = $this->GetApi('ImageManager');
-					$settingApi = $this->GetApi('settings');
 					$GLOBALS['imgLocation'] = $api->GetImageDir();
 
 					// Sorting of the images

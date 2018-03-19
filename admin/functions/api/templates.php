@@ -319,15 +319,15 @@ class Templates_API extends API
 	* @see active
 	* @see isglobal
 	*
-	* @return Array Returns an array of templates that are live.
+	* @return array Returns an array of templates that are live.
 	*/
 	function GetLiveTemplates($ownerid=0)
 	{
-		$user = GetUser($ownerid);
+		$user = new User_API($ownerid);
 
 		$qry = "SELECT templateid, name, ownerid FROM " . SENDSTUDIO_TABLEPREFIX . "templates";
 
-		if (!$user->TemplateAdmin()) {
+		if ($ownerid > 0 && !$user->isTemplateAdmin()) {
 			$access = $user->Get('access');
 
 			$qry .= " WHERE ownerid='" . $this->Db->Quote($user->Get('userid')) . "'";

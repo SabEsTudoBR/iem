@@ -42,5 +42,13 @@ $GLOBALS['Design_Rules']['AOL'] = array (
 		'use_preg_replace' => 1,
 		'replacement' => '$1$2$3$5',
 		'match_offset' => 2
-	)
+	),	
+	
+	/********* New rule for AOL ******/ 
+	array(      
+		'regular_expression' =>'%(<link[^>]*?>)%',
+		'description' => 'AOL removes any link elements tags',
+		'replacement' => '',
+		'match_offset' => 1
+	), 
 );

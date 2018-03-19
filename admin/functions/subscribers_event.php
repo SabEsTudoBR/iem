@@ -70,7 +70,7 @@ class Subscribers_Event extends Subscribers
 	*/
 	function Process($subaction)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$this->api = $this->GetApi('Subscribers');
 
@@ -178,7 +178,7 @@ class Subscribers_Event extends Subscribers
 	*/
 	function EventTable($subscriberid, $listid)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$perpage = $this->GetPerPage('subscriber_events');
 
@@ -281,7 +281,7 @@ class Subscribers_Event extends Subscribers
 
 		$event['notes'] = htmlspecialchars($event['notes'], ENT_QUOTES, SENDSTUDIO_CHARSET);
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if ($user) {
 			$user->AddEventActivityType($event['type']);
 		}
@@ -337,7 +337,7 @@ class Subscribers_Event extends Subscribers
 	*/
 	function EventList($subscriberid)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$sortdetails = array(
 			'SortBy' => 'eventdate',
 			'Direction' => 'desc'
@@ -431,7 +431,7 @@ class Subscribers_Event extends Subscribers
 			return false;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if ($user) {
 			$user->AddEventActivityType($event['type']);
 		}

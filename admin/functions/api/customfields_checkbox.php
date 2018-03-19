@@ -31,17 +31,17 @@ class CustomFields_Checkbox_API extends CustomFields_API
 	*
 	* @var String
 	*/
-	var $fieldtype = 'checkbox';
+    public $fieldtype = 'checkbox';
 
 	/**
 	* Options for this custom field type.
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Options = array(
+    public $Options = [
 		'Key' => '',
 		'Value' => ''
-	);
+    ];
 
 	/**
 	* Constructor
@@ -53,13 +53,11 @@ class CustomFields_Checkbox_API extends CustomFields_API
 	*
 	* @see CustomFields_API::CustomFields_API
 	* @see Db
-	*
-	* @return Boolean Returns the parent's constructor.
 	*/
-	function CustomFields_Checkbox_API($fieldid=0, $connect_to_db=true)
+	public function __construct($fieldid=0, $connect_to_db=true)
 	{
 		unset($this->SharedOptions['DefaultValue']);
-		return $this->CustomFields_API($fieldid, $connect_to_db);
+		parent::__construct($fieldid, $connect_to_db);
 	}
 
 	/**
@@ -67,7 +65,8 @@ class CustomFields_Checkbox_API extends CustomFields_API
 	* Checkdata makes sure the data passed in is valid for this field type.
 	* If the field hasn't been loaded this will return false.
 	*
-	* @param Array $data A list of options to check to see whether they are valid or not.
+	* @param array $data A list of options to check to see whether they are valid or not.
+	* @param bool $return_keys
 	*
 	* @see Settings
 	* @see ValidData
@@ -75,18 +74,18 @@ class CustomFields_Checkbox_API extends CustomFields_API
 	*
 	* @return Boolean If it's a valid option, this returns true. Otherwise false (including if the field hasn't been loaded correctly).
 	*/
-	function CheckData($data=array(), $return_keys=false)
+	function CheckData($data = [], $return_keys=false)
 	{
 		if (!$this->IsLoaded()) {
 			return false;
 		}
 
 		if (!is_array($data)) {
-			$data = array($data);
+			$data = [$data];
 		}
 
 		if ($return_keys) {
-			$return_values = array();
+			$return_values = [];
 			foreach ($data as $d => $option) {
 				// see if the data contains the 'value' first.
 				// eg 'male'.

@@ -1,21 +1,10 @@
 <?php
 /**
-* This file handles mysql database connections, queries, procedures etc.
-* Most functions are overridden from the base object.
-*
-* @version     $Id: mysql.php 148 2011-05-18 04:39:37Z john.tuck $
-* @author Chris <chris@interspire.com>
-*
-* @package Db
-* @subpackage MySQLDb
-*/
-
-/**
 * Include the base database class.
 */
 require_once(dirname(__FILE__).'/db.php');
 
-if (!function_exists('mysql_connect')) {
+if (!function_exists('mysqli_connect')) {
 	die("Your PHP installation does not have MySQL support. Please enable MySQL support in PHP or ask your web host to do so for you.");
 }
 
@@ -28,25 +17,18 @@ if (!function_exists('mysql_connect')) {
 class MySQLDb extends Db
 {
 	/**
-	* Should we use mysql_real_escape_string or the older mysql_escape_string function ?
-	*
-	* @var Boolean
-	*/
-	var $use_real_escape = false;
-
-	/**
 	* Is magic quotes runtime on ?
 	*
 	* @var Boolean
 	*/
-	var $magic_quotes_runtime_on = false;
+	public $magic_quotes_runtime_on = false;
 
 	/**
 	 * MySQL uses ` to escape table/database names
 	 *
 	 * @var String
 	 */
-	var $EscapeChar = '`';
+	public $EscapeChar = '`';
 
 	/**
 	* This flag is checked when Query is called to see which mode to run the query in.
@@ -57,7 +39,7 @@ class MySQLDb extends Db
 	*
 	* @var Boolean Defaults to false (don't run in unbuffered mode).
 	*/
-	var $_unbuffered_query = false;
+	public $_unbuffered_query = false;
 	
 	/**
 	* Constructor
@@ -72,19 +54,13 @@ class MySQLDb extends Db
 	*
 	* @see Connect
 	* @see GetError
-	*
-	* @return Mixed Returns false if no connection can be made - the error can be fetched by the Error() method. Returns the connection result if it can be made. Will return Null if you don't pass in the connection details.
 	*/
-	function MySQLDb($hostname='', $username='', $password='', $databasename='')
+	public function __construct($hostname='', $username='', $password='', $databasename='')
 	{
-		$this->use_real_escape = version_compare(PHP_VERSION, '4.3.0', '>=');
-		$this->magic_quotes_runtime_on = get_magic_quotes_runtime();
-
+	    parent::__construct();
 		if ($hostname && $username && $databasename) {
-			$connection = $this->Connect($hostname, $username, $password, $databasename);
-			return $connection;
+			$this->Connect($hostname, $username, $password, $databasename);
 		}
-		return null;
 	}
 
 	/**
@@ -98,9 +74,9 @@ class MySQLDb extends Db
 	*
 	* @see SetError
 	*
-	* @return False|Resource Returns the resource if the connection is successful. If anything is missing or incorrect, this will return false.
+	* @return bool|mysqli Returns the resource if the connection is successful. If anything is missing or incorrect, this will return false.
 	*/
-	function Connect($hostname=null, $username=null, $password=null, $databasename=null)
+	public function Connect($hostname=null, $username=null, $password=null, $databasename=null)
 	{
 
 		if ($hostname === null && $username === null && $password === null && $databasename === null) {
@@ -125,20 +101,20 @@ class MySQLDb extends Db
 			return false;
 		}
 
-		if ($this->_retry && is_resource($this->connection)) {
+		if ($this->_retry && $this->connection instanceof mysqli) {
 			$this->Disconnect($this->connection);
 		}
 
-		$connection_result = @mysql_connect($hostname, $username, $password, true);
+		$connection_result = @mysqli_connect($hostname, $username, $password);
 		if (!$connection_result) {
-			$this->SetError(mysql_error());
+			$this->SetError(mysqli_connect_error());
 			return false;
 		}
 		$this->connection = &$connection_result;
 
-		$db_result = @mysql_select_db($databasename, $connection_result);
+		$db_result = @mysqli_select_db($connection_result, $databasename);
 		if (!$db_result) {
-			$this->SetError('Unable to select database \''.$databasename.'\': '.mysql_error());
+			$this->SetError("Unable to select database '{$databasename}': ".mysqli_error($connection_result));
 			return false;
 		}
 		$this->_hostname = $hostname;
@@ -170,17 +146,17 @@ class MySQLDb extends Db
 	*
 	* @return Boolean If the resource passed in is not valid, this will return false. Otherwise it returns the status from pg_close.
 	*/
-	function Disconnect($resource=null)
+    public function Disconnect($resource=null)
 	{
 		if ($resource === null) {
 			$this->SetError('Resource is a null object');
 			return false;
 		}
-		if (!is_resource($resource)) {
-			$this->SetError('Resource '.$resource.' is not really a resource');
+		if (!$resource instanceof mysqli) {
+            $this->SetError('Resource is not valid: '.var_export($resource, 1));
 			return false;
 		}
-		$close_success = mysql_close($resource);
+		$close_success = mysqli_close($resource);
 		if ($close_success) {
 			$this->connection = null;
 		}
@@ -198,7 +174,7 @@ class MySQLDb extends Db
 	*
 	* @return Mixed Returns false if the query is empty or if there is no result. Otherwise returns the result of the query.
 	*/
-	function Query($query='')
+	public function Query($query='')
 	{
 		// if we're retrying a query, we have to kill the old connection and grab it again.
 		// if we don't, we get a cached connection which won't work.
@@ -234,18 +210,18 @@ class MySQLDb extends Db
 		}
 
 		if (!$this->_unbuffered_query) {
-			$result = mysql_query($query, $this->connection);
+			$result = mysqli_query($this->connection, $query);
 		} else {
-			$result = mysql_unbuffered_query($query, $this->connection);
+			$result = mysqli_query($this->connection, $query, MYSQLI_USE_RESULT);
 			$this->_unbuffered_query = false;
 		}
 
-		if ($this->TimeLog !== null) {
+		if ($this->TimeLog !== null && !empty($timestart)) {
 			$timeend = $this->GetTime();
 			$this->TimeQuery($query, $timestart, $timeend);
 		}
 
-		if($this->StoreQueryList) {
+		if($this->StoreQueryList && !empty($timestart)) {
 			if(!isset($timeend)) {
 				$timeend = $this->GetTime();
 			}
@@ -257,15 +233,15 @@ class MySQLDb extends Db
 
 		if ($this->QueryLog !== null) {
 			if ($this->_retry) {
-				$this->LogQuery("*** Retry *** Result type: " . gettype($result) . "; value: " . $result . "\t" . $query);
+				$this->LogQuery("*** Retry *** Result type: " . gettype($result) . "; value: " . var_export($result, 1) . "\t" . $query);
 			} else {
-				$this->LogQuery("Result type: " . gettype($result) . "; value: " . $result . "\t" . $query);
+				$this->LogQuery("Result type: " . gettype($result) . "; value: " . var_export($result, 1) . "\t" . $query);
 			}
 		}
 
 		if (!$result) {
-			$error = mysql_error($this->connection);
-			$errno = mysql_errno($this->connection);
+			$error = mysqli_error($this->connection);
+			$errno = mysqli_errno($this->connection);
 
 			if ($this->ErrorLog !== null) {
 				$this->LogError($query, $error);
@@ -305,7 +281,7 @@ class MySQLDb extends Db
 	*
 	* @return Mixed Returns the result from the Query function.
 	*/
-	function UnbufferedQuery($query='')
+	public function UnbufferedQuery($query='')
 	{
 		$this->_unbuffered_query = true;
 		return $this->Query($query);
@@ -315,45 +291,43 @@ class MySQLDb extends Db
 	* Fetch
 	* This function will fetch a result from the result set passed in.
 	*
-	* @param String $resource The result from calling Query. Returns an associative array (not an indexed based one)
+	* @param mysqli_result $resource The result from calling Query. Returns an associative array (not an indexed based one)
 	*
 	* @see Query
 	* @see SetError
 	* @see StripslashesArray
 	*
-	* @return Mixed Returns false if the result is empty. Otherwise returns the next result.
+	* @return bool|array Returns false if the result is empty. Otherwise returns the next result.
 	*/
-	function Fetch($resource=null)
+	public function Fetch($resource = null)
 	{
 		if ($resource === null) {
 			$this->SetError('Resource is a null object');
 			return false;
 		}
-		if (!is_resource($resource)) {
-			$this->SetError('Resource '.$resource.' is not really a resource');
+
+		if (!$resource instanceof mysqli_result) {
+			$this->SetError('Resource is not valid: '.var_export($resource, 1));
 			return false;
 		}
 
-		if($this->magic_quotes_runtime_on) {
-			return $this->StripslashesArray(mysql_fetch_assoc($resource));
-		}
-		else {
-			return mysql_fetch_assoc($resource);
-		}
+        return $this->magic_quotes_runtime_on ?
+            $this->StripslashesArray(mysqli_fetch_assoc($resource)) :
+            mysqli_fetch_assoc($resource);
 	}
 
 	/**
 	* NextId
 	* Fetches the next id from the sequence passed in
 	*
-	* @param String $sequencename Sequence Name to fetch the next id for.
-	* @param String $idcolumn The name of the column for the id field. By default this is 'id'.
+	* @param bool|string $sequencename Sequence Name to fetch the next id for.
+	* @param string $idcolumn The name of the column for the id field. By default this is 'id'.
 	*
 	* @see Query
 	*
 	* @return Mixed Returns false if there is no sequence name or if it can't fetch the next id. Otherwise returns the next id
 	*/
-	function NextId($sequencename=false, $idcolumn='id')
+	public function NextId($sequencename=false, $idcolumn='id')
 	{
 		if (!$sequencename) {
 			return false;
@@ -363,7 +337,7 @@ class MySQLDb extends Db
 		if (!$result) {
 			return false;
 		}
-		return mysql_insert_id($this->connection);
+		return mysqli_insert_id($this->connection);
 	}
 
 	/**
@@ -376,7 +350,7 @@ class MySQLDb extends Db
 	*
 	* @return Mixed Returns false if either fields or searchstring aren't present, otherwise returns a string to append to an sql statement.
 	*/
-	function FullText($fields=null, $searchstring=null, $booleanmode=false)
+	public function FullText($fields=null, $searchstring=null, $booleanmode=false)
 	{
 		if ($fields === null || $searchstring === null) {
 			return false;
@@ -400,7 +374,7 @@ class MySQLDb extends Db
 	 * @param String $searchstring The string you wish to clean.
 	 * @return String The formatted string
 	 */
-	function CleanFullTextString($searchstring)
+	public function CleanFullTextString($searchstring)
 	{
 		$searchstring = strtolower($searchstring);
 		$searchstring = str_replace("%", "\\%", $searchstring);
@@ -475,7 +449,7 @@ class MySQLDb extends Db
 	*
 	* @return String The string to add to the end of the sql statement
 	*/
-	function AddLimit($offset=0, $numtofetch=0)
+	public function AddLimit($offset=0, $numtofetch=0)
 	{
 		$offset = intval($offset);
 		$numtofetch = intval($numtofetch);
@@ -494,46 +468,50 @@ class MySQLDb extends Db
 	* FreeResult
 	* Frees the result from memory.
 	*
-	* @param String $resource The result resource you want to free up.
+	* @param mysqli_result $resource The result resource you want to free up.
 	*
 	* @return Boolean Whether freeing the result worked or not.
 	*/
-	function FreeResult($resource=null)
+	public function FreeResult($resource = null)
 	{
 		if ($resource === null) {
 			$this->SetError('Resource is a null object');
 			return false;
 		}
-		if (!is_resource($resource)) {
-			$this->SetError('Resource '.$resource.' is not really a resource');
-			return false;
-		}
-		$result = mysql_free_result($resource);
-		return $result;
+
+        if (!$resource instanceof mysqli_result) {
+            $this->SetError('Resource is not valid: '.var_export($resource, 1));
+            return false;
+        }
+
+		mysqli_free_result($resource);
+
+		return true;
 	}
 
 	/**
 	* CountResult
 	* Returns the number of rows returned for the resource passed in
 	*
-	* @param String $resource The result from calling Query
+	* @param string|mysqli_result $resource The result from calling Query
 	*
 	* @see Query
 	* @see SetError
 	*
 	* @return Int Number of rows from the result
 	*/
-	function CountResult($resource=null)
+	public function CountResult($resource=null)
 	{
 		if ($resource === null) {
 			$this->SetError('Resource is a null object');
 			return false;
 		}
-		if (!is_resource($resource)) {
+
+		if (!$resource instanceof mysqli_result) {
 			$resource = $this->Query($resource);
 		}
-		$count = mysql_num_rows($resource);
-		return $count;
+
+		return mysqli_num_rows($resource);
 	}
 
 	/**
@@ -544,7 +522,7 @@ class MySQLDb extends Db
 	*
 	* @return String Returns the new string with all of the arguments concatenated together.
 	*/
-	function Concat()
+	public function Concat()
 	{
 		$num_args = func_num_args();
 		if ($num_args < 1) {
@@ -563,14 +541,10 @@ class MySQLDb extends Db
 	*
 	* @return Mixed $var with quotes applied to it appropriately
 	*/
-	function Quote($var='')
+	public function Quote($var='')
 	{
 		if (is_string($var) || is_numeric($var) || is_null($var)) {
-			if ($this->use_real_escape) {
-				return @mysql_real_escape_string($var, $this->connection);
-			} else {
-				return @mysql_escape_string($var, $this->connection);
-			}
+            return @mysqli_real_escape_string($this->connection, $var);
 		} else if (is_array($var)) {
 			return array_map(array($this, 'Quote'), $var);
 		} else if (is_bool($var)) {
@@ -588,9 +562,9 @@ class MySQLDb extends Db
 	*
 	* @return Int Returns mysql_insert_id from the database.
 	*/
-	function LastId($seq='')
+	public function LastId($seq='')
 	{
-		return mysql_insert_id($this->connection);
+		return mysqli_insert_id($this->connection);
 	}
 
 	/**
@@ -600,7 +574,7 @@ class MySQLDb extends Db
 	*
 	* @return Boolean Returns true if there is exactly 1 entry in the sequence table, otherwise returns false.
 	*/
-	function CheckSequence($seq='')
+	public function CheckSequence($seq='')
 	{
 		if (!$seq) {
 			return false;
@@ -623,7 +597,7 @@ class MySQLDb extends Db
 	*
 	* @return Boolean Returns true if the sequence is reset, otherwise false.
 	*/
-	function ResetSequence($seq='', $newid=0)
+	public function ResetSequence($seq='', $newid=0)
 	{
 		if (!$seq) {
 			return false;
@@ -661,7 +635,7 @@ class MySQLDb extends Db
 	*
 	* @return Mixed If no tablename is passed in, this returns false straight away. Otherwise it calls Query and returns the result from that.
 	*/
-	function OptimizeTable($tablename='')
+	public function OptimizeTable($tablename='')
 	{
 		if (!$tablename) {
 			return false;
@@ -679,9 +653,9 @@ class MySQLDb extends Db
 	*
 	* @return int
 	*/
-	function NumAffected($null=null)
+	public function NumAffected($null=null)
 	{
-		return mysql_affected_rows($this->connection);
+		return mysqli_affected_rows($this->connection);
 	}
 
 }

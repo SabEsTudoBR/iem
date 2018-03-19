@@ -128,7 +128,7 @@ class CustomFields extends SendStudio_Functions
 		$GLOBALS['Message'] = '';
 
 		$this->PrintHeader();
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$action = (isset($_GET['Action'])) ? strtolower($_GET['Action']) : null;
 
@@ -474,7 +474,7 @@ class CustomFields extends SendStudio_Functions
 	*/
 	function CreateCustomField_Step1()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$lists = $user->GetLists();
 
 		if (count($lists) == 0) {
@@ -649,7 +649,7 @@ class CustomFields extends SendStudio_Functions
 	*/
 	function ManageCustomFields()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$perpage = $this->GetPerPage();
 
 		$DisplayPage = $this->GetCurrentPage();
@@ -756,7 +756,7 @@ class CustomFields extends SendStudio_Functions
 	*/
 	function RemoveCustomFields($fields=array())
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->HasAccess('CustomFields', 'Delete')) {
 			$this->DenyAccess();
 			return;

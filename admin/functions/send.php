@@ -915,7 +915,7 @@ class Send extends SendStudio_Functions
 	 */
 	function Step3()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$send_details = IEM::sessionGet('SendDetails');
 		$subscriberApi = $this->GetApi('Subscribers');
@@ -1165,7 +1165,7 @@ class Send extends SendStudio_Functions
 		}
 		$GLOBALS['CustomFieldInfo'] = $CustomFieldInfo;
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($user->GetSettings('ShowFilteringOptions') == 2) {
 			$GLOBALS['DoNotShowFilteringOptions'] = ' CHECKED';
@@ -1546,7 +1546,7 @@ class Send extends SendStudio_Functions
 	 */
 	function CanAccessJobs($jobids)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($user->Admin()) {
 			return true;
@@ -1584,7 +1584,7 @@ class Send extends SendStudio_Functions
 	 */
 	function CanAccessNewsletter($newsletterid)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($user->Admin()) {
 			return true;

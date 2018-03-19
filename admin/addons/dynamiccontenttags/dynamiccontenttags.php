@@ -44,7 +44,8 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      * @uses Interspire_Addons::Install
      * @uses Interspire_Addons_Exception
      *
-     * @throws Throws an Interspire_Addons_Exception if something in the install process fails.
+     * @throws Interspire_Addons_Exception if something in the install process fails.
+     * @throws Exception
      * @return True Returns true if everything works ok.
      */
     public function Install() {
@@ -52,7 +53,8 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
 
         $this->db->StartTransaction ();
 
-        require dirname ( __FILE__ ) . '/schema.' . SENDSTUDIO_DATABASE_TYPE . '.php';
+        $queries = [];
+        require dirname ( __FILE__ ) . '/schema.mysql.php';
         foreach ( $queries as $query ) {
             $qry = str_replace ( '%%TABLEPREFIX%%', $this->db->TablePrefix, $query );
             $result = $this->db->Query ( $qry );
@@ -85,8 +87,8 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      * @uses Interspire_Addons::UnInstall
      * @uses Interspire_Addons_Exception
      *
-     * @return Returns true if the addon was uninstalled successfully.
-     * @throws Throws an Interspire_Addons_Exception::DatabaseError if one of the tables it created couldn't be removed. If the parent::UnInstall method throws an exception, this will
+     * @return true if the addon was uninstalled successfully.
+     * @throws Interspire_Addons_Exception::DatabaseError if one of the tables it created couldn't be removed. If the parent::UnInstall method throws an exception, this will
      * just re-throw that error.
      */
     public function UnInstall() {
@@ -101,7 +103,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
             throw new Interspire_Addons_Exception ( $e->getMessage (), $e->getCode () );
         }
 
-        require dirname ( __FILE__ ) . '/schema.' . SENDSTUDIO_DATABASE_TYPE . '.php';
+        require dirname ( __FILE__ ) . '/schema.mysql.php';
         foreach ( $tables as $tablename ) {
             $query = 'DROP TABLE [|PREFIX|]' . $tablename . ' CASCADE';
             $result = $this->db->Query ( $query );
@@ -325,8 +327,6 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
 
             $tagObject->loadTagsByList($subscriberList);
             if ($tagObject->getTagObjectsSize()) {
-                $tagsTobeReplaced = [];
-                $tagsContentTobeReplaced = [];
                 $permanentRulesMatches = [
                     'email'=>'emailaddress',
                     'format'=>'format',
@@ -412,16 +412,23 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
                             }
                             if ($continue) {
                                 if ((int)$ruleEntry->rules->ruleName) {
-                                    $tempActualValues = (isset ($preloadCustomFieldLoc[$ruleEntry->rules->ruleName]) && isset ($subscriberInfoEntry['CustomFields'][$preloadCustomFieldLoc[$ruleEntry->rules->ruleName]]['data']))?trim(strtolower($subscriberInfoEntry['CustomFields'][$preloadCustomFieldLoc[$ruleEntry->rules->ruleName]]['data'])):'';
-                                    if ($ruleEntry->rules->ruleType == 'date') {
-                                        $tempActualValues = split('/', $tempActualValues);
-                                        $tempActualValues = strtotime(implode('-', array_reverse($tempActualValues)));
-                                        $tempRuleValues = split('/', $tempRuleValues);
-                                        $tempRuleValues = strtotime(implode('-', array_reverse($tempRuleValues)));
+                                    if (
+                                        isset ($preloadCustomFieldLoc[$ruleEntry->rules->ruleName]) &&
+                                        isset ($subscriberInfoEntry['CustomFields'][$preloadCustomFieldLoc[$ruleEntry->rules->ruleName]]['data'])
+                                    ) {
+                                        $tempActualValues = trim(strtolower($subscriberInfoEntry['CustomFields'][$preloadCustomFieldLoc[$ruleEntry->rules->ruleName]]['data']));
+                                    } else {
+                                        $tempActualValues = '';
                                     }
 
-
+                                    if ($ruleEntry->rules->ruleType == 'date') {
+                                        $tempActualValues = explode('/', $tempActualValues);
+                                        $tempActualValues = strtotime(implode('-', array_reverse($tempActualValues)));
+                                        $tempRuleValues = explode('/', $tempRuleValues);
+                                        $tempRuleValues = strtotime(implode('-', array_reverse($tempRuleValues)));
+                                    }
                                 }
+
                                 switch ($ruleEntry->rules->ruleType) {
                                     case 'text':
                                     case 'textarea':
@@ -519,11 +526,11 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      */
     public static function DctTinyMCEPluginHook(EventData_IEM_DCT_HTMLEDITOR_TINYMCEPLUGIN $data) {
 
-        $userAPI = GetUser();
+        $userAPI = IEM::getCurrentUser();
 
         // Permission checking
         $access = $userAPI->HasAccess('dynamiccontenttags', 'general');
-        $access = $access || $userAPI->Admin();
+        $access = $access || $userAPI->isAdmin();
         if (!$access) {
             $data->dynamicContentButton = "";
             $data->dynamicContentPopup = "";
@@ -554,11 +561,11 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      */
     public static function CreateInsertTagButton(EventData_IEM_EDITOR_TAG_BUTTON $data) {
 
-        $userAPI = GetUser ();
+        $userAPI = IEM::getCurrentUser();
 
         // Permission checking
         $access = $userAPI->HasAccess('dynamiccontenttags', 'general');
-        $access = $access || $userAPI->Admin();
+        $access = $access || $userAPI->isAdmin();
         if (!$access) {
             $data->tagButtonHtml = $data->tagButtonText = '';
             return;
@@ -584,7 +591,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      * @return void This function will only show the available dynamic content tags
      */
     public function Admin_Action_ShowDynamicContentTag() {
-    	$user = GetUser();
+    	$user = IEM::getCurrentUser();
         $GLOBALS ['ContentArea'] = $_GET ['ContentArea'];
         $GLOBALS ['EditorName'] = 'myDeveditControl';
         if (isset ( $_GET ['EditorName'] )) {
@@ -792,10 +799,8 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
         $sortorder = $this->_getPOSTRequest ( 'sortorder', -1 );
 
         if (intval($activated) == 1) {
-        	$query = "UPDATE [|PREFIX|]dynamic_content_block "
-            . " SET activated = '0' "
-            . " WHERE tagid = '".intval($tagId)."'";
-            $result = $this->db->Query ( $query );
+        	$query = "UPDATE [|PREFIX|]dynamic_content_block SET activated = '0' WHERE tagid = '".intval($tagId)."'";
+            $this->db->Query($query);
         }
 
 
@@ -822,7 +827,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      *
      */
     public function Admin_Action_Default() {
-        $user = GetUser ();
+        $user = IEM::getCurrentUser();
 
 		$userLists = $user->GetLists();
 		$userListsId = array_keys($userLists);
@@ -1015,7 +1020,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      */
     public function Admin_Action_Save() {
         // Dynamic Content Tags Properties
-        $userAPI = GetUser ();
+        $userAPI = IEM::getCurrentUser();
         $tagId = $this->_getPOSTRequest ( 'dynamiccontenttags_id', 0 );
         $tagName = $this->_getPOSTRequest ( 'dynamiccontenttags_name', '' );
         $tagDate = time ();
@@ -1046,7 +1051,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
 
         $tag = new DynamicContentTag_Api_Tag ( $tagId, $tagName, $tagDate, $userAPI->Get('userid'), $blocks, $lists );
 
-        $savedTagId = $tag->save ();
+        $savedTagId = $tag->save();
 
         if (isset ( $_POST ['subact'] ) && $_POST ['subact'] == 'saveedit') {
             $redirectUrl = $this->admin_url . "&Action=Edit&id={$savedTagId}";
@@ -1067,7 +1072,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
     public function Admin_Action_Edit() {
         $ssf = new SendStudio_Functions ( );
         $id = $this->_getGETRequest ( 'id', 0 );
-        $userAPI = GetUser ();
+        $userAPI = IEM::getCurrentUser();
 
 		$userLists = $userAPI->GetLists();
 		$userListsId = array_keys($userLists);
@@ -1101,14 +1106,15 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
                 return false;
             }
 
-            $tag->loadLists ();
-            $tag->loadBlocks ();
-            $listIDs = $tag->getLists ();
-            $blocks = $tag->getBlocks ();
+            $tag->loadLists();
+            $tag->loadBlocks();
+            $listIDs = $tag->getLists();
+            $blocks = $tag->getBlocks();
             $blocksString = '';
 
+            /** @var DynamicContentTag_Api_Block $blockEntry */
             foreach ( $blocks as $blockEntry ) {
-                $rule = $blockEntry->getRules ();
+                $rule = $blockEntry->getRules();
                 $rule = str_replace(['\"', "'"], ['\\\\"', '&#39;'], $rule);
                 $blocksString .= " BlockInterface.Add(" . intval ( $blockEntry->getBlockId () ) . ", '" . $blockEntry->getName () . "', " . intval ( $blockEntry->isActivated () ) . ", " . intval ( $blockEntry->getSortOrder() ) . ", '" . $rule . "'); ";
             }
@@ -1180,7 +1186,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      *
      */
     public function loadTags($id = 0) {
-    	$user = GetUser();
+    	$user = IEM::getCurrentUser();
 
         $tmpTags = [];
         $query = "SELECT * FROM [|PREFIX|]dynamic_content_tags dct";
@@ -1257,7 +1263,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
      * @return int Return size of loaded dynamic content tags
      */
     public function getTagsSize() {
-    	$user = GetUser();
+    	$user = IEM::getCurrentUser();
         $query = "SELECT COUNT(dct.tagid) AS tagsize FROM [|PREFIX|]dynamic_content_tags dct ";
         if (!$user->isAdmin()) {
         	$query .= " WHERE dct.ownerid = '{$user->Get('userid')}' ";

@@ -38,7 +38,7 @@ class Addons_survey_templates extends Addons_surveys
 	public function Admin_Action_Templates_Default()
 	{
 		$api = self::getApi();
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		
 		/**
 		* Add the add button and print flash messages
@@ -132,7 +132,7 @@ class Addons_survey_templates extends Addons_surveys
 			$surveyid = (int)$_REQUEST['id'];
 		}
 		$api = self::getApi();
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		
 		$this->template_system->Assign('Heading',GetLang('Survey_Template_Heading_Create'));
 		$this->template_system->Assign('Intro',GetLang('Survey_Template_Intro_Create'));

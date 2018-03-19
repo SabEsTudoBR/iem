@@ -522,7 +522,7 @@ class Segment_API extends API
 			return array(false, 'Unable to load segment to be copied.');
 		}
 
-		$currentuser = GetUser();
+		$currentuser = IEM::getCurrentUser();
 
 		$this->segmentname = GetLang('CopyPrefix') . $this->segmentname;
 		$this->ownerid = $currentuser->userid;

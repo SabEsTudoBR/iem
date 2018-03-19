@@ -1,32 +1,21 @@
 <?php
 /**
-* This file only has the base Db class in it. This sets up class variables and basic constructs only.
-* Each subclass (different database type) overrides most functions (except logging) and handles database specific instances.
-*
-* @version     $Id: db.php 141 2009-03-24 00:20:18Z chris.boulton $
-* @author Chris <chris@interspire.com>
-*
-* @package Library
-* @subpackage Db
-*/
-
-/**
 * This is the base class for the database system.
 * Almost all methods are overwritten in subclasses, except for logging and for the 'FetchOne' method.
 *
 * @package Library
 * @subpackage Db
 */
-class Db
+abstract class Db
 {
 	/**
 	* The global database connection.
 	*
 	* @see Connect
 	*
-	* @var Resource
+	* @var mysqli
 	*/
-	var $connection = null;
+	public $connection = null;
 
 	/**
 	* Where any database errors are stored.
@@ -38,7 +27,7 @@ class Db
 	*
 	* @var String
 	*/
-	var $_Error = null;
+	public $_Error = null;
 
 	/**
 	* What type of error this is.
@@ -50,7 +39,7 @@ class Db
 	*
 	* @var String
 	*/
-	var $_ErrorLevel = E_USER_ERROR;
+	public $_ErrorLevel = E_USER_ERROR;
 
 	/**
 	* Determines if the list of queries executed on a page will be stored in the QueryList array.
@@ -59,7 +48,7 @@ class Db
 	* @see Query
 	* @var Boolean
 	*/
-	var $StoreQueryList = false;
+	public $StoreQueryList = false;
 
 	/**
 	* Determines whether a query will be logged or not. If it's false or null it won't log, if it's a filename (or path to a file) it will log.
@@ -69,7 +58,7 @@ class Db
 	*
 	* @var String
 	*/
-	var $QueryLog = null;
+	public $QueryLog = null;
 
 	/**
 	* Determines whether a time query will be logged or not. If it's false or null it won't log, if it's a filename (or path to a file) it will log.
@@ -79,7 +68,7 @@ class Db
 	*
 	* @var String
 	*/
-	var $TimeLog = null;
+	public $TimeLog = null;
 
 	/**
 	* Determines whether an error will be logged or not. If it's false or null it won't log, if it's a filename (or path to a file) it will log.
@@ -89,49 +78,49 @@ class Db
 	*
 	* @var String
 	*/
-	var $ErrorLog = null;
+	public $ErrorLog = null;
 
 	/**
 	* The number of queries that have been executed
 	*
 	* @var Integer
 	*/
-	var $NumQueries = 0;
+	public $NumQueries = 0;
 
 	/**
 	* Array of queries for debug purposes
 	*
 	* @var Integer
 	*/
-	var $QueryList = array();
+	public $QueryList = array();
 
 	/**
 	* Is magic quotes runtime on ?
 	*
 	* @var Boolean
 	*/
-	var $magic_quotes_runtime_on = false;
+	public $magic_quotes_runtime_on = false;
 
 	/**
 	* The database table prefix that is being used.
 	*
 	* @var String
 	*/
-	var $TablePrefix = null;
+	public $TablePrefix = null;
 
 	/**
 	 * The character to enclose fields/tables with to escape the field name
 	 *
 	 * @var String
 	 */
-	var $EscapeChar='';
+	public $EscapeChar='';
 
 	/**
 	* The function to call whenever there is a database error. Useful for logging errors.
 	*
 	* @var String
 	*/
-	var $ErrorCallback = null;
+	public $ErrorCallback = null;
 
 	/**
 	* Are we in the error callback function ? Used to avoid logging errors that happen inside
@@ -139,7 +128,7 @@ class Db
 	*
 	* @var Boolean
 	*/
-	var $_InErrorCallback = false;
+	public $_InErrorCallback = false;
 
 	/**
 	 * The number of transactions that have been 'started'.
@@ -149,9 +138,9 @@ class Db
 	 * @see CommitTransaction
 	 * @see RollbackTransaction
 	 */
-	var $_transaction_counter = 0;
+	public $_transaction_counter = 0;
 
-	var $_transaction_names = array();
+	public $_transaction_names = array();
 
 	/**
 	* Whether a query is being automatically retried or not.
@@ -163,7 +152,7 @@ class Db
 	*
 	* @var Boolean
 	*/
-	var $_retry = false;
+	public $_retry = false;
 
 	/**
 	* The hostname we are connected to.
@@ -173,7 +162,7 @@ class Db
 	*
 	* @var String
 	*/
-	var $_hostname = '';
+	public $_hostname = '';
 
 	/**
 	* The username we are connected with.
@@ -183,7 +172,7 @@ class Db
 	*
 	* @var String
 	*/
-	var $_username = '';
+	public $_username = '';
 
 	/**
 	* The password we are connected with.
@@ -193,7 +182,7 @@ class Db
 	*
 	* @var String
 	*/
-	var $_password = '';
+	public $_password = '';
 
 	/**
 	* The database name we are connected to.
@@ -203,59 +192,26 @@ class Db
 	*
 	* @var String
 	*/
-	var $_databasename = '';
+	public $_databasename = '';
 
 	/**
 	 * The character set to use when connecting and querying the database server.
 	 */
-	var $charset = '';
+	public $charset = '';
 
 	/**
 	 * @var string The timezone to set/use for the database server.
 	 */
-	var $timezone = '';
+	public $timezone = '';
 
-	/**
-	* Constructor
-	*
-	* Sets up the database connection.
-	* Since this is the parent class the others inherit from, this returns null when called directly.
-	*
-	* @return Null This will always return null in the base class.
-	*/
-	function Db()
+    public function __construct()
 	{
 		$this->magic_quotes_runtime_on = get_magic_quotes_runtime();
-		return null;
 	}
 
-	/**
-	* Connect
-	*
-	* This function will connect to the database based on the details passed in.
-	* Since this is the parent class the others inherit from, this returns false when called directly.
-	*
-	* @return False Will always return false when called in the base class.
-	*/
-	function Connect()
-	{
-		$this->SetError('Cannot call base class method Connect directly');
-		return false;
-	}
+	abstract public function Connect();
 
-	/**
-	* Disconnect
-	*
-	* This function will disconnect from the database resource passed in.
-	* Since this is the parent class the others inherit from, this returns false when called directly.
-	*
-	* @return False Will always return false when called in the base class.
-	*/
-	function Disconnect()
-	{
-		$this->SetError('Cannot call base class method Disconnect directly');
-		return false;
-	}
+	abstract public function Disconnect();
 
 	/**
 	* SetError
@@ -263,12 +219,12 @@ class Db
 	* Stores the error in the _error var for retrieval. This function will also call the error callback if there is one specified.
 	*
 	* @param String $error The error you wish to store for retrieval.
-	* @param String $errorlevel The error level you wish to store.
+	* @param int $errorlevel The error level you wish to store.
 	* @param String $query (Optional) The query that was executed that caused the error if there is one.
 	*
 	* @return Void Doesn't return anything, only sets the values and leaves it at that.
 	*/
-	function SetError($error='', $errorlevel=E_USER_ERROR, $query='')
+    public function SetError($error='', $errorlevel=E_USER_ERROR, $query='')
 	{
 		$this->_Error = $error;
 		$this->_ErrorLevel = $errorlevel;
@@ -293,9 +249,9 @@ class Db
 	*
 	* @see SetError
 	*
-	* @return Array Returns the error and it's error level.
+	* @return array Returns the error and it's error level.
 	*/
-	function GetError()
+    public function GetError()
 	{
 		return array($this->_Error, $this->_ErrorLevel);
 	}
@@ -310,7 +266,7 @@ class Db
 	*
 	* @return String Returns just the error message from SetError.
 	*/
-	function Error()
+	public function Error()
 	{
 		return $this->_Error;
 	}
@@ -326,52 +282,28 @@ class Db
 	*
 	* @return String Returns the error
 	*/
-	function GetErrorMsg()
+	public function GetErrorMsg()
 	{
 		return $this->_Error;
 	}
 
-	/**
-	* Query
-	*
-	* This runs a query against the database and returns the resource result.
-	*
-	* @return False Will always return false when called in the base class.
-	*/
-	function Query()
-	{
-		$this->SetError('Cannot call base class method Query directly');
-		return false;
-	}
+	abstract public function Query($query);
 
-	/**
-	* Fetch
-	* This function will fetch a result from the result set passed in.
-	*
-	* @see Query
-	* @see SetError
-	*
-	* @return False Will always return false when called in the base class.
-	*/
-	function Fetch()
-	{
-		$this->SetError('Cannot call base class method Fetch directly');
-		return false;
-	}
+	abstract public function Fetch($result);
 
 	/**
 	* LogError
 	* This will log all errors if ErrorLog is not false or null. Is called from Query.
 	*
 	* @param String $query The query to log.
-	* @param String $error The error message to log.
+	* @param string|bool $error The error message to log.
 	*
 	* @see ErrorLog
 	* @see Query
 	*
 	* @return Boolean Returns whether the query & error are logged or not. Will return false if there is no query, or if the ErrorLog variable is set to false or null.
 	*/
-	function LogError($query='', $error=false)
+    public function LogError($query='', $error=false)
 	{
 		if (!$query) {
 			return false;
@@ -414,7 +346,7 @@ class Db
 	*
 	* @return Boolean Returns whether the query is logged or not. Will return false if there is no query or if the QueryLog variable is set to false or null.
 	*/
-	function LogQuery($query='')
+    public function LogQuery($query='')
 	{
 		if (!$query) {
 			return false;
@@ -445,7 +377,7 @@ class Db
 		return true;
 	}
 
-	function TimeQuery($query='', $timestart=0, $timeend=0)
+    public function TimeQuery($query='', $timestart=0, $timeend=0)
 	{
 		if (!$this->TimeLog || $this->TimeLog === null) {
 			return false;
@@ -476,35 +408,9 @@ class Db
 		return true;
 	}
 
-	/**
-	* FreeResult
-	* Frees the result from memory. The base class always returns false.
-	*
-	* @see Query
-	* @see SetError
-	*
-	* @return Boolean Whether freeing the result worked or not.
-	*/
-	function FreeResult()
-	{
-		$this->SetError('Can\'t call FreeResult from the base class.');
-		return false;
-	}
+	abstract public function FreeResult();
 
-	/**
-	* CountResult
-	* Returns the number of rows returned for the resource passed in. The base class always returns 0.
-	*
-	* @see Query
-	* @see SetError
-	*
-	* @return False Always returns false in the base class.
-	*/
-	function CountResult()
-	{
-		$this->SetError('Can\'t call CountResult from the base class.');
-		return false;
-	}
+	abstract public function CountResult();
 
 	/**
 	* FetchOne
@@ -517,12 +423,12 @@ class Db
 	*
 	* @return Mixed Returns false if there is no result or item, or if the item doesn't exist in the result. Otherwise returns the item's value.
 	*/
-	function FetchOne($result=null, $item=null)
+    public function FetchOne($result=null, $item=null)
 	{
 		if ($result === null) {
 			return false;
 		}
-		if (!is_resource($result)) {
+		if (!$result instanceof mysqli_result) {
 			$result = $this->Query($result);
 		}
 		$row = $this->Fetch($result);
@@ -541,16 +447,7 @@ class Db
 		return $row[$item];
 	}
 
-	/**
-	* Concat
-	* Concatentates multiple strings together. The base class returns nothing - it needs to be overridden for each database type.
-	*
-	* @return False Always returns false in the base class.
-	*/
-	function Concat()
-	{
-		return false;
-	}
+	abstract public function Concat();
 
 	/**
 	* StripslashesArray
@@ -560,7 +457,7 @@ class Db
 	*
 	* @return Mixed Returns the same type as passed in
 	*/
-	function StripslashesArray($value)
+    public function StripslashesArray($value)
 	{
 		if(is_array($value)) {
 			$value = array_map(array($this, 'StripslashesArray'), $value);
@@ -579,81 +476,20 @@ class Db
 	*
 	* @return String String with quotes!
 	*/
-	function Quote($string='')
+    public function Quote($string='')
 	{
 		return addslashes($string);
 	}
 
-	/**
-	* LastId
-	*
-	* Returns the last insert id
-	*
-	* @param String $seq The sequence name to fetch the last id from.
-	*
-	* @return False The base class always returns false.
-	*/
-	function LastId($seq='')
-	{
-		$this->SetError('Can\'t call LastId from the base class.');
-		return false;
-	}
+	abstract public function LastId($seq='');
 
-	/**
-	* NextId
-	*
-	* Returns the next insert id
-	*
-	* @param String $seq The sequence name to fetch the next id from.
-	*
-	* @return False The base class always returns false.
-	*/
-	function NextId($seq='')
-	{
-		$this->SetError('Can\'t call NextId from the base class.');
-		return false;
-	}
+	abstract public function NextId($seq='');
 
-	/**
-	* CheckSequence
-	*
-	* Checks to make sure a sequence doesn't have multiple entries.
-	*
-	* @return False The base class always returns false.
-	*/
-	function CheckSequence()
-	{
-		$this->SetError('Can\'t call CheckSequence from the base class.');
-		return false;
-	}
+	abstract public function CheckSequence();
 
-	/**
-	* ResetSequence
-	*
-	* Resets a field in a sequence table.
-	*
-	* @return False The base class always returns false.
-	*/
-	function ResetSequence()
-	{
-		$this->SetError('Can\'t call ResetSequence from the base class.');
-		return false;
-	}
+	abstract public function ResetSequence();
 
-	/**
-	* OptimizeTable
-	*
-	* Runs "optimize" or "analyze" over the tablename passed in. This is useful to keep the database reasonably speedy.
-	*
-	* @param String $tablename The tablename to optimize.
-	*
-	* @return False The base class always returns false.
-	*/
-	function OptimizeTable($tablename='')
-	{
-		$this->SetError('Can\'t call OptimizeTable from the base class.');
-		return false;
-	}
+	abstract public function OptimizeTable($tablename='');
 
 	/**
 	* GetTime
@@ -666,7 +502,7 @@ class Db
 	*
 	* @return Float Returns a float microtime.
 	*/
-	function GetTime()
+    public function GetTime()
 	{
 		list($usec, $sec) = explode(" ", microtime());
 		return ((float)$usec + (float)$sec);
@@ -681,7 +517,7 @@ class Db
 	*
 	* @return mixed array of data or false on error
 	*/
-	function FetchRow($query)
+    public function FetchRow($query)
 	{
 		if (empty($query)) {
 			return false;
@@ -690,45 +526,20 @@ class Db
 		return $this->Fetch($result);
 	}
 
-	/**
-	* NumAffected
-	*
-	* The base class always returns false.
-	* @param  mixed $null Placeholder for postgres compatability
-	*
-	* @return False The base class always returns false.
-	*/
-	function NumAffected($null=null)
-	{
-		$this->SetError('Can\'t call NumAffected from the base class.');
-		return false;
-	}
+	abstract public function NumAffected($null=null);
 
-	/**
-	* UnbufferedQuery
-	*
-	* The base class always returns false. UnbufferedQuery is also a mysql-only feature.
-	*
-	* @param String This is a placeholder which the sub-classes take, not used in the base class.
-	*
-	* @return False The base class always returns false.
-	*/
-	function UnbufferedQuery($query=null)
-	{
-		$this->SetError('Can\'t call UnbufferedQuery from the base class. Also note this is a mysql-only feature.');
-		return false;
-	}
+	abstract public function UnbufferedQuery($query=null);
 
 
 	/**
 	 * Build and execute a database insert query from an array of keys/values.
 	 *
-	 * @param string The table to insert into.
-	 * @param array Associative array of key/value pairs to insert.
-	 * @param bool TRUE to interpret NULL as being database NULL, FALSE to mean an empty string
+	 * @param string $table The table to insert into.
+	 * @param array $values Associative array of key/value pairs to insert.
+	 * @param bool $useNullValues TRUE to interpret NULL as being database NULL, FALSE to mean an empty string
 	 * @return mixed Insert ID or true on successful insertion, false on failure.
 	 */
-	function InsertQuery($table, $values, $useNullValues=false)
+    public function InsertQuery($table, $values, $useNullValues=false)
 	{
 		$keys = array_keys($values);
 		$fields = implode($this->EscapeChar.",".$this->EscapeChar, $keys);
@@ -766,14 +577,14 @@ class Db
 	/**
 	 * Build and execute a database update query from an array of keys/values.
 	 *
-	 * @param string The table to insert into.
-	 * @param array Associative array containing key/value pairs to update.
-	 * @param string The where clause to apply to the update
-	 * @param bool TRUE to interpret NULL as being database NULL, FALSE to mean an empty string
+	 * @param string $table The table to insert into.
+	 * @param array $values Associative array containing key/value pairs to update.
+	 * @param string $where The where clause to apply to the update
+	 * @param bool $useNullValues TRUE to interpret NULL as being database NULL, FALSE to mean an empty string
 	 *
 	 * @return boolean True on success, false on error.
 	 */
-	function UpdateQuery($table, $values, $where="", $useNullValues=false)
+    public function UpdateQuery($table, $values, $where="", $useNullValues=false)
 	{
 		$fields = array();
 		foreach ($values as $k => $v) {
@@ -819,7 +630,7 @@ class Db
 	*
 	* @return Mixed Returns false if no query is passed in, or if an invalid limit is supplied. Otherwise returns the result from Query
 	*/
-	function DeleteQuery($table='', $query=null, $limit=0)
+    public function DeleteQuery($table='', $query=null, $limit=0)
 	{
 		if ($query === null) {
 			return false;
@@ -849,7 +660,7 @@ class Db
 	 * @access public
 	 * @return bool TRUE if the transaction was successfully created, FALSE otherwise
 	 */
-	function StartTransaction()
+    public function StartTransaction()
 	{
 		/**
 		 * If there are no transactions open, start one up.
@@ -876,7 +687,7 @@ class Db
 	 *
 	 * @return Boolean Returns whether the "COMMIT" call was successful or not.
 	 */
-	function CommitAllTransactions()
+    public function CommitAllTransactions()
 	{
 		$this->_transaction_counter = 0;
 		$this->_transaction_names = array();
@@ -893,7 +704,7 @@ class Db
 	 * @access public
 	 * @return bool TRUE if the transaction was successfully commited, FALSE otherwise
 	 */
-	function CommitTransaction()
+    public function CommitTransaction()
 	{
 		/**
 		 * If there are no transactions open, return false.
@@ -925,7 +736,7 @@ class Db
 	 * @access public
 	 * @return bool TRUE if the transaction was successfully rolled back, FALSE otherwise
 	 */
-	function RollbackTransaction()
+    public function RollbackTransaction()
 	{
 		/**
 		 * If there are no transactions open, return false.
@@ -953,7 +764,7 @@ class Db
 	 *
 	 * @return Boolean Returns whether the "ROLLBACK" call was successful or not.
 	 */
-	function RollbackAllTransactions()
+    public function RollbackAllTransactions()
 	{
 		$this->_transaction_counter = 0;
 		$this->_transaction_names = array();
@@ -973,7 +784,7 @@ class Db
 	 *
 	 * @return String Returns a random transaction name starting with 'interspire'.
 	 */
-	function _generate_transaction_name()
+    public function _generate_transaction_name()
 	{
 		while (true) {
 			$name = uniqid('interspire');
@@ -991,7 +802,7 @@ class Db
 	*
 	* @return Boolean True if update process success. Otherwise, return False
 	*/
-	function UpdateFullTextIndex()
+    public function UpdateFullTextIndex()
 	{
 		return true;
 	}
@@ -1004,7 +815,7 @@ class Db
 	*
 	* @return Boolean True if Full Text Service is Installed. Otherwise, return False
 	*/
-	function IsFulltextInstalled()
+    public function IsFulltextInstalled()
 	{
 		return true;
 	}
@@ -1015,7 +826,7 @@ class Db
 	*
 	* @return String The version number of the DB, e.g. "4.1.1".
 	*/
-	function Version()
+    public function Version()
 	{
 		$result = $this->Query("SELECT VERSION()");
 		return $this->FetchOne($result);
@@ -1031,7 +842,7 @@ class Db
 	*
 	* @return String If all the param is valid, this will return the substring SQL string. Otherwise, it will return an empty string.
 	*/
-	function SubString($str = '', $from = 1, $len = 1)
+    public function SubString($str = '', $from = 1, $len = 1)
 	{
 		if ($str == '') {
 			return '';

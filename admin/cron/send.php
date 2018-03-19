@@ -7,35 +7,13 @@
  * @package interspire.iem.cron
  */
 
-/*
- * If the framework was able to handle CLI requests then autoloading could have
- * been used instead of manual file inclusion.
- * 
- * @todo Refactor framework.
- */
 require_once dirname(__FILE__) . '/common.php';
-
-/**
- * Make sure we update how often cron is running.
- * 
- * Note on above comment: This actually doesn't update it. The line below
- * updates it. Comment in the wrong place FTW!
- */
 require_once(SENDSTUDIO_API_DIRECTORY . '/jobs.php');
 
-/*
- * This marks the cron as run and therefore updates how often it needs to be run
- * (see above comment), and therefore needs to be here. As this is just a 
- * constructor, it's not clear as to what it's actually doing.
- * 
- * @todo Refactor code so that it's self-documenting.
- */
 $jobs_api = new Jobs_API(true);
 
 /*
  * CheckCronSchedule actually returns whether or not sending should be allowed.
- * 
- * Unclear function name FTW!
  */
 if (CheckCronSchedule('send')) {
 	/*
@@ -56,13 +34,7 @@ if (CheckCronSchedule('send')) {
 		return;
 	}
 
-	/*
-	 * While we keep fetching a job, process it.
-	 *
-	 * @see FetchJob
-	 * @see ProcessJob
-	 */
-	while ($job = $JobsAPI->FetchJob('send')) {
+	while ($job = $JobsAPI->FetchJob()) {
 		$result = $JobsAPI->ProcessJob($job);
 		if (!$result) {
 			echo "*** WARNING *** send job '" . $job . "' couldn't be processed.\n";
@@ -70,5 +42,3 @@ if (CheckCronSchedule('send')) {
 		}
 	}
 }
-
-?>

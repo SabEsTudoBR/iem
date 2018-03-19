@@ -89,7 +89,7 @@ class Addons_splittest_Stats extends Addons_splittest
 	 */
 	private function ManageStats()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$subAction = $this->_getPOSTRequest('SubAction', null);
 		$jobid = $this->_getPOSTRequest('jobid', null);
@@ -198,7 +198,7 @@ class Addons_splittest_Stats extends Addons_splittest
 	 */
 	private function ShowStats($split_id)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$template_name = 'splittest_campaign_stats';
 		$stats_api = $this->GetApi('Splittest_Stats');
         $this->GetApi();
@@ -252,7 +252,7 @@ class Addons_splittest_Stats extends Addons_splittest
 		require_once(SENDSTUDIO_LIB_DIRECTORY . '/amcharts/amcharts.php');
 		$stats_api = $this->GetApi('Splittest_Stats');
 
-		$statsChartUrl =  SENDSTUDIO_APPLICATION_URL . '/admin/stats_chart.php?graph=custom_bar&' . IEM::SESSION_NAME . '=' . IEM::sessionID() . '&';
+		$statsChartUrl =  SENDSTUDIO_APPLICATION_URL . '/admin/stats_chart.php?graph=custom_bar&';
 
 		$summaryDataURL = $statsChartUrl . $stats_api->barChartSummaryDataURL($campaigns, 'Opens,Clicks,Bounces,Unsubscribes');
 

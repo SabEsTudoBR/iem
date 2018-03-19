@@ -1,11 +1,5 @@
 <?php
 /**
- * This file contains a database "factory" static object and it's supporting exception object
- *
- * @package interspire.iem.lib.iem
- */
-
-/**
  * Require Db base object
  */
 require_once IEM_PATH . '/ext/database/db.php';
@@ -14,73 +8,60 @@ require_once IEM_PATH . '/ext/database/db.php';
  * DataBase Factory static object
  * Factory object that will encapsulate database instantiation procedure.
  *
- * This is a static object that
- *
  * @package interspire.iem.lib.iem
  */
 class IEM_DBFACTORY
 {
 	/**
 	 * Cache of available implementation
-	 * @var Array Cache of available implementation
+	 * @var array Cache of available implementation
 	 */
 	static private $_cacheLists = null;
 
-
-
-
-	/**
-	 * COSNTRUCTOR
-	 */
-	public function __construct()
-	{
-		die('This class cannot be instantiated.');
-	}
+	private function __construct() {}
 
 	/**
 	 * manufacture
 	 * Manufacture a concrete implementation of the Db object
 	 *
-	 * @param String $type Database type
 	 * @param String $host The host where the database server is located
 	 * @param String $user Username to login to the database server
 	 * @param String $password Password to authenticate the username
 	 * @param String $name Database password
+     * @param array $options
 	 *
-	 * @return Db Returns a concrete implementation of the Db object
+	 * @return MySQLDb Returns a concrete implementation of the Db object
 	 *
 	 * @throws exception_IEM_DBFACTORY
 	 */
-	static public function manufacture($type, $host = 'localhost', $user = null, $password = null, $name = null)
+	static public function manufacture($host = 'localhost', $user = null, $password = null, $name = null, $options = [])
 	{
-		if (!self::exists($type)) {
-			throw new exception_IEM_DBFACTORY('IEM_DBFACTORY::manufacture -- Implementation does not exists', exception_IEM_DBFACTORY::IMPLEMENTATION_DOES_NOT_EXISTS);
-		}
+		require_once IEM_PATH . "/ext/database/mysql.php";
 
-		$class = "{$type}Db";
-		require_once IEM_PATH . "/ext/database/{$type}.php";
+		$db = new MySQLDb();
 
-		if (!class_exists($class, false)) {
-			throw new exception_IEM_DBFACTORY('IEM_DBFACTORY::manufacture -- Invalid implementation', exception_IEM_DBFACTORY::INVALID_IMPLEMENTATION);
-		}
+		if (array_key_exists('charset', $options)) {
+		    $db->charset = $options['charset'];
+        }
+		if (array_key_exists('timezone', $options)) {
+		    $db->timezone = $options['timezone'];
+        }
+		if (array_key_exists('tablePrefix', $options)) {
+		    $db->TablePrefix = $options['tablePrefix'];
+        }
 
-		$db = new $class();
-		
-		//Should almost always be UTF-8
-		// » List of character sets that MySQL supports
-		//   http://dev.mysql.com/doc/refman/5.1/en/charset-charsets.html
- 		$db->charset = 'utf8';
-		
-		$db->Connect($host, $user, $password, $name);
+		if (!$db->Connect($host, $user, $password, $name)) {
+		    throw new exception_IEM_DBFACTORY($db->GetErrorMsg());
+        }
 
-		return $db;
+        return $db;
 	}
 
 	/**
 	 * lists
 	 * List all available Db implementations in the system
 	 *
-	 * @return Array Return an array of string of the available Db implementation
+	 * @return array Return an array of string of the available Db implementation
 	 */
 	static public function lists()
 	{

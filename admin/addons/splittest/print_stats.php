@@ -38,7 +38,7 @@ class PrintStats extends Addons_splittest_Stats
 	 */
 	public function printPage()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$split_api = $this->GetApi('Splittest'); // for permission checks
 
 		$subaction = $this->_getGetRequest('subaction', 'print');

@@ -62,7 +62,7 @@ class Folders extends SendStudio_Functions
 	{
 		$this->PrintHeader();
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if (!isset($_GET['Action'])) {
 			return;
@@ -140,7 +140,7 @@ class Folders extends SendStudio_Functions
 	*/
 	public function InFolderMode()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$page = $this->GetPageName();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if (isset($display_settings['FolderMode'][$page])) {
@@ -166,7 +166,7 @@ class Folders extends SendStudio_Functions
 	{
 		$Folders_Api = $this->GetApi('Folders');
 		$folder_type = $Folders_Api->GetValidType($folder_type);
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if (isset($display_settings['FolderOrphan'][$folder_type]['expanded'])) {
 			return ($display_settings['FolderOrphan'][$folder_type]['expanded'] == 1);
@@ -195,7 +195,7 @@ class Folders extends SendStudio_Functions
 		if (!$folder_type) {
 			return false;
 		}
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if (!isset($display_settings['FolderOrphan']) || !is_array($display_settings['FolderOrphan'])) {
 			$display_settings['FolderOrphan'] = array();

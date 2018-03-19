@@ -717,7 +717,7 @@ class Newsletters extends SendStudio_Functions {
      * @uses EventData_IEM_NEWSLETTERS_MANAGENEWSLETTERS
      */
     function ManageNewsletters() {        
-        $user = GetUser();
+        $user = IEM::getCurrentUser();
         
         $remove_temp_dir = IEM::sessionGet('Newsletters_creation['.$user->Get('userid').']');
         IEM::sessionSet('Newsletters_creation['.$user->Get('userid').']',null);
@@ -1026,7 +1026,7 @@ class Newsletters extends SendStudio_Functions {
             return;
         }
 
-        $user = GetUser();
+        $user = IEM::getCurrentUser();
 
         $newsletterapi = $this->GetApi();
 
@@ -1133,7 +1133,7 @@ class Newsletters extends SendStudio_Functions {
             return;
         }
 
-        $user = GetUser();
+        $user = IEM::getCurrentUser();
 
         $sends_in_progress = array();
         $delete_ok = $delete_fail = 0;
@@ -1304,7 +1304,7 @@ class Newsletters extends SendStudio_Functions {
         $newsletter = $this->GetApi();
         $newslettercontents = array('text' => '', 'html' => '');
 
-        $user = GetUser();
+        $user = IEM::getCurrentUser();
 
         $GLOBALS['FromPreviewEmail'] = $user->Get('emailaddress');
 
@@ -1379,7 +1379,7 @@ class Newsletters extends SendStudio_Functions {
         $editor = $this->FetchEditor();
         $GLOBALS['Editor'] = $editor;
 
-        $user = GetUser();
+        $user = IEM::getCurrentUser();
         if ($user->group->forcespamcheck) {
             $GLOBALS['ForceSpamCheck'] = 1;
         }

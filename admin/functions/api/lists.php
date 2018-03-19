@@ -581,25 +581,25 @@ class Lists_API extends API
 			while($row = $this->Db->Fetch($status)){
 				$query = "DELETE FROM [|PREFIX|]subscribers_data WHERE subscriberid = ".$row['subscriberid'];
 				$res = $this->Db->Query($query);
-				if(!$res){trigger_error(mysql_error());}
+				if(!$res){trigger_error(mysqli_error($this->Db->connection));}
 			}
 			$event_count_query = "SELECT COUNT(eventid) FROM [|PREFIX|]list_subscriber_events WHERE listid = {$listid}";
 			$res = $this->Db->Query($event_count_query);
-			if(!$res){trigger_error(mysql_error());}
+			if(!$res){trigger_error(mysqli_error($this->Db->connection));}
 			$event_count = (int) $this->Db->FetchOne($res);
 			if($event_count < 1000){
 				$query = "DELETE FROM [|PREFIX|]list_subscriber_events WHERE listid = {$listid}";
 				$res = $this->Db->Query($query);
-				if(!$res){trigger_error(mysql_error());}				
+				if(!$res){trigger_error(mysqli_error($this->Db->connection));}
 			} else {
 				for ($i = 1; $i <= $event_count; $i++) {
 					"DELETE FROM [|PREFIX|]list_subscriber_events WHERE listid = {$listid} LIMIT 1";
 					$res = $this->Db->Query($query);
-					if(!$res){trigger_error(mysql_error());}
+					if(!$res){trigger_error(mysqli_error($this->Db->connection));}
 				}
 				$query = "DELETE FROM [|PREFIX|]list_subscriber_events WHERE listid = {$listid}";
 				$res = $this->Db->Query($query);
-				if(!$res){trigger_error(mysql_error());}				
+				if(!$res){trigger_error(mysqli_error($this->Db->connection));}
 			}
 			$queries = array();
 			//$queries[] = "DELETE FROM [|PREFIX|]subscribers_data WHERE subscriberid IN ({$query_subscriber_in_list})";

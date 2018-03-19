@@ -37,7 +37,7 @@ class Interspire_Csv_Exporter extends Interspire_Csv_Abstract
 	 * 
 	 * @return object
 	 * 
-	 * @param string $arrToExport The array to convert to a CSV file.
+	 * @param array $arrToExport The array to convert to a CSV file.
 	 */
 	public function __construct($arrToExport, $config = null)
 	{

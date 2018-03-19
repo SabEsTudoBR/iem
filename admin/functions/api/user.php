@@ -1,15 +1,4 @@
 <?php
-
-/**
- * The User API.
- *
- * @version     $Id: user.php,v 1.71 2008/02/24 22:11:51 hendri Exp $
- * @author Chris <chris@interspire.com>
- * @author Fredrick Gabelmann <fredrick.gabelmann@interspire.com>
- *
- * @package API
- * @subpackage User_API
- */
 /**
  * Include the base api class if we need to.
  */
@@ -22,132 +11,137 @@ require_once(dirname(__FILE__) . '/api.php');
  * @package API
  * @subpackage User_API
  */
-class User_API extends API {
-
+class User_API extends API
+{
     /**
      * Default event activity type
      *
-     * @var Array
+     * @var array
      */
-    var $defaultEventActivityType = array('Phone Call', 'Meeting', 'Email');
+    public $defaultEventActivityType = ['Phone Call', 'Meeting', 'Email'];
     /**
      * The User that is loaded. By default is 0 (no user).
      *
      * @var Int
      */
-    var $userid = 0;
+    public $userid = 0;
     /**
      * User group id
      * @var Int
      */
-    var $groupid = 0;
+    public $groupid = 0;
+    /**
+     * User group
+     * @var object
+     */
+    public $group;
     /**
      * Whether or not this is a trial user
      * @var string Contains either 1 or 0
      */
-    var $trialuser = '0';
+    public $trialuser = '0';
     /**
      * Username of the user that we've loaded.
      *
      * @var String
      */
-    var $username = '';
+    public $username = '';
     /**
      * Full name of the user.
      *
      * @var String
      */
-    var $fullname = '';
+    public $fullname = '';
     /**
      * Email address of the user.
      *
      * @var String
      */
-    var $emailaddress = '';
+    public $emailaddress = '';
     /**
      * Whether this user is active or not.
      *
      * @var Boolean
      */
-    var $status = false;
+    public $status = false;
     /**
      * Whether this user is an admin or not.
      *
      * @var Boolean
      */
-    var $systemadmin;
+    public $systemadmin;
     /**
      * The 'admintype'.
      *
      * @see AdminTypes
      *
-     * @var Char
+     * @var string
      */
-    var $admintype = 'c';
+    public $admintype = 'c';
     /**
      * Whether this user is a list-admin or not. List-admins have access to all lists but not necessarily other functionality.
      *
      * @var Boolean
      */
-    var $listadmin;
+    public $listadmin;
     /**
      * The 'listadmintype'.
      *
      * @see ListAdminTypes
      *
-     * @var Char
+     * #var string
      */
-    var $listadmintype = 'c';
+    public $listadmintype = 'c';
     /**
      * Whether this user is a template-admin or not. Template-admins can create, approve, globalise any template in the system.
      *
      * @var Boolean
      */
-    var $templateadmin;
+    public $templateadmin;
     /**
      * The 'templateadmintype'.
      *
      * @see TemplateAdminTypes
      *
-     * @var Char
+     * #var string
      */
-    var $templateadmintype = 'c';
+    public $templateadmintype = 'c';
     /**
      * Whether this uses is a segment-admin or not. Segment-admins have access to all segments but not necessarily other functionalities.
      *
      * @var Boolean
      */
-    var $segmentadmin;
+    public $segmentadmin;
     /**
      * The "SegmentAdminType"
      *
      * @see SegmentAdminTypes
      *
-     * @var Char
+     * #var string
      */
-    var $segmentadmintype = 'c';
+    public $segmentadmintype = 'c';
     /**
      * Whether the user can edit it's own settings.
      *
      * @var Boolean
      */
-    var $editownsettings = false;
+    public $editownsettings = false;
     /**
      * Whether the user can use the xml api or not.
      *
      * @var Boolean
      */
-    var $xmlapi = false;
+    public $xmlapi = false;
     /**
      * A random token for the user to use the xml api.
      */
-    var $xmltoken = null;
+    public $xmltoken = null;
     /**
      * Whether the user has access to the wysiwyg editor or not.
      *
      * @var Boolean
      */
-    var $usewysiwyg = true;
+    public $usewysiwyg = true;
     /**
      * Whether or not to disable XHTML editing when using wysiwyg editor
      *
@@ -157,107 +151,114 @@ class User_API extends API {
      *
      * @var Boolean
      */
-    var $usexhtml = true;
+    public $usexhtml = true;
     /**
      * Whether or not to enable "Activity Log" activity tracking
      * @var Boolean
      */
-    var $enableactivitylog = false;
+    public $enableactivitylog = false;
     /**
      * The array of user permissions.
      *
-     * @var Array
+     * @var array
      */
-    var $permissions = array();
+    public $permissions = [];
     /**
      * Settings The array of user settings.
      *
-     * @var Array
+     * @var array
      */
-    var $settings = array();
+    public $settings = [];
     /**
      * The users password. This is only set by the users area after updating.
      *
      * @var String
      */
-    var $password = null;
+    public $password = null;
     /**
      * The timezone the user is in.
      *
      * @var String
      */
-    var $usertimezone = 'GMT';
+    public $usertimezone = 'GMT';
     /**
      * The text footer that the user has. This gets included at the bottom of every text email sent.
      *
      * @var String
      */
-    var $textfooter = '';
+    public $textfooter = '';
     /**
      * The html footer that the user has. This gets included at the bottom of every html email sent.
      *
      * @var String
      */
-    var $htmlfooter = '';
+    public $htmlfooter = '';
     /**
      * A unique token assigned to the user
      *
      * @var String
      */
-    var $unique_token = '';
+    public $unique_token = '';
     /**
      * Which steps of the Getting Started wizard the user has completed. This is set to 0 for none, 2 for the getting started guide step and 1 for all steps.
      *
      * @var Int
      */
-    var $gettingstarted = 1;
+    public $gettingstarted = 1;
     /**
      * Note the time last warning email was sent by the system
      * @var integer Linux timestap
      */
-    var $credit_warning_time = 0;
+    public $credit_warning_time = 0;
     /**
      * Note the credit level percentage of which the warning was sent for (for monthly credit)
      * @var integer Percentage as a whole number
      */
-    var $credit_warning_percentage = 0;
+    public $credit_warning_percentage = 0;
     /**
      * Note the credit level of which the warning was sent for (for fixed credit)
      * @var integer Credit level
      */
-    var $credit_warning_fixed = 0;
+    public $credit_warning_fixed = 0;
     /**
      * An array of administrator types and their language variables.
      *
      * @see GetAdminTypes
      *
-     * @var Array
+     * @var array
      */
-    var $AdminTypes = array('a' => 'SystemAdministrator', 'l' => 'ListAdministrator', 'n' => 'NewsletterAdministrator', 't' => 'TemplateAdministrator', 'u' => 'UserAdministrator', 'c' => 'Custom');
+    public $AdminTypes = [
+        'a' => 'SystemAdministrator',
+        'l' => 'ListAdministrator',
+        'n' => 'NewsletterAdministrator',
+        't' => 'TemplateAdministrator',
+        'u' => 'UserAdministrator',
+        'c' => 'Custom'
+    ];
     /**
      * An array of list administrator types and their language variables.
      *
      * @see GetListAdminTypes
      *
-     * @var Array
+     * @var array
      */
-    var $ListAdminTypes = array('a' => 'AllLists', 'c' => 'Custom');
+    public $ListAdminTypes = ['a' => 'AllLists', 'c' => 'Custom'];
     /**
      * An array of segment administrator types and their language variables.
      *
      * @see User_API::GetSegmentAdminTypes()
      *
-     * @var Array
+     * @var array
      */
-    var $SegmentAdminTypes = array('a' => 'AllSegments', 'c' => 'Custom');
+    public $SegmentAdminTypes = ['a' => 'AllSegments', 'c' => 'Custom'];
     /**
      * An array of template administrator types and their language variables.
      *
      * @see GetTemplateAdminTypes
      *
-     * @var Array
+     * @var array
      */
-    var $TemplateAdminTypes = array('a' => 'AllTemplates', 'c' => 'Custom');
+    public $TemplateAdminTypes = ['a' => 'AllTemplates', 'c' => 'Custom'];
     /**
      * An array of permission types a user can have.
      * This allows fine grain control over what the user can do.
@@ -267,46 +268,46 @@ class User_API extends API {
      * @see GrantAccess
      * @see RevokeAccess
      *
-     * @var Array
+     * @var array
      */
-    var $PermissionTypes = array(
-        'autoresponders' => array(
+    public $PermissionTypes = [
+        'autoresponders' => [
             'create', 'edit', 'delete', 'approve'
-        ),
-        'forms' => array(
+        ],
+        'forms' => [
             'create', 'edit', 'delete'
-        ),
-        'newsletters' => array(
+        ],
+        'newsletters' => [
             'create', 'edit', 'delete', 'approve', 'send'
-        ),
-        'templates' => array(
+        ],
+        'templates' => [
             'create', 'edit', 'delete', 'approve', 'global', 'builtin'
-        ),
-        'subscribers' => array(
+        ],
+        'subscribers' => [
             'manage', 'add', 'edit', 'delete', 'import', 'export', 'banned', 'eventsave', 'eventdelete', 'eventupdate'
-        ),
-        'lists' => array(
+        ],
+        'lists' => [
             'create', 'edit', 'delete', 'bounce', 'bouncesettings'
-        ),
-        'customfields' => array(
+        ],
+        'customfields' => [
             'create', 'edit', 'delete'
-        ),
-        'system' => array(
+        ],
+        'system' => [
             'system', 'list', 'template'
-        ),
-        'statistics' => array(
+        ],
+        'statistics' => [
             'newsletter', 'user', 'autoresponder', 'list', 'triggeremails'
-        ),
-        'user' => array(
+        ],
+        'user' => [
             'smtp', 'smtpcom'
-        ),
-        'segments' => array(
+        ],
+        'segments' => [
             'view', 'create', 'edit', 'delete', 'send'
-        ),
-        'triggeremails' => array(
+        ],
+        'triggeremails' => [
             'create', 'edit', 'delete', 'activate'
-        )
-    );
+        ]
+    ];
     /**
      * access
      * The areas this user has specific access to, mainly lists and templates.
@@ -315,75 +316,75 @@ class User_API extends API {
      * @see LoadPermissions
      * @see SavePermissions
      *
-     * @var Array
+     * @var array
      */
-    var $access = array('lists' => array(), 'templates' => array(), 'segments' => array());
+    public $access = ['lists' => [], 'templates' => [], 'segments' => []];
     /**
      * infotips
      * Whether this user wants to see info tips or not.
      *
      * @var boolean
      */
-    var $infotips = false;
+    public $infotips = false;
     /**
      * The smtp server name specific for this user.
      *
      * @var String
      */
-    var $smtpserver = '';
+    public $smtpserver = '';
     /**
      * The smtp username specific for this user.
      *
      * @var String
      */
-    var $smtpusername = '';
+    public $smtpusername = '';
     /**
      * The smtp password specific for this user.
      *
      * @var String
      */
-    var $smtppassword = '';
+    public $smtppassword = '';
     /**
      * The smtp port specific for this user.
      *
      * @var String
      */
-    var $smtpport = 25;
+    public $smtpport = 25;
     /**
      * createdate
      * When the user was created
      *
      * @var int
      */
-    var $createdate = 0;
+    public $createdate = 0;
     /**
      * lastloggedin
      * When the user last logged in.
      *
      * @var int
      */
-    var $lastloggedin = 0;
+    public $lastloggedin = 0;
     /**
      * forgotpasscode
      * A random code sent to the user when they forget their password.
      *
      * @var string
      */
-    var $forgotpasscode = '';
+    public $forgotpasscode = '';
     /**
      * user_language
      * Language chosen by current user to be used for display
      *
      * @var String
      */
-    var $user_language = '';
+    public $user_language = '';
     /**
      * eventactivitytype
      * Event Activity type
      *
      * @var String Serialized array of event activity type
      */
-    var $eventactivitytype = '';
+    public $eventactivitytype = '';
     /**
      * adminnotify_email
      * The email address of the current system administartor
@@ -391,55 +392,68 @@ class User_API extends API {
      *
      * @var String email address
      */
-    var $adminnotify_email = '';
+    public $adminnotify_email = '';
     /**
      * adminnotify_send_flag
      * Whether admin notify for large send is enabled
      *
      * @var Int Flag
      */
-    var $adminnotify_send_flag = '';
+    public $adminnotify_send_flag = '';
     /**
      * adminnotify_send_threshold
      * The threshold for triggering the email for large send
      *
      * @var Int limit
      */
-    var $adminnotify_send_threshold = '';
+    public $adminnotify_send_threshold = '';
     /**
      * adminnotify_send_emailtext
      * The text of the email to be send.
      *
      * @var Int String
      */
-    var $adminnotify_send_emailtext = '';
+    public $adminnotify_send_emailtext = '';
     /**
      * adminnotify_import_flag
      * Whether admin notify for large import is enabled
      *
      * @var Int
      */
-    var $adminnotify_import_flag = '';
+    public $adminnotify_import_flag = '';
     /**
      * adminnotify_import_threshold
      * The threshold for triggering the email for large import
      *
      * @var Int
      */
-    var $adminnotify_import_threshold = '';
+    public $adminnotify_import_threshold = '';
     /**
      * adminnotify_import_emailtext
      * The text of the email to be send when import exceed the limit.
      *
      * @var Int String
      */
-    var $adminnotify_import_emailtext = '';
+    public $adminnotify_import_emailtext = '';
     /**
      * User count cache
      * @var array|FALSE Contains an array of user count, FALSE if the contents needs to be refreshed
      */
-    var $_cacheUserTypeCount = false;
+    public $_cacheUserTypeCount = false;
 
+    public $ValidSorts = [
+        'username' => 'u.username',
+        'fullname' => 'u.fullname',
+        'createdate' => 'u.createdate',
+        'lastloggedin' => 'u.lastloggedin',
+        'status' => 'u.status',
+        'admintype' => 'u.admintype',
+        'usergroup' => 'g.groupname'
+    ];
+    
+    public $DefaultOrder = 'u.username';
+    public $DefaultDirection = 'up';
+    
     /**
      * Constructor
      * Sets up the database object, loads the user if the ID passed in is not 0.
@@ -448,50 +462,21 @@ class User_API extends API {
      *
      * @uses Sendstudio_Functions::GetDb()
      * @uses User_API::Load()
-     *
-     * @todo convert this to throw exception whenever you can't login
      */
-    function User_API($userid=0) {
-        $this->GetDb();
+    public function __construct($userid=0) {
+        parent::__construct();
         if ($userid > 0) {
-            return $this->Load($userid);
+            $this->Load($userid);
         }
-
-        $this->ValidSorts = array(
-            'username' => 'u.username',
-            'fullname' => 'u.fullname',
-            'createdate' => 'u.createdate',
-            'lastloggedin' => 'u.lastloggedin',
-            'status' => 'u.status',
-            'admintype' => 'u.admintype',
-            'usergroup' => 'g.groupname'
-        );
-
-        $this->DefaultOrder = 'u.username';
-
-        $this->DefaultDirection = 'up';
     }
 
-    /**
-     * Automates relationship property setting.
-     * 
-     * Automatically loads a relationship based on which property is accessed.
-     * If the db class was better we could automate this process for one-to-one
-     * one-to-many, many-to-one and many-to-many relationships.
-     * 
-     * @param string $name The name of the variable to get.
-     * 
-     * @return mixed;
-     */
     public function __get($name) {
         switch ($name) {
             case 'group':
                 if (!isset($this->group)) {
                     $this->group = (object) API_USERGROUPS::getRecordById($this->groupid);
                 }
-
                 return $this->group;
-
                 break;
         }
     }
@@ -501,7 +486,7 @@ class User_API extends API {
      * @param boolean $forceRefresh Whether or not to refetch user count again
      * @return array Returns an array of available user count
      */
-    function AvailableUsers($forceRefresh = false) {
+    public function AvailableUsers($forceRefresh = false) {
         if (!$forceRefresh || !$this->_cacheUserTypeCount) {
             $this->_cacheUserTypeCount = get_available_user_count();
         }
@@ -520,7 +505,7 @@ class User_API extends API {
      *
      * @return Boolean Will return false if the userid is not present, or the user can't be found, otherwise it set the class vars and return true.
      */
-    function Load($userid=0, $load_permissions=true) {
+    public function Load($userid=0, $load_permissions=true) {
         $userid = intval($userid);
 
         if ($userid <= 0) {
@@ -540,6 +525,7 @@ class User_API extends API {
 
         $this->userid = $user['userid'];
         $this->groupid = $user['groupid'];
+        $this->group = (object) API_USERGROUPS::getRecordById($this->groupid);
         $this->trialuser = IEM::ifsetor($user['trialuser'], '0');
         $this->username = $user['username'];
         $this->unique_token = isset($user['unique_token']) ? $user['unique_token'] : '';
@@ -634,7 +620,7 @@ class User_API extends API {
      * Return "trial user" information
      * @return array Returns "days_used", "days_left", "days_total" if this is a trial user
      */
-    function GetTrialInformation() {
+    public function GetTrialInformation() {
         $agency_edition_variables = get_agency_license_variables();
         $return = array('days_used' => 0, 'days_left' => 0, 'days_total' => 0);
 
@@ -643,7 +629,6 @@ class User_API extends API {
         }
 
         $days_used = intval((time() - $this->createdate) / 86400);
-        $days_remaining = $agency_edition_variables['trial_days'] - $days_used;
 
         $return['days_used'] = $days_used;
         $return['days_left'] = $agency_edition_variables['trial_days'] - $days_used;
@@ -664,7 +649,7 @@ class User_API extends API {
      *
      * @return True if permissions are loaded correctly. Otherwise returns false.
      */
-    function LoadPermissions($userid=0) {
+    public function LoadPermissions($userid=0) {
         $userid = intval($userid);
 
         if ($userid <= 0) {
@@ -748,7 +733,7 @@ class User_API extends API {
      *
      * @return Void Does not return anything.
      */
-    function FilterData() {
+    public function FilterData() {
         // Username and password should be trimmed, because we trim it on authentication
         $this->username = trim($this->username);
         $this->password = trim($this->password);
@@ -762,7 +747,7 @@ class User_API extends API {
      *
      * @return Boolean True if all tested data validates, otherwise false.
      */
-    function Validate($action) {
+    public function Validate($action) {
         $fields = array(
             'username' => '/\w{3}/',
             'password' => '/[^\s]{3}/',
@@ -785,7 +770,7 @@ class User_API extends API {
      *
      * @return False|Int Returns false if it couldn't create a user, otherwise returns the new userid.
      */
-    function Create() {
+    public function Create() {
         if (!ss9024kwehbehb($this)) {
             return -1;
         }
@@ -878,7 +863,7 @@ class User_API extends API {
      *
      * @return Int|False Will return the userid if it's found, otherwise returns false.
      */
-    function Find($username='') {
+    public function Find($username='') {
         if (!$username) {
             return false;
         }
@@ -913,7 +898,7 @@ class User_API extends API {
      * @return Boolean True if it deleted the user, false otherwise.
      *
      */
-    function Delete($userid=0) {
+    public function Delete($userid=0) {
         if ($userid == 0) {
             $userid = $this->userid;
         }
@@ -967,11 +952,9 @@ class User_API extends API {
      *
      * @see SavePermissions
      *
-     * @param Boolean $update_perms Defaults to true to save permissions, false will skip this.
-     *
      * @return Boolean Returns true if it worked, false if it fails.
      */
-    function Save($update_perms = true) {
+    public function Save() {
         $this->FilterData();
 
         if (!$this->Validate('save')) {
@@ -1081,7 +1064,7 @@ class User_API extends API {
      *
      * @return Boolean Returns false if the user isn't loaded. Otherwise tries to do an update of the random code and returns the result from that.
      */
-    function ResetForgotCode($code='') {
+    public function ResetForgotCode($code='') {
         if ($this->userid <= 0) {
             return false;
         }
@@ -1104,7 +1087,7 @@ class User_API extends API {
      *
      * @return Boolean Returns false if the user isn't loaded. Otherwise tries to do an update and returns the result from that.
      */
-    function UpdateLoginTime() {
+    public function UpdateLoginTime() {
         if ($this->userid <= 0) {
             return false;
         }
@@ -1135,7 +1118,7 @@ class User_API extends API {
      *
      * @return Boolean Returns true if it worked ok, otherwise false.
      */
-    function SaveSettings() {
+    public function SaveSettings() {
         $this->GetDb();
 
         $tempSettings = $this->Db->Quote(serialize($this->settings));
@@ -1168,7 +1151,7 @@ class User_API extends API {
      *
      * @return Boolean The users status (active/inactive).
      */
-    function Status() {
+    public function Status() {
         return $this->status;
     }
 
@@ -1178,7 +1161,7 @@ class User_API extends API {
      *
      * @return Boolean The users info tips choice (on/off).
      */
-    function InfoTips() {
+    public function InfoTips() {
         return $this->infotips;
     }
 
@@ -1210,7 +1193,7 @@ class User_API extends API {
      *
      * @return Boolean True if the user has access, false if not.
      */
-    function HasAccess($area = null, $subarea = null, $id = 0) {
+    public function HasAccess($area = null, $subarea = null, $id = 0) {
         $id = (int) $id;
 
         if (!gz0pen($area, $subarea, $id, $this->userid)) {
@@ -1256,7 +1239,7 @@ class User_API extends API {
         }
 
         if ($area == 'users') {
-            if ($this->isUserAdmin()) {
+            if ($this->isAdmin()) {
                 return true;
             }
         }
@@ -1357,11 +1340,11 @@ class User_API extends API {
      * @uses InterspireEvent::Trigger
      * @see PermissionTypes
      *
-     * @return Array Returns the built in permission types and also the extra addon permissions
+     * @return array Returns the built in permission types and also the extra addon permissions
      *
      * @uses EventData_IEM_USERAPI_GETPERMISSIONTYPES
      */
-    function getPermissionTypes() {
+    public function getPermissionTypes() {
         $extra_permissions = array();
 
         /**
@@ -1379,7 +1362,7 @@ class User_API extends API {
         return $this->PermissionTypes;
     }
 
-    function getProcessedPermissionList() {
+    public function getProcessedPermissionList() {
         static $permission = false;
 
         if (!$permission) {
@@ -1439,280 +1422,12 @@ class User_API extends API {
         return $permission;
     }
 
-    /**
-     * GrantAccess
-     * RevoGrantke access for this user to a particular area and possibly subarea.
-     * If the area is not specified, nothing is granted.
-     * If an area is specified but no subarea is specified, the whole section of permissions is granted.
-     * If an area and subarea are specified, that specific permission is granted.
-     *
-     * <b>Example</b>
-     * <code>
-     * GrantAccess('Newsletters');
-     * </code>
-     * Will grant all access to newsletters (creating, editing, deleting, sending and so on).
-     *
-     * <b>Example</b>
-     * <code>
-     * GrantAccess('Lists', 'Create');
-     * </code>
-     * Will grant all access to creating new mailing lists only.
-     *
-     * @param String $area Area to grant access to. If not specified, this will fail.
-     * @param String $subarea SubArea of area to grant access to. If not specified, all permissions for that area are granted.
-     *
-     * @see permissions
-     * @see PermissionTypes
-     *
-     * @return Boolean Returns false if the area is not a valid permissions area. Otherwise permissions are granted and this will return true.
-     */
-    function GrantAccess($area=null, $subarea=null) {
-        return;
-
-
-
-        if (is_null($area)) {
-            return false;
-        }
-
-        $permission_types = $this->getPermissionTypes();
-
-        $area = strtolower($area);
-
-        // if it's not a base permission, check it's an addon permission.
-        if (!in_array($area, array_keys($permission_types))) {
-
-            // there are no addon permissions? bail out.
-            if (!isset($permission_types['addon_permissions'])) {
-                return false;
-            }
-
-            if (!isset($permission_types['addon_permissions'][$area])) {
-                return false;
-            }
-        }
-
-        if (is_null($subarea)) {
-            $subarea = $permission_types[$area];
-        }
-        if (!is_array($subarea)) {
-            $subarea = array($subarea);
-        }
-
-        if (!in_array($area, array_keys($this->permissions))) {
-            $this->permissions[$area] = array();
-        }
-
-        foreach ($subarea as $p => $sub) {
-            if (!in_array($sub, $this->permissions[$area])) {
-                array_push($this->permissions[$area], $sub);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * RevokeAccess
-     * Revoke access for this user from a particular area and possibly subarea.
-     * If the area is not specified, access to everything is revoked.
-     * If an area is specified but no subarea is specified, the whole section of permissions is removed.
-     *
-     * <b>Example</b>
-     * <code>
-     * RevokeAccess('Newsletters');
-     * </code>
-     * Will revoke all access to newsletters (creating, editing, deleting, sending and so on).
-     *
-     * <b>Example</b>
-     * <code>
-     * RevokeAccess('Lists', 'Create');
-     * </code>
-     * Will revoke all access to creating new mailing lists only.
-     *
-     * @param String $area Area to revoke access from. If not specified, all permissions are revoked.
-     * @param String $subarea SubArea of area to revoke. If not specified, all permissions for that area are revoked.
-     *
-     * @see permissions
-     * @see PermissionTypes
-     *
-     * @return Boolean Returns false if the area is not a valid permissions area. Otherwise permissions are revoked and this will return true.
-     */
-    function RevokeAccess($area=null, $subarea=null) {
-        return;
-
-
-
-        if (is_null($area)) {
-            $this->permissions = array();
-        }
-
-        $area = strtolower($area);
-        if (!in_array($area, array_keys($this->PermissionTypes))) {
-            return false;
-        }
-
-        if (is_null($subarea)) {
-            $subarea = $this->PermissionTypes[$area];
-        }
-
-        if (!is_array($subarea)) {
-            $subarea = array($subarea);
-        }
-
-        if (!in_array($area, array_keys($this->permissions))) {
-            $this->permissions[$area] = array();
-        }
-
-        foreach ($subarea as $p => $sub) {
-            if (in_array($sub, array_keys($this->permissions[$area]))) {
-                unset($this->permissions[$area][$p]);
-            }
-        }
-        return true;
-    }
-
-    /**
-     * GrantListAccess
-     * Grants user access to specific lists passed in.
-     *
-     * @param Array $lists An array of listid's to grant access to for this user.
-     *
-     * @see access
-     *
-     * @return True Always returns true.
-     */
-    function GrantListAccess($lists=array()) {
-        return;
-
-
-
-        // reset the session so it can be set up again next time GetLists is called.
-        IEM::sessionRemove('UserLists');
-
-        if (!is_array($lists)) {
-            if (!in_array($lists, $this->access['lists'])) {
-                array_push($this->access['lists'], $lists);
-            }
-            return true;
-        }
-
-        foreach ($lists as $listid => $p) {
-            if (!in_array($listid, $this->access['lists'])) {
-                array_push($this->access['lists'], $listid);
-            }
-        }
-    }
-
-    /**
-     * RevokeListAccess
-     * Revokes user access to specific lists passed in. If no listid's are passed in, all access is revoked.
-     *
-     * @param Array $lists_to_remove An array of listid's to revoke access from for this user. If none are passed in, all access is revoked.
-     *
-     * @see access
-     *
-     * @return True Always returns true.
-     */
-    function RevokeListAccess($lists_to_remove=array()) {
-        return;
-
-
-
-        // reset the session so it can be set up again next time GetLists is called.
-        IEM::sessionRemove('UserLists');
-
-        if (!is_array($this->access['lists'])) {
-            return true;
-        }
-
-        if (!$lists_to_remove) {
-            $lists_to_remove = $this->access['lists'];
-        }
-
-        if (!is_array($lists_to_remove)) {
-            $lists_to_remove = array($lists_to_remove);
-        }
-
-        foreach ($this->access['lists'] as $p => $listid) {
-            if (in_array($listid, $lists_to_remove)) {
-                unset($this->access['lists'][$p]);
-            }
-        }
-        return true;
-    }
-
-    /**
-     * GrantTemplateAccess
-     * Grants user access to specific templates passed in.
-     *
-     * @param Array $templates An array of templateid's to grant access to for this user.
-     *
-     * @see access
-     *
-     * @return True Always returns true.
-     */
-    function GrantTemplateAccess($templates=array()) {
-        return;
-
-
-
-        // reset the session so it can be set up again next time GetTemplates is called.
-        IEM::sessionRemove('UserTemplates');
-
-        if (!is_array($templates)) {
-            if (!in_array($templates, $this->access['templates'])) {
-                array_push($this->access['templates'], $templates);
-            }
-            return true;
-        }
-
-        foreach ($templates as $templateid => $p) {
-            if (!in_array($templateid, $this->access['templates'])) {
-                array_push($this->access['templates'], $templateid);
-            }
-        }
-        return true;
-    }
-
-    /**
-     * RevokeTemplateAccess
-     * Revokes user access to specific templates passed in. If no templateid's are passed in, all access is revoked.
-     *
-     * @param Array $templates_to_remove An array of templateid's to revoke access from for this user. If none are passed in, all access is revoked.
-     *
-     * @see access
-     *
-     * @return True Always returns true.
-     */
-    function RevokeTemplateAccess($templates_to_remove=array()) {
-        return;
-
-
-
-        // reset the session so it can be set up again next time GetTemplates is called.
-        IEM::sessionRemove('UserTemplates');
-
-        if (!is_array($this->access['templates'])) {
-            return true;
-        }
-
-        if (!$templates_to_remove) {
-            $templates_to_remove = $this->access['templates'];
-        }
-
-        if (!is_array($templates_to_remove)) {
-            $templates_to_remove = array($templates_to_remove);
-        }
-
-        foreach ($this->access['templates'] as $p => $templateid) {
-            if (in_array($templateid, $templates_to_remove)) {
-                unset($this->access['templates'][$p]);
-            }
-        }
-
-        return true;
-    }
+    public function GrantAccess($area=null, $subarea=null) {return;}
+    public function RevokeAccess($area=null, $subarea=null) {return;}
+    public function GrantListAccess($lists=array()) {return;}
+    public function RevokeListAccess($lists_to_remove=array()) {return;}
+    public function GrantTemplateAccess($templates=array()) {return;}
+    public function RevokeTemplateAccess($templates_to_remove=array()) {return;}
 
     /**
      * SetSettings
@@ -1723,9 +1438,9 @@ class User_API extends API {
      *
      * @see GetSettings
      *
-     * @return Array Returns the new settings per GetSettings
+     * @return array|bool Returns the new settings per GetSettings
      */
-    function SetSettings($area='', $area_val='') {
+    public function SetSettings($area='', $area_val='') {
         if (!$area) {
             return false;
         }
@@ -1747,9 +1462,9 @@ class User_API extends API {
      *
      * @param String $area Name of the area to return settings for.
      *
-     * @return Array Returns the settings for the area specified. If it's not an set yet, an empty array is returned.
+     * @return array|bool Returns the settings for the area specified. If it's not an set yet, an empty array is returned.
      */
-    function GetSettings($area='') {
+    public function GetSettings($area='') {
         if (!$area) {
             return false;
         }
@@ -1768,7 +1483,7 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function Admin() {
+    public function Admin() {
         return $this->isAdmin();
     }
 
@@ -1777,7 +1492,8 @@ class User_API extends API {
      * 
      * @return Boolean True if they are an admin, otherwise false.
      */
-    function isAdmin() {
+    public function isAdmin()
+    {
         // if we've already worked this out, return it.
         if (isset($this->systemadmin)) {
             return $this->systemadmin;
@@ -1785,7 +1501,7 @@ class User_API extends API {
 
         $admin = false;
 
-        if ($this->group->systemadmin == 1) {
+        if (isset($this->group) && $this->group->systemadmin == 1) {
             $admin = true;
         }
 
@@ -1802,7 +1518,8 @@ class User_API extends API {
      *
      * @return string The type of administrator this user is.
      */
-    function AdminType() {
+    public function AdminType()
+    {
         return $this->isAdmin() ? 'a' : 'c';
     }
 
@@ -1815,7 +1532,8 @@ class User_API extends API {
      * @return string If it's a 'c'ustom admin type, 'c' is returned. Else, it's
      *                transformed into the full word and returned.
      */
-    function GetAdminType($admintype = 'a') {
+    public function GetAdminType($admintype = 'a')
+    {
         if (!in_array($admintype, array_keys($this->AdminTypes))) {
             return false;
         }
@@ -1834,7 +1552,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function ListAdmin() {
+    public function ListAdmin()
+    {
         return $this->isListAdmin();
     }
 
@@ -1843,7 +1562,8 @@ class User_API extends API {
      *
      * @return boolean True if they are a list admin, otherwise false.
      */
-    public function isListAdmin() {
+    public function isListAdmin()
+    {
         // if we've already worked this out, return it.
         if (!is_null($this->listadmin)) {
             return $this->listadmin;
@@ -1872,16 +1592,18 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function ListAdminType() {
+    public function ListAdminType()
+    {
         return $this->getListAdminType();
     }
 
     /**
      * Returns the list admin type. This should either be 'c' for custom or 'a' for access to all lists.
      *
-     * @return Char returns the list admin type.
+     * @return string returns the list admin type.
      */
-    public function getListAdminType() {
+    public function getListAdminType()
+    {
         return $this->isAdmin() || $this->isListAdmin() ? 'a' : 'c';
     }
 
@@ -1890,7 +1612,8 @@ class User_API extends API {
      * 
      * @return boolean
      */
-    public function isSegmentAdmin() {
+    public function isSegmentAdmin()
+    {
         return $this->group->segmentadmin == 1;
     }
 
@@ -1901,7 +1624,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function SegmentAdminType() {
+    public function SegmentAdminType()
+    {
         return $this->getSegmentAdminType();
     }
 
@@ -1911,7 +1635,8 @@ class User_API extends API {
      *
      * @return string The character representing the segment admin type.
      */
-    public function getSegmentAdminType() {
+    public function getSegmentAdminType()
+    {
         return $this->isAdmin() || $this->isSegmentAdmin() ? 'a' : 'c';
     }
 
@@ -1922,7 +1647,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function TemplateAdmin() {
+    public function TemplateAdmin()
+    {
         return $this->isTemplateAdmin();
     }
 
@@ -1931,9 +1657,10 @@ class User_API extends API {
      *
      * @return Boolean True if they are a list admin, otherwise false.
      */
-    public function isTemplateAdmin() {
+    public function isTemplateAdmin()
+    {
         // if we've already worked this out, return it.
-        if (!is_null($this->templateadmin)) {
+        if (isset($this->templateadmin)) {
             return $this->templateadmin;
         }
 
@@ -1963,7 +1690,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function TemplateAdminType() {
+    public function TemplateAdminType()
+    {
         return $this->getTemplateAdminType();
     }
 
@@ -1973,7 +1701,8 @@ class User_API extends API {
      *
      * @return string The template admin type.
      */
-    public function getTemplateAdminType() {
+    public function getTemplateAdminType()
+    {
         return $this->isAdmin() || $this->isTemplateAdmin() ? 'a' : 'c';
     }
 
@@ -1984,7 +1713,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function UserAdmin() {
+    public function UserAdmin()
+    {
         return $this->isAdmin();
     }
 
@@ -1998,7 +1728,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    public function isUserAdmin() {
+    public function isUserAdmin()
+    {
         if ($this->isAdmin()) {
             return true;
         }
@@ -2017,7 +1748,8 @@ class User_API extends API {
      *
      * @return Boolean True if this user is the last one, false if there are others.
      */
-    function LastUser($userid = 0) {
+    public function LastUser($userid = 0)
+    {
         return $this->isLastUser($userid);
     }
 
@@ -2029,7 +1761,8 @@ class User_API extends API {
      *
      * @return Boolean True if this user is the last one, false if there are others.
      */
-    public function isLastUser($userid = null) {
+    public function isLastUser($userid = null)
+    {
         $userid = (int) $userid;
 
         $this->GetDb();
@@ -2076,7 +1809,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function LastActiveUser($userid = 0) {
+    public function LastActiveUser($userid = 0)
+    {
         return $this->isLastActiveUser($userid);
     }
 
@@ -2087,7 +1821,8 @@ class User_API extends API {
      *
      * @return Boolean True if this user is the last one, false if there are others.
      */
-    public function isLastActiveUser($userid = null) {
+    public function isLastActiveUser($userid = null)
+    {
         $userid = (int) $userid;
         $query = "
 			SELECT
@@ -2135,7 +1870,8 @@ class User_API extends API {
      * 
      * @deprecated
      */
-    function LastAdminUser($userid = 0) {
+    public function LastAdminUser($userid = 0)
+    {
         return $this->isLastAdmin($userid);
     }
 
@@ -2146,7 +1882,8 @@ class User_API extends API {
      *
      * @return boolean
      */
-    public function isLastAdmin($userid = null) {
+    public function isLastAdmin($userid = null)
+    {
         $userid = (int) $userid;
 
         $this->GetDb();
@@ -2197,8 +1934,9 @@ class User_API extends API {
      *
      * @return Boolean Returns true if they are an admin or if they can edit their own settings, otherwise false.
      */
-    function EditOwnSettings() {
-        if ($this->Admin()) {
+    public function EditOwnSettings()
+    {
+        if ($this->isAdmin()) {
             return true;
         }
 
@@ -2215,8 +1953,9 @@ class User_API extends API {
      *
      * @return Int Returns the number of lists this user is allowed to create.
      */
-    function GetMaxLists() {
-        if (!$this->Admin() && !$this->ListAdmin()) {
+    public function GetMaxLists()
+    {
+        if (!$this->isAdmin() && !$this->isListAdmin()) {
             return $this->group->limit_list;
         }
 
@@ -2229,9 +1968,10 @@ class User_API extends API {
      *
      * @see AdminTypes
      *
-     * @return Array Returns the admin types listed in AdminTypes
+     * @return array Returns the admin types listed in AdminTypes
      */
-    function GetAdminTypes() {
+    public function GetAdminTypes()
+    {
         return $this->AdminTypes;
     }
 
@@ -2241,9 +1981,10 @@ class User_API extends API {
      *
      * @see ListAdminTypes
      *
-     * @return Array Returns the listadmin types listed in ListAdminTypes
+     * @return array Returns the listadmin types listed in ListAdminTypes
      */
-    function GetListAdminTypes() {
+    public function GetListAdminTypes()
+    {
         return $this->ListAdminTypes;
     }
 
@@ -2253,9 +1994,10 @@ class User_API extends API {
      *
      * @see SegmentAdminTypes
      *
-     * @return Array Returns the segmentadmin types listed in SegmentAdminTypes
+     * @return array Returns the segmentadmin types listed in SegmentAdminTypes
      */
-    function GetSegmentAdminTypes() {
+    public function GetSegmentAdminTypes()
+    {
         return $this->SegmentAdminTypes;
     }
 
@@ -2265,9 +2007,10 @@ class User_API extends API {
      *
      * @see TemplateAdminTypes
      *
-     * @return Array Returns the templateadmin types listed in TemplateAdminTypes
+     * @return array Returns the templateadmin types listed in TemplateAdminTypes
      */
-    function GetTemplateAdminTypes() {
+    public function GetTemplateAdminTypes()
+    {
         return $this->TemplateAdminTypes;
     }
 
@@ -2286,9 +2029,10 @@ class User_API extends API {
      * @see ListAdmin
      * @uses Lists_API::GetListByUserID()
      *
-     * @return Array Returns an array - list of listid's this user has created (or if the user is an admin/listadmin, returns everything).
+     * @return array|bool Returns an array - list of listid's this user has created (or if the user is an admin/listadmin, returns everything).
      */
-    function GetLists($userid = 0, $getUnconfirmedCount = false) {
+    public function GetLists($userid = 0, $getUnconfirmedCount = false)
+    {
         if (!$userid && !$this->userid) {
             trigger_error('This user object is not loaded with any user.... You will need to supply the userid as a parameter.', E_USER_NOTICE);
             return false;
@@ -2300,7 +2044,7 @@ class User_API extends API {
 
         // If user is a "System Admin" or a "List Admin", allow to access all lists
         if ($userid == $this->userid) {
-            if ($this->ListAdmin() || $this->listadmintype == 'a') {
+            if ($this->isListAdmin() || $this->listadmintype == 'a') {
                 $userid = 0;
             }
         }
@@ -2323,7 +2067,8 @@ class User_API extends API {
      *
      * @uses TriggerEmails_API::GetRecordsByUserID()
      */
-    function GetTriggerEmailsList($userid = 0) {
+    public function GetTriggerEmailsList($userid = 0)
+    {
         if (!$userid && !$this->userid) {
             trigger_error('This user object is not loaded with any user.... You will need to supply the userid as a parameter.', E_USER_NOTICE);
             return false;
@@ -2353,14 +2098,15 @@ class User_API extends API {
      * Gets the count per list of the number of bans on each mailing list.
      * If this user has access to the global list, then the global list is added.
      *
-     * @param Array $listids An array of listid's to check ban counts for.
+     * @param array $listids An array of listid's to check ban counts for.
      *
      * @see HasAccess
      * @see Subscribers::ChooseList
      *
-     * @return Array Returns an array - list of listid's that have bans. If some don't have any bans, then they aren't included in the array. That will need to be worked out separately.
+     * @return array Returns an array - list of listid's that have bans. If some don't have any bans, then they aren't included in the array. That will need to be worked out separately.
      */
-    function GetBannedLists($listids=array()) {
+    public function GetBannedLists($listids = [])
+    {
         $this->GetDb();
 
         $listids = $this->CheckIntVars($listids);
@@ -2396,14 +2142,13 @@ class User_API extends API {
      *
      * @see TemplateAdmin
      *
-     * @return Array Returns an array - list of listid's this user has created (or if the user is an admin/listadmin, returns everything).
+     * @return array Returns an array - list of listid's this user has created (or if the user is an admin/listadmin, returns everything).
      */
-    function GetTemplates($userid=0) {
+    public function GetTemplates($userid=0)
+    {
         $this->GetDb();
 
-        $qry = "SELECT templateid, name, ownerid FROM "
-                . SENDSTUDIO_TABLEPREFIX
-                . "templates";
+        $qry = "SELECT templateid, name, ownerid FROM ".SENDSTUDIO_TABLEPREFIX."templates";
 
         if ($userid) {
             $qry .= " AS t, " . SENDSTUDIO_TABLEPREFIX
@@ -2413,7 +2158,7 @@ class User_API extends API {
                     . " a.resourcetype = 'templates'      ";
             $qry .= " OR t.ownerid='" . $this->Db->Quote($userid) . "'";
         } else {
-            if (!$this->TemplateAdmin()) {
+            if (!$this->isTemplateAdmin()) {
                 $qry .= " WHERE ownerid='" . $this->Db->Quote($this->userid) . "'";
 
                 if (!empty($this->access['templates'])) {
@@ -2426,7 +2171,7 @@ class User_API extends API {
 
         $qry .= " ORDER BY LOWER(name) ASC";
 
-        $templates = array();
+        $templates = [];
         $result = $this->Db->Query($qry);
 
         while ($row = $this->Db->Fetch($result)) {
@@ -2440,10 +2185,11 @@ class User_API extends API {
      * GetAdminNotification
      * Returns the admin notification details  in an array.
      *
-     * @return Array Return a the array of the admin notify setting.
+     * @return array Return a the array of the admin notify setting.
      */
-    function GetAdminNotification() {
-        $notifications = array(
+    public function GetAdminNotification()
+    {
+        $notifications = [
             'adminnotify_email' => $this->adminnotify_email,
             'adminnotify_send_flag' => $this->adminnotify_send_flag,
             'adminnotify_send_threshold' => $this->adminnotify_send_threshold,
@@ -2451,12 +2197,12 @@ class User_API extends API {
             'adminnotify_import_flag' => $this->adminnotify_import_flag,
             'adminnotify_import_threshold' => $this->adminnotify_import_threshold,
             'adminnotify_import_emailtext' => $this->adminnotify_import_emailtext
-        );
+        ];
 
         return $notifications;
     }
 
-    /*     * *
+    /**
      * CheckAdminImportNotification
      * Check whether an import action will trigger the notify admin i.e.
      * whether the threshold of the imported contact exceed the notify admin settings
@@ -2464,8 +2210,8 @@ class User_API extends API {
      *
      * @return boolean true when succes or false otherwise
      */
-
-    function CheckAdminImportNotification($importresults=array(), $listid=0) {
+    public function CheckAdminImportNotification($importresults=array(), $listid=0)
+    {
         if (empty($importresults) || empty($listid)) {
             return false;
         }
@@ -2508,7 +2254,8 @@ class User_API extends API {
         return false;
     }
 
-    function CheckAdminSendNotification($campaign_reports=array()) {
+    public function CheckAdminSendNotification($campaign_reports=array())
+    {
         if (empty($campaign_reports)) {
             return false;
         }
@@ -2551,9 +2298,12 @@ class User_API extends API {
             }
             return false;
         }
+
+        return true;
     }
 
-    function SendAdminNotificationEmail($email_subject, $email_contents) {
+    public function SendAdminNotificationEmail($email_subject, $email_contents)
+    {
         require_once(IEM_PATH . '/ext/interspire_email/email.php');
         $emailapi = new Email_API();
         $emailapi->SetSmtp(SENDSTUDIO_SMTP_SERVER, SENDSTUDIO_SMTP_USERNAME, @base64_decode(SENDSTUDIO_SMTP_PASSWORD), SENDSTUDIO_SMTP_PORT);
@@ -2571,7 +2321,7 @@ class User_API extends API {
         }
 
         $emailapi->Set('FromName', false);
-        $emailapi->Set('FromAddress', (defined('SENDSTUDIO_EMAIL_ADDRESS') ? SENDSTUDIO_EMAIL_ADDRESS : $userobject->emailaddress));
+        $emailapi->Set('FromAddress', SENDSTUDIO_EMAIL_ADDRESS);
         $emailapi->Set('BounceAddress', SENDSTUDIO_EMAIL_ADDRESS);
         $emailapi->Set('CharSet', SENDSTUDIO_CHARSET);
         $emailapi->Set('Subject', $email_subject);
@@ -2595,16 +2345,16 @@ class User_API extends API {
      *
      * @return Mixed Returns true if the user can create a new list, returns false if they can't. Returns -1 if they have reached their limit so we can display a different message.
      */
-    function CanCreateList() {
+    public function CanCreateList() {
         if (!verify($this->userid)) {
             return -1;
         }
 
-        if ($this->Admin()) {
+        if ($this->isAdmin()) {
             return true;
         }
 
-        if ($this->ListAdmin()) {
+        if ($this->isListAdmin()) {
             return true;
         }
 
@@ -2634,7 +2384,7 @@ class User_API extends API {
      * Returns a list of users based on the criteria passed in.
      *
      * @param Int $userid Userid to get users for. This is used to restrict to the current user only if they are not an admin user.
-     * @param Array $sortinfo An array of sorting information - what to sort by and what direction.
+     * @param array $sortinfo An array of sorting information - what to sort by and what direction.
      * @param Boolean $countonly Whether to only get a count of users, rather than the information.
      * @param Int $start Where to start in the list. This is used in conjunction with perpage for paging.
      * @param Int|String $perpage How many results to return (max).
@@ -2647,13 +2397,12 @@ class User_API extends API {
      *
      * @return Mixed Returns false if it couldn't retrieve user information. Otherwise returns the count (if specified), or a list of userid's.
      */
-    function GetUsers($userid = 0, $sortinfo = array(), $countonly = false, $start = 0, $perpage = 10, $quicksearch = false, $groupID = false) {
+    public function GetUsers($userid = 0, $sortinfo = array(), $countonly = false, $start = 0, $perpage = 10, $quicksearch = false, $groupID = false) {
         $userid = intval($userid);
         $start = intval($start);
         $groupID = intval($groupID);
 
         $searchSQL = '';
-        $groupIDSQL = '';
 
         if (!empty($quicksearch)) {
             if (!empty($searchSQL)) {
@@ -2746,18 +2495,16 @@ class User_API extends API {
      *
      * @param Mixed $listid The list to check links for. If this is not passed in, we look at all lists the user has access to. (Integer or an array of Integer)
      *
-     * @return Array Returns an array of linkid's and urls that have been sent to either the listid passed in (which the user must have access to) or any of the lists the user has access to - both from autoresponders and newsletters.
+     * @return array Returns an array of linkid's and urls that have been sent to either the listid passed in (which the user must have access to) or any of the lists the user has access to - both from autoresponders and newsletters.
      */
-    function GetAvailableLinks($listid=false) {
+    public function GetAvailableLinks($listid = false) {
         $this->GetDb();
 
-        $links = array();
+        $links = [];
 
         if ($this->userid <= 0) {
             return $links;
         }
-
-        $listids = array();
 
         $lists = $this->GetLists();
 
@@ -2779,7 +2526,7 @@ class User_API extends API {
 
         // getlists sets up the db object so we don't need to here.
 
-        $statids = array();
+        $statids = [];
         $query = "SELECT sa.statid FROM " . SENDSTUDIO_TABLEPREFIX . "stats_autoresponders sa, " . SENDSTUDIO_TABLEPREFIX . "autoresponders a WHERE sa.autoresponderid=a.autoresponderid AND a.listid IN (" . implode(',', $listids) . ")";
         $result = $this->Db->Query($query);
         while ($row = $this->Db->Fetch($result)) {
@@ -2813,20 +2560,18 @@ class User_API extends API {
      * In both cases, we check which lists the user has access to and make sure they aren't trying to access anything outside of those lists.
      * If the user has not been loaded or if they try to access a listid outside of the ones they do have access to, this returns an empty array.
      *
-     * @param Int $listid The list to check newsletters for. If this is not passed in, we look at all lists the user has access to.
+     * @param int|bool $listid The list to check newsletters for. If this is not passed in, we look at all lists the user has access to.
      *
-     * @return Array Returns an array of newsletterid's and newsletter names that have been sent to either the listid passed in (which the user must have access to) or any of the lists the user has access to.
+     * @return array Returns an array of newsletterid's and newsletter names that have been sent to either the listid passed in (which the user must have access to) or any of the lists the user has access to.
      */
-    function GetAvailableNewsletters($listid=false) {
+    public function GetAvailableNewsletters($listid = false) {
         $this->GetDb();
 
-        $news = array();
+        $news = [];
 
         if ($this->userid <= 0) {
             return $news;
         }
-
-        $listids = array();
 
         $lists = $this->GetLists();
 
@@ -2836,7 +2581,7 @@ class User_API extends API {
             $listids = $user_listids;
         } else {
             if (!is_array($listid)) {
-                $listid = array($listid);
+                $listid = [$listid];
             }
 
             $listids = array_intersect($listid, $user_listids);
@@ -2869,9 +2614,9 @@ class User_API extends API {
      * That function will only return an array of newsletter that can be used for filtering.
      * while this function will return ALL newsletter that the current user have access to.
      *
-     * @return Array Returns an array of newsletter records if successful, FALSE if it encountered any error
+     * @return array|bool Returns an array of newsletter records if successful, FALSE if it encountered any error
      */
-    function GetNewsletters() {
+    public function GetNewsletters() {
         $this->GetDb();
         $userid = intval($this->userid);
 
@@ -2885,7 +2630,7 @@ class User_API extends API {
         }
 
         // Only restrict the query if this is a regular user
-        if (!$this->Admin()) {
+        if (!$this->isAdmin()) {
             $queryCondition .= " WHERE ownerid = {$userid}";
         }
 
@@ -2896,7 +2641,7 @@ class User_API extends API {
             return false;
         }
 
-        $rows = array();
+        $rows = [];
         while ($row = $this->Db->Fetch($result)) {
             $rows[$row['newsletterid']] = $row;
         }
@@ -2914,12 +2659,11 @@ class User_API extends API {
      *
      * @return Boolean True if the reduction was completed successfully, otherwise false.
      */
-    function ReduceEmails($reduce_emails_by=0) {
+    public function ReduceEmails($reduce_emails_by=0) {
         if ($this->userid <= 0) {
             return false;
         }
 
-        $userid = intval($this->userid);
         $reduce_emails_by = intval($reduce_emails_by);
 
         if ($reduce_emails_by == 0) {
@@ -2951,7 +2695,7 @@ class User_API extends API {
      *
      * @return Int Returns the number you can send left "this month" (and this month only).
      */
-    function GetAvailableEmailsThisMonth() {
+    public function GetAvailableEmailsThisMonth() {
         trigger_error(__CLASS__ . '::' . __METHOD__ . 'This function is deprecated. Please use API_USERS::* instead', E_USER_NOTICE);
 
         return API_USERS::creditAvailableThisMonth($this->userid);
@@ -2963,7 +2707,7 @@ class User_API extends API {
      *
      * @return Boolean True if they are a segment admin, otherwise false.
      */
-    function SegmentAdmin() {
+    public function SegmentAdmin() {
         // if we've already worked this out, return it.
         if (!is_null($this->segmentadmin)) {
             return $this->segmentadmin;
@@ -2996,21 +2740,21 @@ class User_API extends API {
      *
      * @uses Segment_API::GetSegmentByUserID()
      *
-     * @return Array Returns an array - list of segments this user has created (or if the user is an admin/listadmin, returns everything).
+     * @return array Returns an array - list of segments this user has created (or if the user is an admin/listadmin, returns everything).
      */
-    function GetSegmentList($userid=0) {
+    public function GetSegmentList($userid=0) {
         if (!$userid) {
             $userid = $this->userid;
         }
 
         require_once(dirname(__FILE__) . '/segment.php');
 
-        if ($this->SegmentAdmin() || $this->SegmentAdminType() == 'a') {
+        if ($this->SegmentAdmin() || $this->getSegmentAdminType() == 'a') {
             $userid = null;
         }
 
         $segment_api = new Segment_API();
-        return $segment_api->GetSegmentByUserID($userid, array(), false, 0, 'all');
+        return $segment_api->GetSegmentByUserID($userid, [], false, 0, 'all');
     }
 
     /**
@@ -3018,7 +2762,7 @@ class User_API extends API {
      * Returns whether the current user can create a segment or not.
      * @return Mixed Returns true if the user can create a new list, returns false if they can't. Returns -1 if they have reached their limit so we can display a different message.
      */
-    function CanCreateSegment() {
+    public function CanCreateSegment() {
         if ($this->SegmentAdmin()) {
             return true;
         }
@@ -3034,16 +2778,16 @@ class User_API extends API {
      * GrantSegmentAccess
      * Grants user access to specific segments passed in.
      *
-     * @param Array $segments An array of segmentid's to grant access to for this user.
+     * @param array $segments An array of segmentid's to grant access to for this user.
      *
      * @see access
      *
      * @return True Always returns true.
      */
-    function GrantSegmentAccess($segments) {
+    public function GrantSegmentAccess($segments) {
         if (!is_array($segments)) {
-            if (!in_array($lists, $this->access['segments'])) {
-                array_push($this->access['segments'], $lists);
+            if (!in_array($segments, $this->access['segments'])) {
+                array_push($this->access['segments'], $segments);
             }
             return true;
         }
@@ -3053,19 +2797,21 @@ class User_API extends API {
                 array_push($this->access['segments'], $segmentid);
             }
         }
+
+        return true;
     }
 
     /**
      * RevokeSegmentAccess
      * Revokes user access to specific segments passed in. If no segmentid's are passed in, all access is revoked.
      *
-     * @param Array $segments_to_remove An array of segmentid's to revoke access from for this user. If none are passed in, all access is revoked.
+     * @param array $segments_to_remove An array of segmentid's to revoke access from for this user. If none are passed in, all access is revoked.
      *
      * @see access
      *
      * @return True Always returns true.
      */
-    function RevokeSegmentAccess($segments_to_remove = array()) {
+    public function RevokeSegmentAccess($segments_to_remove = []) {
         if (!is_array($this->access['segments'])) {
             return true;
         }
@@ -3090,10 +2836,10 @@ class User_API extends API {
      * SetEventActivityType
      * Set event activity type for current user
      *
-     * @param Array $activity_types Event activity types to be saved to current user
+     * @param array $activity_types Event activity types to be saved to current user
      * @return Boolean Returns TRUE if successful, FALSE otherwise
      */
-    function SetEventActivityType($activity_types) {
+    public function SetEventActivityType($activity_types) {
         if (empty($this->userid)) {
             return false;
         }
@@ -3125,10 +2871,10 @@ class User_API extends API {
      * Add event activity type for current user.
      * This will add a new activity type to the list when it's not a duplicate of any existing type.
      *
-     * @param String $activity_types Event activity type to be added
+     * @param string $activity_type Event activity type to be added
      * @return Boolean Returns TRUE if successful, FALSE otherwise
      */
-    function AddEventActivityType($activity_type) {
+    public function AddEventActivityType($activity_type) {
         if (empty($this->userid)) {
             return false;
         }
@@ -3155,11 +2901,11 @@ class User_API extends API {
      * GetEventActivityType
      * Get event activity type for current user
      *
-     * @return Array Returns a list of event activity type
+     * @return array Returns a list of event activity type
      */
-    function GetEventActivityType() {
+    public function GetEventActivityType() {
         if (empty($this->eventactivitytype)) {
-            return array();
+            return [];
         }
 
         if (is_array($this->eventactivitytype)) {
@@ -3173,9 +2919,9 @@ class User_API extends API {
      * GetNewAPI
      * Get new record_User object
      *
-     * @return record_User Returns user object that is used in the new framework
+     * @return bool|record_Users Returns user object that is used in the new framework
      */
-    function GetNewAPI() {
+    public function GetNewAPI() {
         if (empty($this->userid)) {
             return false;
         }
@@ -3238,7 +2984,7 @@ class User_API extends API {
      *
      * @return String Difference between user timeone to the server timezone
      */
-    function ServerHoursDifference() {
+    public function ServerHoursDifference() {
         $difference = '+0';
 
         $server_timezone = str_replace('GMT','',SENDSTUDIO_SERVERTIMEZONE);
@@ -3258,10 +3004,7 @@ class User_API extends API {
 
     	$offset = max($server_hrs,$user_hrs) - min($server_hrs,$user_hrs);
 
-    	if($server_hrs > $user_hrs)
-            		return "-" . $offset;
-
-    	return "+" .  $offset;
+        return $server_hrs > $user_hrs ? "-{$offset}" : "+{$offset}";
     }
 
 }

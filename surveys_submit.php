@@ -369,9 +369,6 @@ class surveySubmit extends Interspire_Addons {
 				$emailapi = new Email_API();
 
 				$emailapi->SetSmtp(SENDSTUDIO_SMTP_SERVER, SENDSTUDIO_SMTP_USERNAME, @base64_decode(SENDSTUDIO_SMTP_PASSWORD), SENDSTUDIO_SMTP_PORT);
-				//if ($this->smtpserver) {
-				//	$emailapi->SetSmtp($this->smtpserver, $this->smtpusername, $this->smtppassword, $this->smtpport);
-				//}
 
 				$emailapi->ClearRecipients();
 				$emailapi->ForgetEmail();
@@ -380,7 +377,7 @@ class surveySubmit extends Interspire_Addons {
 				$to = ($surveyApi->Get('email'));
 				$emailapi->AddRecipient($to);
 
-				$emailapi->Set('FromAddress', (defined('SENDSTUDIO_EMAIL_ADDRESS') ? SENDSTUDIO_EMAIL_ADDRESS : $userobject->emailaddress));
+				$emailapi->Set('FromAddress', SENDSTUDIO_EMAIL_ADDRESS);
 				$emailapi->Set('BounceAddress', SENDSTUDIO_EMAIL_ADDRESS);
 				$emailapi->Set('CharSet', SENDSTUDIO_CHARSET);
 

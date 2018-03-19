@@ -84,13 +84,13 @@ class Lists extends SendStudio_Functions
 	{
 
 		// ----- Define and sanitize "common" variables that are used by this function
-			$user = GetUser();
+			$user = IEM::getCurrentUser();
 
 			$req_action		= strtolower($this->_getGETRequest('Action', ''));
 			$response		= '';
 			$parameters 	= array();
 
-			$parameters['user']		= GetUser();
+			$parameters['user']		= IEM::getCurrentUser();
 			$parameters['action']	= $req_action;
 		// ------
 
@@ -465,7 +465,7 @@ class Lists extends SendStudio_Functions
 			return;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->HasAccess('Lists', 'Edit')) {
 			$this->DenyAccess();
 			return;
@@ -1137,9 +1137,10 @@ class Lists extends SendStudio_Functions
                                     $query = "SELECT jobid FROM [|PREFIX|]jobs_lists WHERE listid = {$list}";
                                     $result = $db->Query($query);
                                     if(!$result){
-                                            trigger_error(mysql_error()."<br />".$query);
-                                            FlashMessage("Unable to load list jobs. <br /> ". mysql_error(), SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
-                                            exit();
+                                        $error = mysqli_error($db->connection);
+                                        trigger_error($error."<br />".$query);
+                                        FlashMessage("Unable to load list jobs. <br /> ". $error, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                                        exit();
                                     }
                                     while($row = $db->Fetch($result)){
                                             $jobs_to_check[] = $row['jobid'];
@@ -1149,9 +1150,10 @@ class Lists extends SendStudio_Functions
                                             $query = "SELECT jobstatus FROM [|PREFIX|]jobs WHERE jobid IN (" . implode(',', $jobs_to_check) . ")";	
                                             $result = $db->Query($query);
                                             if(!$result){
-                                                    trigger_error(mysql_error()."<br />".$query);
-                                                    FlashMessage("Unable to load jobs. <br /> ". mysql_error() . "<br />Query: " . $query, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
-                                                    exit();
+                                                $error = mysqli_error($db->connection);
+                                                trigger_error($error."<br />".$query);
+                                                FlashMessage("Unable to load jobs. <br /> ". $error . "<br />Query: " . $query, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                                                exit();
                                             }
                                             while($row = $db->Fetch($result)){
                                                     if($row['jobstatus'] != 'c'){
@@ -1179,9 +1181,10 @@ class Lists extends SendStudio_Functions
                                     $query = "SELECT jobid FROM [|PREFIX|]jobs_lists WHERE listid = {$list}";
                                     $result = $db->Query($query);
                                     if(!$result){
-                                            trigger_error(mysql_error()."<br />".$query);
-                                            FlashMessage("Unable to load list jobs. <br /> ". mysql_error(), SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
-                                            exit();
+                                        $error = mysqli_error($db->connection);
+                                        trigger_error($error."<br />".$query);
+                                        FlashMessage("Unable to load list jobs. <br /> ". $error, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                                        exit();
                                     }
                                     while($row = $db->Fetch($result)){
                                             $jobs_to_check[] = $row['jobid'];
@@ -1191,9 +1194,10 @@ class Lists extends SendStudio_Functions
                                             $query = "SELECT jobstatus FROM [|PREFIX|]jobs WHERE jobid IN (" . implode(',', $jobs_to_check) . ")";	
                                             $result = $db->Query($query);
                                             if(!$result){
-                                                    trigger_error(mysql_error()."<br />".$query);
-                                                    FlashMessage("Unable to load jobs. <br /> ". mysql_error() . "<br />Query: " . $query, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
-                                                    exit();
+                                                $error = mysqli_error($db->connection);
+                                                trigger_error($error."<br />".$query);
+                                                FlashMessage("Unable to load jobs. <br /> ". $error . "<br />Query: " . $query, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                                                exit();
                                             }
                                             while($row = $db->Fetch($result)){
                                                     if($row['jobstatus'] != 'c'){
@@ -1334,8 +1338,9 @@ class Lists extends SendStudio_Functions
 		$query = "SELECT jobid FROM [|PREFIX|]jobs_lists WHERE listid = {$list}";
 		$result = $db->Query($query);
 		if(!$result){
-			trigger_error(mysql_error()."<br />".$query);
-			FlashMessage("Unable to load list jobs. <br /> ". mysql_error(), SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+            $error = mysqli_error($db->connection);
+			trigger_error($error."<br />".$query);
+			FlashMessage("Unable to load list jobs. <br /> ". $error, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 			exit();
 		}
 		while($row = $db->Fetch($result)){
@@ -1346,8 +1351,9 @@ class Lists extends SendStudio_Functions
 			$query = "SELECT jobstatus FROM [|PREFIX|]jobs WHERE jobid IN (" . implode(',', $jobs_to_check) . ")";	
 			$result = $db->Query($query);
 			if(!$result){
-				trigger_error(mysql_error()."<br />".$query);
-				FlashMessage("Unable to load jobs. <br /> ". mysql_error() . "<br />Query: " . $query, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                $error = mysqli_error($db->connection);
+                trigger_error($error."<br />".$query);
+				FlashMessage("Unable to load jobs. <br /> ". $error . "<br />Query: " . $query, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 				exit();
 			}
 			while($row = $db->Fetch($result)){

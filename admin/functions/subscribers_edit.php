@@ -48,7 +48,7 @@ class Subscribers_Edit extends Subscribers
 				$listid = (isset($_GET['List'])) ? (int)$_GET['List'] : 0;
 				$subscriberid = (int)$_POST['subscriberid'];
 				$segmentid = isset($_GET['SegmentID'])? intval($_GET['SegmentID']) : 0;
-				$user = GetUser();
+				$user = IEM::getCurrentUser();
 
 				$subscriber = $this->GetApi('Subscribers');
 
@@ -243,7 +243,7 @@ class Subscribers_Edit extends Subscribers
 	*/
 	function EditSubscriber($listid = 0, $subscriberid = 0, $segmentid = 0, $msgtype = 'Error', $msg = false)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Subscribers', 'Edit');
 		if (!$access) {
 			$this->DenyAccess();

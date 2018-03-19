@@ -57,7 +57,7 @@ class Subscribers_Add extends Subscribers
 
 			case 'saveadd':
 			case 'save':
-				$user = GetUser();
+				$user = IEM::getCurrentUser();
 
 				$listid = (isset($_GET['list'])) ? (int)$_GET['list'] : 0;
 
@@ -204,7 +204,7 @@ class Subscribers_Add extends Subscribers
 			break;
 
 			default:
-				$user = GetUser();
+				$user = IEM::getCurrentUser();
 				$lists = $user->GetLists();
 
 				// If only one list available, go directly to step 2
@@ -234,7 +234,7 @@ class Subscribers_Add extends Subscribers
 	*/
 	function AddSubscriber_Step2($listid=0, $clear_post=false)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Subscribers', 'Manage');
 		if (!$access) {
 			$this->DenyAccess();

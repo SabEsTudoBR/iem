@@ -169,7 +169,7 @@ class StatsChart extends SendStudio_Functions
 			break;
 
 			case 'userchart':
-				$restrictions = $calendarDates['usersummary'];
+                $restrictions = IEM::ifsetor($calendarDates['usersummary'], '');
 				$this->chart['chart_data'][1][0] = GetLang('Stats_TotalEmailsSent');
 			break;
 
@@ -605,7 +605,7 @@ class StatsChart extends SendStudio_Functions
 					}
 				}
 
-				$user = GetUser();
+				$user = IEM::getCurrentUser();
 
 				$calendar_settings = $user->GetSettings('Calendar');
 

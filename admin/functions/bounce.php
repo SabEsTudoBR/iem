@@ -69,7 +69,7 @@ class Bounce extends SendStudio_Functions
 	public function Process()
 	{
 		$action = (isset($_GET['Action'])) ? strtolower($_GET['Action']) : null;
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$popup = (in_array($action, $this->PopupWindows)) ? true : false;
 		if (!in_array($action, $this->SuppressHeaderFooter)) {
@@ -181,7 +181,7 @@ class Bounce extends SendStudio_Functions
 	 */
 	private function bounceStep2()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$list_api = $this->GetApi('Lists');
 		$bd = self::hold('TestBounceDetails');
 
@@ -890,7 +890,7 @@ class Bounce extends SendStudio_Functions
 	 */
 	private function getBounceServerMap()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$lists = $user->GetLists();
 		$bounce_server_map = array();
 

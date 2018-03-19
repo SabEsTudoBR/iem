@@ -125,7 +125,6 @@ class DynamicContentTag_Api_Block {
         $pattern = '/[\t]+/i';
         $replacement = '    ';
         $rule = preg_replace($pattern, $replacement, $this->rules);
-        $myTempVar = json_decode($rule);
         return json_decode($rule);
     }
 

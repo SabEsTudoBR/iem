@@ -723,9 +723,9 @@ class Jobs_Autoresponders_API extends Jobs_API
 		$query = "SELECT recipient FROM " . SENDSTUDIO_TABLEPREFIX . "queues WHERE queueid={$queueid}";
 		$result = $this->Db->Query($query);
 		if (!$result) {
-			trigger_error(mysql_error());
+			trigger_error(mysqli_error($this->Db->connection));
 			if ($this->Debug) {
-				error_log(time() . "\t" . __FILE__ . "\t" . __LINE__ . "\t" . mysql_error() . "\n", 3, $this->LogFile);
+				error_log(time() . "\t" . __FILE__ . "\t" . __LINE__ . "\t" . mysqli_error($this->Db->connection) . "\n", 3, $this->LogFile);
 			}
 		}
 		while ($row = $this->Db->Fetch($result)) {

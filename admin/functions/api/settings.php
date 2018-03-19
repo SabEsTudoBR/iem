@@ -31,9 +31,9 @@ class Settings_API extends API
 	* @see Load
 	* @see Save
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Settings = array();
+	var $Settings = [];
 
 	/**
 	* Used to store the location of the settings file temporarily.
@@ -49,10 +49,10 @@ class Settings_API extends API
 	*
 	* @see Save
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Areas = array (
-		'config' => array (
+	var $Areas = [
+		'config' => [
 			'DATABASE_TYPE',
 			'DATABASE_USER',
 			'DATABASE_PASS',
@@ -62,9 +62,9 @@ class Settings_API extends API
 			'TABLEPREFIX',
 			'LICENSEKEY',
 			'APPLICATION_URL',
-		),
+        ],
 
-		'whitelabel' => array (
+		'whitelabel' => [
 			'LNG_ApplicationTitle',
 			'LNG_Copyright',
 			'LNG_Default_Global_HTML_Footer',
@@ -76,7 +76,7 @@ class Settings_API extends API
 			'UPDATE_CHECK_ENABLED',
 			'SHOW_SMTP_COM_OPTION',
 			'SHOW_INTRO_VIDEO',
-		),
+        ],
 
 		'SMTP_SERVER',
 		'SMTP_USERNAME',
@@ -140,13 +140,13 @@ class Settings_API extends API
 		'CREDIT_WARNINGS',
 
 		'DEFAULT_EMAILSIZE'
-	);
+    ];
 
 	/**
 	* send_options
 	* The options for how often scheduled sending can run. This is used by the settings page to work out which options to show.
 	*
-	* @var Array
+	* @var array
 	*/
 	var $send_options = array(
 		'0'		=> 'disabled',
@@ -163,7 +163,7 @@ class Settings_API extends API
 	* autoresponder_options
 	* The options for how often autoresponders can run. This is used by the settings page to work out which options to show.
 	*
-	* @var Array
+	* @var array
 	*/
 	var $autoresponder_options = array(
 		'0'		=> 'disabled',
@@ -184,7 +184,7 @@ class Settings_API extends API
 	* bounce_options
 	* The options for how often bounce processing can run. This is used by the settings page to work out which options to show.
 	*
-	* @var Array
+	* @var array
 	*/
 	var $bounce_options = array(
 		'0'			=> 'disabled',
@@ -200,7 +200,7 @@ class Settings_API extends API
 	 * triggeremails_s_options
 	 * The options for how often triggeremails send process can run. This is used by the settings page to work out which options to show.
 	 *
-	 * @var Array
+	 * @var array
 	 */
 	var $triggeremails_s_options = array(
 		'0'		=> 'disabled',
@@ -217,7 +217,7 @@ class Settings_API extends API
 	 * triggeremails_p_options
 	 * The options for how often triggeremails send process can run. This is used by the settings page to work out which options to show.
 	 *
-	 * @var Array
+	 * @var array
 	 */
 	var $triggeremails_p_options = array(
 		'0'		=> 'disabled',
@@ -229,7 +229,7 @@ class Settings_API extends API
 	 * $maintenance_options
 	 * The option to set how often maintainace  process can run. This is used by the settings page to work out which options to show.
 	 *
-	 * @var Array
+	 * @var array
 	 */
 	var $maintenance_options = array(
 		'0'			=> 'disabled',
@@ -675,7 +675,7 @@ class Settings_API extends API
 		$result = $this->Db->Query($query);
 
 		if (!$result) {
-			trigger_error(mysql_error());
+			trigger_error(mysqli_error($this->Db->connection));
 			trigger_error('Cannot set CRON schedule', E_USER_NOTICE);
 			return;
 		}

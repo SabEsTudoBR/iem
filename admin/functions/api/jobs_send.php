@@ -163,92 +163,17 @@ class Jobs_Send_API extends Send_API {
             return false;
         }
 
-        $user = GetUser($this->jobowner);
         IEM::userLogin($this->jobowner, false);
 
-        $queueid = false;
+        $queueid = $this->GetJobQueue($jobid);
 
         // if there's no queue, start one up.
-        if (!$queueid = $this->GetJobQueue($jobid)) {
-            $sendqueue = $this->CreateQueue('send');
-            $queueok = $this->JobQueue($jobid, $sendqueue);
-            $send_criteria = $this->jobdetails['SendCriteria'];
-
-            $original_queuesize = $this->jobdetails['SendSize'];
-
-            $queueinfo = array('queueid' => $sendqueue, 'queuetype' => 'send', 'ownerid' => $this->jobowner);
-
-            if (isset($this->jobdetails['Segments']) && is_array($this->jobdetails['Segments'])) {
-                $this->Subscriber_API->GetSubscribersFromSegment($this->jobdetails['Segments'], false, $queueinfo, 'nosort');
-            } else {
-                $this->Subscriber_API->GetSubscribers($send_criteria, array(), false, $queueinfo, $sendqueue);
-            }
-
-            $this->Subscriber_API->RemoveDuplicatesInQueue($sendqueue, 'send', $this->jobdetails['Lists']);
-
-            $this->Subscriber_API->RemoveBannedEmails($this->jobdetails['Lists'], $sendqueue, 'send');
-
-            $this->Subscriber_API->RemoveUnsubscribedEmails($this->jobdetails['Lists'], $sendqueue, 'send');
-
-            $queueid = $sendqueue;
-
-            $newsletterstats = $this->jobdetails;
-            $newsletterstats['Job'] = $jobid;
-            $newsletterstats['Queue'] = $sendqueue;
-            $newsletterstats['SentBy'] = $queueinfo['ownerid'];
-
-            $real_queuesize = $this->Subscriber_API->QueueSize($queueid, 'send');
-
-            $newsletterstats['SendSize'] = $real_queuesize;
-
-            $statid = $this->Stats_API->SaveNewsletterStats($newsletterstats);
-
-            if (!class_exists('module_TrackerFactory', false)) {
-                $tempFile = dirname(__FILE__) . '/module_trackerfactory.php';
-                if (is_file($tempFile)) {
-                    require_once($tempFile);
-                    module_Tracker::ParseOptionsForAllTracker(
-                        array_merge($this->jobdetails, array(
-                            'statid' => $statid,
-                            'stattype' => 'newsletter',
-                            'newsletterid'	=> $this->jobdetails['Newsletter']
-                        ))
-                    );
-                }
-            }
-
-            /**
-             * -----
-             */
-            /**
-             * So we can link user stats to send stats, we need to update it.
-             */
-            $this->Stats_API->UpdateUserStats($queueinfo['ownerid'], $jobid, $statid);
-
-            /**
-             * The 'queuesize' in the stats_users table is updated by MarkNewsletterFinished in send.php
-             * so we don't need to worry about it while setting up the send.
-             * That takes into account whether some recipients were skipped because a html-only email was sent etc.
-             */
-            /**
-             * We re-check the user stats in case a bunch of subscribers have joined, or the user has done something like:
-             * - create a list
-             * - added a few subscribers
-             * - scheduled a send
-             * - added more subscribers
-             */
-            $check_stats = $this->Stats_API->ReCheckUserStats($user, $original_queuesize, $real_queuesize, AdjustTime());
-
-            list($ok_to_send, $not_ok_to_send_reason) = $check_stats;
-            if (!$ok_to_send) {
-                trigger_error(__CLASS__ . '::' . __METHOD__ . " -- " . GetLang($not_ok_to_send_reason), E_USER_WARNING);
-                $this->PauseJob($jobid);
-                $this->UnapproveJob($jobid);
+        if ($queueid == false) {
+            $queueid = $this->createSendQueue($jobid);
+            if (empty($queueid)) {
                 IEM::userLogout();
                 return false;
             }
-
-            API_USERS::creditEvaluateWarnings($user->userid);
         }
 
         $this->statid = $this->LoadStats($jobid);
@@ -258,30 +183,119 @@ class Jobs_Send_API extends Send_API {
             return false;
         }
 
-        $queuesize = $this->Subscriber_API->QueueSize($queueid, 'send');
-
         // used by send.php::CleanUp
         $this->queuesize = $this->jobdetails['SendSize'];
 
         /**
          * There's nothing left? Just mark it as done.
          */
-        if ($queuesize == 0) {
+        if ($this->Subscriber_API->QueueSize($queueid, 'send') == 0) {
             $this->jobstatus = 'c';
             $this->FinishJob($jobid);
             IEM::userLogout();
             return true;
         }
 
-        $finished = $this->ActionJob($jobid, $queueid);
-
-        if ($finished) {
+        if ($this->ActionJob($jobid, $queueid)) {
             $this->jobstatus = 'c';
             $this->FinishJob($jobid);
         }
 
         IEM::userLogout();
         return true;
+    }
+
+    private function createSendQueue($jobid)
+    {
+        $user = GetUser($this->jobowner);
+
+        $sendqueue = $this->CreateQueue('send');
+        if (empty($sendqueue)) {
+            trigger_error("Unable to start send queue {$jobid}");
+            return false;
+        }
+
+        if (!$this->JobQueue($jobid, $sendqueue)) {
+            trigger_error("Unable to update send queue {$jobid} -- {$sendqueue}");
+            return false;
+        }
+
+        $send_criteria = $this->jobdetails['SendCriteria'];
+
+        $original_queuesize = $this->jobdetails['SendSize'];
+
+        $queueinfo = ['queueid' => $sendqueue, 'queuetype' => 'send', 'ownerid' => $this->jobowner];
+
+        if (isset($this->jobdetails['Segments']) && is_array($this->jobdetails['Segments'])) {
+            $this->Subscriber_API->GetSubscribersFromSegment($this->jobdetails['Segments'], false, $queueinfo, 'nosort');
+        } else {
+            $this->Subscriber_API->GetSubscribers($send_criteria, array(), false, $queueinfo, $sendqueue);
+        }
+
+        $this->Subscriber_API->RemoveDuplicatesInQueue($sendqueue, 'send', $this->jobdetails['Lists']);
+
+        $this->Subscriber_API->RemoveBannedEmails($this->jobdetails['Lists'], $sendqueue, 'send');
+
+        $this->Subscriber_API->RemoveUnsubscribedEmails($this->jobdetails['Lists'], $sendqueue, 'send');
+
+        $newsletterstats = $this->jobdetails;
+        $newsletterstats['Job'] = $jobid;
+        $newsletterstats['Queue'] = $sendqueue;
+        $newsletterstats['SentBy'] = $queueinfo['ownerid'];
+
+        $real_queuesize = $this->Subscriber_API->QueueSize($sendqueue, 'send');
+
+        $newsletterstats['SendSize'] = $real_queuesize;
+
+        $statid = $this->Stats_API->SaveNewsletterStats($newsletterstats);
+
+        if (!class_exists('module_TrackerFactory', false)) {
+            $tempFile = dirname(__FILE__) . '/module_trackerfactory.php';
+            if (is_file($tempFile)) {
+                require_once($tempFile);
+                module_Tracker::ParseOptionsForAllTracker(
+                    array_merge($this->jobdetails, array(
+                        'statid' => $statid,
+                        'stattype' => 'newsletter',
+                        'newsletterid'	=> $this->jobdetails['Newsletter']
+                    ))
+                );
+            }
+        }
+
+        /**
+         * -----
+         */
+        /**
+         * So we can link user stats to send stats, we need to update it.
+         */
+        $this->Stats_API->UpdateUserStats($queueinfo['ownerid'], $jobid, $statid);
+
+        /**
+         * The 'queuesize' in the stats_users table is updated by MarkNewsletterFinished in send.php
+         * so we don't need to worry about it while setting up the send.
+         * That takes into account whether some recipients were skipped because a html-only email was sent etc.
+         */
+        /**
+         * We re-check the user stats in case a bunch of subscribers have joined, or the user has done something like:
+         * - create a list
+         * - added a few subscribers
+         * - scheduled a send
+         * - added more subscribers
+         */
+        $check_stats = $this->Stats_API->ReCheckUserStats($user, $original_queuesize, $real_queuesize, AdjustTime());
+
+        list($ok_to_send, $not_ok_to_send_reason) = $check_stats;
+        if (!$ok_to_send) {
+            trigger_error(__CLASS__ . '::' . __METHOD__ . " -- " . GetLang($not_ok_to_send_reason), E_USER_WARNING);
+            $this->PauseJob($jobid);
+            $this->UnapproveJob($jobid);
+            return false;
+        }
+
+        API_USERS::creditEvaluateWarnings($user->userid);
+
+        return $sendqueue;
     }
 
     /**

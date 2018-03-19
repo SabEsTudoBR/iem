@@ -1,15 +1,5 @@
 <?php
 /**
-* This file has the upgrade functionality in it.
-*
-* @version     $Id: upgrade.php,v 1.30 2008/03/04 04:31:33 hendri Exp $
-* @author Chris <chris@interspire.com>
-*
-* @package SendStudio
-* @subpackage SendStudio_Functions
-*/
-
-/**
 * Include the base sendstudio functions.
 */
 require_once(dirname(__FILE__) . '/sendstudio_functions.php');
@@ -22,22 +12,14 @@ require_once(dirname(__FILE__) . '/sendstudio_functions.php');
 */
 class UpgradeNX extends SendStudio_Functions
 {
-	/**
-	 * Loads the language file and checks to see if there are any upgrades. If
-	 * there aren't any upgrades, then it redirects the user back to the admin
-	 * index.
-	 * 
-	 * @return UpgradNx
-	 */
 	public function __construct()
 	{
-	    // if there are no upgrades, then we can't upgrade
+        // if there are no upgrades, then we can't upgrade
 	    if (!IEM::isCompletingUpgrade() && !IEM::hasUpgrade()) {
 	        header('Location: index.php');
-	        
 	        exit;
 	    }
-	    
+
 		$this->LoadLanguageFile();
 	}
 

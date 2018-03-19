@@ -36,9 +36,9 @@ class SendStudio_Functions
 	*
 	* @see ParseTemplate
 	*
-	* @var Array
+	* @var array
 	*/
-	var $GlobalAreas = array();
+	public $GlobalAreas = [];
 
 	/**
 	* _RandomStrings
@@ -46,9 +46,9 @@ class SendStudio_Functions
 	*
 	* @see _GenerateHelpTip
 	*
-	* @var Array
+	* @var array
 	*/
-	var $_RandomStrings = array();
+	public $_RandomStrings = [];
 
 
 	/**
@@ -60,7 +60,7 @@ class SendStudio_Functions
 	*
 	* @var Int
 	*/
-	var $_PagesToShow = 5;
+	public $_PagesToShow = 5;
 
 
 	/**
@@ -68,7 +68,7 @@ class SendStudio_Functions
 	*
 	* @var Int
 	*/
-	var $_PagingMinimum = 5;
+	public $_PagingMinimum = 5;
 
 
 	/**
@@ -78,7 +78,7 @@ class SendStudio_Functions
 	*
 	* @var Int
 	*/
-	var $_PerPageDefault = 10;
+	public $_PerPageDefault = 10;
 
 
 	/**
@@ -90,7 +90,7 @@ class SendStudio_Functions
 	*
 	* @var String
 	*/
-	var $_DefaultSort = 'emailaddress';
+	public $_DefaultSort = 'emailaddress';
 
 
 	/**
@@ -102,7 +102,7 @@ class SendStudio_Functions
 	*
 	* @var String
 	*/
-	var $_DefaultDirection = 'desc';
+	public $_DefaultDirection = 'desc';
 
 	/**
 	* _SecondarySorts
@@ -110,9 +110,9 @@ class SendStudio_Functions
 	*
 	* @see GetSortDetails
 	*
-	* @var Array
+	* @var array
 	*/
-	var $_SecondarySorts = array();
+	public $_SecondarySorts = [];
 
 
 	/**
@@ -121,9 +121,9 @@ class SendStudio_Functions
 	*
 	* @see Process
 	*
-	* @var Array
+	* @var array
 	*/
-	var $PopupWindows = array('view');
+	public $PopupWindows = ['view'];
 
 
 	/**
@@ -132,9 +132,30 @@ class SendStudio_Functions
 	*
 	* @see SaveAttachments
 	*
-	* @var Array
+	* @var array
 	*/
-	var $ValidFileExtensions = array('pdf', 'doc', 'xls', 'zip', 'jpg', 'png', 'gif', 'jpeg', 'txt', 'htm', 'html', 'csv', 'rtf', 'rar', 'ppt', 'pps', 'avi', 'mp3', 'mpg', 'mpeg');
+	public $ValidFileExtensions = [
+        'pdf',
+        'doc',
+        'xls',
+        'zip',
+        'jpg',
+        'png',
+        'gif',
+        'jpeg',
+        'txt',
+        'htm',
+        'html',
+        'csv',
+        'rtf',
+        'rar',
+        'ppt',
+        'pps',
+        'avi',
+        'mp3',
+        'mpg',
+        'mpeg'
+    ];
 
 	/**
 	* Months
@@ -143,9 +164,9 @@ class SendStudio_Functions
 	* @see CreateDateTimeBox
 	* @see GetLang
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Months = array(
+	public $Months = [
 		'1' => 'Jan',
 		'2' => 'Feb',
 		'3' => 'Mar',
@@ -158,7 +179,7 @@ class SendStudio_Functions
 		'10' => 'Oct',
 		'11' => 'Nov',
 		'12' => 'Dec'
-	);
+    ];
 
 	/**
 	* days_of_week
@@ -167,9 +188,9 @@ class SendStudio_Functions
 	* @see Stats_Chart::SetupChart_SubscriberSummary
 	* @see Stats_Chart::SetupChart
 	*
-	* @var Array
+	* @var array
 	*/
-	var $days_of_week = array(
+	public $days_of_week = [
 		'0' => 'Sun',
 		'1' => 'Mon',
 		'2' => 'Tue',
@@ -178,35 +199,30 @@ class SendStudio_Functions
 		'5' => 'Fri',
 		'6' => 'Sat',
 		'7' => 'Sun'
-	);
+    ];
 
 	/**
 	* These are fields that can be selected in the visible fields section
 	* of mailing lists that aren't custom fields
 	*
-	* @var Array
+	* @var array
 	*/
-	var $BuiltinFields = array(
-			'emailaddress' => 'EmailAddress','subscribedate' => 'DateSubscribed', 'format' => 'Format','status' => 'Status','confirmed' => 'Confirmed'
-		);
+	public $BuiltinFields = [
+        'emailaddress' => 'EmailAddress',
+        'subscribedate' => 'DateSubscribed', 
+        'format' => 'Format',
+        'status' => 'Status',
+        'confirmed' => 'Confirmed',
+    ];
 
-	/**
-	* @var _MaxNameLength The maximum length of a name (eg keywords, url, etc). If a name is longer than this length, it is chopped off (4 chars early) and has ' ...' appended to it.
-	*
-	* @see TruncateName
-	*/
-	var $_MaxNameLength = 45;
-
-	/**
-	* Constructor
-	* Does nothing. Shouldn't ever be called itself anyway.
-	*
-	* @return Void Base class does nothing.
-	*/
-	function SendStudio_Functions()
-	{
-	}
-
+    /**
+    * @var int _MaxNameLength The maximum length of a name (eg keywords, url, etc).
+    *                         If a name is longer than this length, it is chopped off (4 chars early)
+    *                         and has ' ...' appended to it.
+    *
+    * @see TruncateName
+    */
+	public $_MaxNameLength = 45;
 
 	/**
 	* Process
@@ -798,7 +814,6 @@ class SendStudio_Functions
 
 			$id = ucfirst($link_area);
 
-			$width = '100';
 			$width = (int) $sublinks['menudetails']['width'];
 
 			$sublink = '<a href="#" title="' . htmlspecialchars($links[$link_area]['menudetails']['description'], ENT_QUOTES, SENDSTUDIO_CHARSET) . '" id="' . $id . 'MenuButton" class="PopDownMenu MenuText">' . htmlspecialchars($links[$link_area]['menudetails']['title'], ENT_QUOTES, SENDSTUDIO_CHARSET) . '<img src="images/arrow_down_white.gif" border="0" style="position: relative;" /></a><div id="' . $id . 'Menu" style="display: none; width: ' . $width . 'px;" class="DropDownMenu DropShadow">' .  '<ul>';
@@ -1279,7 +1294,7 @@ class SendStudio_Functions
 	*/
 	function ShowInfoTip()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user) {
 			return; // if we're not logged in we can't show anything.
 		}
@@ -1760,7 +1775,7 @@ class SendStudio_Functions
 	*/
 	function LoadSortDetails($page_name = null)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if ($page_name == null) {
 			$page_name = $this->GetPageName();
@@ -1790,7 +1805,7 @@ class SendStudio_Functions
 		if (is_null($page_name)) {
 			$page_name = $this->GetPageName();
 		}
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if (!isset($display_settings['DisplayPage'])) {
 			$display_settings['DisplayPage'] = array();
@@ -1814,23 +1829,28 @@ class SendStudio_Functions
 	* @see LoadSortDetails
 	* @see SaveSortDetails
 	*
-	* @return Array Array of sort information including sort direction and what field sort by.
+	* @return array Array of sort information including sort direction and what field sort by.
 	*/
 	function GetSortDetails($page_name = null)
 	{
 		$sort = $this->LoadSortDetails($page_name);
-		$update = array(
+		$update = [
 			'SortBy' => (isset($_GET['SortBy'])) ? strtolower($_GET['SortBy']) : null,
 			'Direction' => (isset($_GET['Direction'])) ? strtolower($_GET['Direction']) : null,
 			'Secondary' => null,
 			'SecondaryDirection' => null,
-			);
-		$default = array(
+        ];
+		$default = [
 			'SortBy' => $this->_DefaultSort,
 			'Direction' => $this->_DefaultDirection,
 			'Secondary' => false,
 			'SecondaryDirection' => false,
-			);
+        ];
+		if (!is_null($update['SortBy'])) {
+            $update['SortBy'] = strip_tags($update['SortBy']);
+            $update['SortBy'] = htmlentities($update['SortBy']);
+            $update['SortBy'] = trim($update['SortBy']);
+		}
 		if (!is_null($update['Direction'])) {
 			if (strtolower($update['Direction']) == 'up' || strtolower($update['Direction']) == 'asc') {
 				$update['Direction'] = 'asc';
@@ -1868,7 +1888,7 @@ class SendStudio_Functions
 			$page_num = $this->SetCurrentPage($_GET['DisplayPage']);
 		} else {
 			// if not, recall it from the session
-			$user = GetUser();
+			$user = IEM::getCurrentUser();
 			$display_settings = $user->GetSettings('DisplaySettings');
 
 			$page_name = $this->GetPageName();
@@ -1897,7 +1917,7 @@ class SendStudio_Functions
 		if (is_null($page_name)) {
 			$page_name = $this->GetPageName();
 		}
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if (!isset($display_settings['DisplayPage']) || !is_array($display_settings['DisplayPage'])) {
 			$display_settings['DisplayPage'] = array();
@@ -2348,27 +2368,7 @@ class SendStudio_Functions
 				if ($_FILES['attachments']['tmp_name'][$pos] == '' || $_FILES['attachments']['tmp_name'][$pos] == 'none') {
 					if (isset($_FILES['attachments']['error'][$pos])) {
 						$error = $_FILES['attachments']['error'][$pos];
-
-						/**
-						* see http://www.php.net/manual/en/features.file-upload.errors.php
-						* for what these errors mean.
-						*/
-
-						// this was added in php 4.3.10 & 5.0.3.
-						if (!defined('UPLOAD_ERR_NO_TMP_DIR')) {
-							define('UPLOAD_ERR_NO_TMP_DIR', 6);
-						}
-
-						// this was added in php 5.1.0.
-						if (!defined('UPLOAD_ERR_CANT_WRITE')) {
-							define('UPLOAD_ERR_CANT_WRITE', 7);
-						}
-
-						// this was added in php 5.2.0.
-						if (!defined('UPLOAD_ERR_EXTENSION')) {
-							define('UPLOAD_ERR_EXTENSION', 8);
-						}
-
+						$size = $_FILES['attachments']['size'][$pos];
 						switch ($error) {
 							case UPLOAD_ERR_INI_SIZE:
 							case UPLOAD_ERR_FORM_SIZE:
@@ -3096,14 +3096,15 @@ class SendStudio_Functions
 	*/
 	function GetTemplateList($built_in_only=false, $select_size = 10)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$templatelist = array();
 
 		if (!$built_in_only) {
+		    /** @var Templates_API $TemplatesApi */
 			$TemplatesApi = $this->GetApi('Templates');
 
-			if ($user->Admin()) {
+			if ($user->isAdmin()) {
 				$templatelist = $TemplatesApi->GetLiveTemplates();
 			} else {
 				$templatelist = $TemplatesApi->GetLiveTemplates($user->userid);
@@ -3276,7 +3277,7 @@ class SendStudio_Functions
 	{
 		$page = strtolower($page);
 		$action = strtolower($action);
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$lists = array();
 
 		if ($page == 'send') {
@@ -3423,7 +3424,7 @@ class SendStudio_Functions
 	function SendPreview()
 	{
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
         if (!$user->HasAccess('Newsletters', 'send')) {
             $GLOBALS['Error'] = GetLang('SendPreviewDenied');
             $GLOBALS['Message'] = $this->ParseTemplate('ErrorMsg', true, false);
@@ -3585,7 +3586,7 @@ class SendStudio_Functions
 	*/
 	function SendTestPreview()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$preview_email = (isset($_POST['PreviewEmail'])) ? urldecode($_POST['PreviewEmail']) : false;
 		if (isset($_POST['smtp_test']) && $_POST['smtp_test'] != '') {
 			$preview_email = urldecode($_POST['smtp_test']);
@@ -4237,7 +4238,7 @@ class SendStudio_Functions
 			return true;
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$global_footer_content = '';
 		$user_footer_content = '';
@@ -4612,7 +4613,7 @@ class SendStudio_Functions
 		$page = strtolower($page);
 		$action = strtolower($action);
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$api = $this->GetApi('Subscribers');
 

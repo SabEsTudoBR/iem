@@ -95,7 +95,7 @@ class Subscribers_Import extends Subscribers
 	*/
 	function Process($action=null)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$this->PrintHeader(false, false, false);
 
@@ -451,7 +451,7 @@ class Subscribers_Import extends Subscribers
 			$listid = $importinfo['List'];
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$userid = $user->userid;
 		$user = GetUser($userid);
 
@@ -826,7 +826,7 @@ class Subscribers_Import extends Subscribers
 
 		$GLOBALS['ShowAutoresponderImport'] = 'none';
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($user->HasAccess('Autoresponders')) {
 			$GLOBALS['ShowAutoresponderImport'] = '';

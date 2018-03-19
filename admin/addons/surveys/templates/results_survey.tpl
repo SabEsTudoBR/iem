@@ -24,7 +24,7 @@
 	<div class="PageDescription">{$lang.Addon_Surveys_resultsResponseDescription}</div>
 	<form id="form-responses" action="index.php?Page=Addons&Addon=surveys&Action=export&ajax=1" method="post">
 		<div class="Buttons">
-			<input type="hidden" id="survey_id" value={$survey_id}" />
+			<input type="hidden" id="survey_id" value="{$survey_id}" />
 			<button class="export Field" type="button">{$lang.Addon_Surveys_Results_exportResponses}</button>
 			<button class="browse Field" type="button">{$lang.Addon_Surveys_Results_browseResponse}</button>
 		</div>

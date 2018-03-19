@@ -1,16 +1,5 @@
 <?php
 /**
-* This file has the login functions in it. Shows the login page and then authenticates upon submission.
-*
-* @version     $Id: login.php,v 1.21 2007/09/18 01:22:22 chris Exp $
-* @author Chris <chris@interspire.com>
-* @author Fredrick Gabelmann <fredrick.gabelmann@interspire.com>
-*
-* @package SendStudio
-* @subpackage SendStudio_Functions
-*/
-
-/**
 * Include the base sendstudio functions.
 */
 require_once(dirname(__FILE__) . '/sendstudio_functions.php');
@@ -24,15 +13,7 @@ require_once(dirname(__FILE__) . '/sendstudio_functions.php');
 class Login extends SendStudio_Functions
 {
 
-	/**
-	* Constructor
-	* Loads the language file.
-	*
-	* @see LoadLanguageFile
-	*
-	* @return Void Doesn't return anything.
-	*/
-	function Login()
+	public function __construct()
 	{
 		$this->LoadLanguageFile();
 	}
@@ -50,7 +31,7 @@ class Login extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything. Checks the action and passes it off to the appropriate area.
 	*/
-	function Process()
+    public function Process()
 	{
 		$action = IEM::requestGetGET('Action', '', 'strtolower');
 		switch ($action) {
@@ -64,7 +45,7 @@ class Login extends SendStudio_Functions
 					break;
 				}
 
-				$userapi = GetUser(-1);
+				$userapi = new User_API();
 				$loaded = $userapi->Load(IEM::sessionGet('ForgotUser'));
 
 				if (!$loaded) {
@@ -91,7 +72,7 @@ class Login extends SendStudio_Functions
 			break;
 
 			case 'sendpass':
-				$user = GetUser(-1);
+				$user = new User_API();
 				$username = IEM::requestGetPOST('ss_username', '');
 
 				/**
@@ -152,7 +133,7 @@ class Login extends SendStudio_Functions
 					break;
 				}
 
-				$userapi = GetUser(-1);
+				$userapi = new User_API();
 				$loaded = $userapi->Load($user, false);
 
 				if (!$loaded || $userapi->Get('forgotpasscode') != $code) {
@@ -185,12 +166,7 @@ class Login extends SendStudio_Functions
 					break;
 				}
 
-                $user = false;
-                $rand_check = false;
-
 				IEM::userLogin($result['userid']);
-
-				$oneyear = 365 * 24 * 3600; // one year's time.
 
 				$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
 
@@ -199,7 +175,7 @@ class Login extends SendStudio_Functions
 			break;
 
 			default:
-				$msg = false; $template = false;
+                $msg = false; $template = false;
 				if ($action == 'logout') {
 					$this->LoadLanguageFile('Logout');
 				}
@@ -208,14 +184,23 @@ class Login extends SendStudio_Functions
 		}
 	}
 
+    public function printLoginHeader()
+    {
+        header('Content-type: text/html; charset="' . SENDSTUDIO_CHARSET . '"');
+
+        $this->LoadLanguageFile();
+
+        return $this->ParseTemplate('header_login');
+    }
+
 	/**
 	* ShowLoginForm
 	* This shows the login form.
 	* If there is a template to use in the data/templates folder it will use that as the login form.
 	* Otherwise it uses the default one below. If you pass in a message it will show that message above the login form.
 	*
-	* @param String $template Uses the template passed in for the message (eg success / error).
-	* @param String $msg Prints the message passed in above the login form (eg unsuccessful attempt).
+	* @param bool|string $template Uses the template passed in for the message (eg success / error).
+	* @param bool|string $msg Prints the message passed in above the login form (eg unsuccessful attempt).
 	*
 	* @see FetchTemplate
 	* @see PrintHeader
@@ -223,13 +208,13 @@ class Login extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything, just prints the login form.
 	*/
-	function ShowLoginForm($template=false, $msg=false)
+    public function ShowLoginForm($template=false, $msg=false)
 	{
 		if (!IEM::getCurrentUser()) {
 			$this->GlobalAreas['InfoTips'] = '';
 		}
 
-		$this->PrintHeader(true);
+        $this->printLoginHeader();
 
 		$GLOBALS['Message'] = GetLang('Help_Login');
 
@@ -251,10 +236,6 @@ class Login extends SendStudio_Functions
  		}
 
 		$GLOBALS['ss_takemeto'] = 'index.php';
-		$loginPreference = IEM::requestGetCookie('IEM_LoginPreference', array());
-		if (is_array($loginPreference) && isset($loginPreference['takemeto'])) {
-			$GLOBALS['ss_takemeto'] = $loginPreference['takemeto'];
-		}
 
 		$this->GlobalAreas['SubmitAction'] = 'Login';
 
@@ -276,9 +257,9 @@ class Login extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything, only prints out the form.
 	*/
-	function ShowForgotForm($template=false, $msg=false)
+    public function ShowForgotForm($template=false, $msg=false)
 	{
-		$this->PrintHeader(true);
+		$this->printLoginHeader();
 
 		$GLOBALS['Message'] = GetLang('Help_ForgotPassword');
 
@@ -306,8 +287,8 @@ class Login extends SendStudio_Functions
 	* This shows the form for changing the password. It will show the password/password confirm boxes for the user to fill in.
 	*
 	* @param String $username The username to show in the form. This is not editable, it is just shown for reference.
-	* @param String $template If there is a template (will either be success or error template) use that as a message.
-	* @param String $msg This also tells us what's going on (password has been reset and so on).
+	* @param bool|string $template If there is a template (will either be success or error template) use that as a message.
+	* @param bool|string $msg This also tells us what's going on (password has been reset and so on).
 	*
 	* @see PrintHeader
 	* @see ParseTemplate
@@ -315,9 +296,9 @@ class Login extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything, only prints out the form.
 	*/
-	function ShowForgotForm_Step2($username='', $template=false, $msg=false)
+    public function ShowForgotForm_Step2($username='', $template=false, $msg=false)
 	{
-		$this->PrintHeader(true);
+        $this->printLoginHeader();
 
 		$GLOBALS['UserName'] = htmlspecialchars($username, ENT_QUOTES, SENDSTUDIO_CHARSET);
 
@@ -357,7 +338,7 @@ class Login extends SendStudio_Functions
 	 *
 	 * @access private
 	 */
-	function _validateTakeMeToRedirect($redirectString)
+    public function _validateTakeMeToRedirect($redirectString)
 	{
 		$defaultRedirect = 'index.php';
 		$urlParts = parse_url($redirectString);

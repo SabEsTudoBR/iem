@@ -23,7 +23,6 @@ require_once(dirname(__FILE__) . '/customfields.php');
 */
 class CustomFields_Date_API extends CustomFields_API
 {
-
 	/**
 	* Months
 	* An array of months. This lets us quickly grab the right language pack variable.
@@ -33,7 +32,7 @@ class CustomFields_Date_API extends CustomFields_API
 	*
 	* @var array
 	*/
-	var $Months = array(
+	public $Months = [
 		'1' => 'Jan',
 		'2' => 'Feb',
 		'3' => 'Mar',
@@ -46,7 +45,7 @@ class CustomFields_Date_API extends CustomFields_API
 		'10' => 'Oct',
 		'11' => 'Nov',
 		'12' => 'Dec'
-	);
+    ];
 
 	/**
 	* This overrides the parent classes setting so we know what sort it is.
@@ -55,17 +54,17 @@ class CustomFields_Date_API extends CustomFields_API
 	*
 	* @var String
 	*/
-	var $fieldtype = 'date';
+	public $fieldtype = 'date';
 
 	/**
 	* Options for this custom field type.
 	*
 	* @var array
 	*/
-	var $Options = array(
-		'Key' => array(),
-                'ApplyDefault' => ''
-	);
+	public $Options = [
+		'Key' => [],
+        'ApplyDefault' => ''
+    ];
 
 	/**
 	* Constructor
@@ -79,10 +78,8 @@ class CustomFields_Date_API extends CustomFields_API
 	* @see CustomFields_API::CustomFields_API
 	* @see Options
 	* @see Db
-	*
-	* @return Boolean Returns the parent's constructor.
 	*/
-	function CustomFields_Date_API($fieldid=0, $connect_to_db=true)
+	public function __construct($fieldid=0, $connect_to_db=true)
 	{
 		if ($fieldid <= 0) {
 			$this->Options['Key'][0] = 'day';
@@ -91,7 +88,7 @@ class CustomFields_Date_API extends CustomFields_API
 			$this->Options['Key'][3] = (date('Y') - 5);
 			$this->Options['Key'][4] = date('Y');
 		}
-		return $this->CustomFields_API($fieldid, $connect_to_db);
+		parent::__construct($fieldid, $connect_to_db);
 	}
 
 	/**
@@ -105,27 +102,29 @@ class CustomFields_Date_API extends CustomFields_API
 	* </code>
 	*
 	* @param array $data The data to validate.
+	* @param bool $return_date_format
 	*
 	* @see ValidData
 	* @see Settings
 	* @see IsLoaded
 	*
-	* @return Boolean If the data passed in contains a valid date within the range for this particular custom field, this will return true. If the data passed in contains an invalid date or is outside the range for this field, this will return false.
+	* @return bool|array If the data passed in contains a valid date within the range for this particular custom field, this will return true. If the data passed in contains an invalid date or is outside the range for this field, this will return false.
 	*/
-	function CheckData($data=array(), $return_date_format=false)
+    public function CheckData($data = [], $return_date_format = false)
 	{
 		if (!$this->IsLoaded()) {
 			return false;
 		}
 
 		if (!is_array($data)) {
+            $data = (string) $data;
 			if (strpos($data, '/') !== false) {
 				$data = explode('/', $data);
 			}
 			if (sizeof($data) != 3) {
 				return false;
 			}
-            $format = array();
+            $format = [];
             $format["dd"] = $data[0];
     		if ((int)$format["dd"] <= 0 || (int)$format["dd"] > 31) {return false;}            
             $format["mm"] = $data[1];
@@ -149,7 +148,7 @@ class CustomFields_Date_API extends CustomFields_API
 
 		// an empty date - this should be fine as long as the field is not required.
 		$empty = true;
-		foreach (array('dd', 'mm', 'yy') as $field) {
+		foreach (['dd', 'mm', 'yy'] as $field) {
 			if (trim($data[$field]) != '') {
 				$empty = false;
 			}
@@ -182,7 +181,7 @@ class CustomFields_Date_API extends CustomFields_API
 	* This displays options for the custom field if it is loaded. Each type handles this differently.
 	* It will return the options and the items (eg checkboxes).
 	*
-	* @param array $chosen A list of chosen checkboxes (keys not values).
+	* @param string|array $chosen A list of chosen checkboxes (keys not values).
 	* @param Boolean $useoptions This isn't used in the function, needed as a parameter placeholder. Set to false.
 	* @param Int $formid The form we are generating the content for. This is used to modify the form id's and javascript slightly to allow multiple forms to be on the same page.
 	*
@@ -191,23 +190,19 @@ class CustomFields_Date_API extends CustomFields_API
 	*
 	* @return String Returns a blank string if the custom field hasn't been loaded. If it has, it will create a list of checkboxes with pre-selected items (if supplied).
 	*/
-	function DisplayFieldOptions($chosen=array(), $useoptions=false, $formid=0)
+	public function DisplayFieldOptions($chosen = [], $useoptions=false, $formid=0)
 	{
-		if (!$chosen) {
-			$chosen = array();
+        if (empty($chosen)) {
+			$chosen = [];
 		}
 
-                if (!is_array($chosen)) {
-                        $chosen = explode('/', $chosen);
+		if (!is_array($chosen)) {
+ 			$chosen = explode('/', $chosen);
 		}
-
-
 
 		if (!$this->IsLoaded()) {
 			return '';
 		}
-
-		$formid = (int)$formid;
 
 		$return_string = '';
 
@@ -219,38 +214,46 @@ class CustomFields_Date_API extends CustomFields_API
 
 		$field_order = array_slice($this->Settings['Key'], 0, 3);
 
-                $chosen = array_combine($field_order, $chosen);
+		if (empty($chosen)) {
+            $chosen = [
+                'month' => 0,
+                'day' => 0,
+                'year' => 0,
+            ];
+        }
 
-                $selected = 'selected="selected"';
+		$chosen = array_combine($field_order, $chosen);
+
+		$selected = 'selected="selected"';
 
 		$daylist = '<select name="CustomFields['.$this->fieldid.'][dd]" id="CustomFields_'.$this->fieldid.'_dd">';
 
 		for ($i=1; $i<=31; $i++) {
-                        if ($chosen['day'] == $i){
-                            $daylist.='<option value="'.sprintf("%02d",$i).'" '.$selected.'>'.$i . '</option>';
-                        } else {
-                            $daylist.='<option value="'.sprintf("%02d",$i).'">'.$i . '</option>';
-                        }
+            if ($chosen['day'] == $i){
+                $daylist.='<option value="'.sprintf("%02d",$i).'" '.$selected.'>'.$i . '</option>';
+            } else {
+                $daylist.='<option value="'.sprintf("%02d",$i).'">'.$i . '</option>';
+            }
 		}
 		$daylist .= '</select>';
 
 		$monthlist = '<select name="CustomFields['.$this->fieldid.'][mm]" id="CustomFields_'.$this->fieldid.'_mm">';
 		for ($i=1; $i<=12; $i++) {
-                        if ($chosen['month'] == $i){
-                            $monthlist.='<option value="'.sprintf("%02d",$i).'" '.$selected.'>'.GetLang($this->Months[$i]) . '</option>';
-                        } else {
-                            $monthlist.='<option value="'.sprintf("%02d",$i).'">'.GetLang($this->Months[$i]) . '</option>';
-                        }
+            if ($chosen['month'] == $i){
+                $monthlist.='<option value="'.sprintf("%02d",$i).'" '.$selected.'>'.GetLang($this->Months[$i]) . '</option>';
+            } else {
+                $monthlist.='<option value="'.sprintf("%02d",$i).'">'.GetLang($this->Months[$i]) . '</option>';
+            }
 		}
 		$monthlist.='</select>';
 
 		$yearlist = '<select name="CustomFields['.$this->fieldid.'][yy]" id="CustomFields_'.$this->fieldid.'_yy">';
 		for ($i=$yy_start; $i<=$yy_end; $i++) {
-                        if ($chosen['year'] == $i){
-                            $yearlist.='<option value="'.$i.'" '.$selected.'>'. $i . '</option>';
-                        } else {
-                            $yearlist.='<option value="'.$i.'">'. $i . '</option>';
-                        }
+            if ($chosen['year'] == $i){
+                $yearlist.='<option value="'.$i.'" '.$selected.'>'. $i . '</option>';
+            } else {
+                $yearlist.='<option value="'.$i.'">'. $i . '</option>';
+            }
 		}
 		$yearlist.='</select>';
 
@@ -283,17 +286,16 @@ class CustomFields_Date_API extends CustomFields_API
 	*
 	* @return String Returns the real value based on the custom field type.
 	*/
-	function GetRealValue($value = array())
+	public function GetRealValue($value = [])
 	{
         $return_value = $this->CheckData($value,true);
-        if($return_value === false){return false;}
+        if($return_value === false){
+            return false;
+        }
         $format['day'] = $return_value['dd'];
         $format['month'] = $return_value['mm'];
         $format['year'] = $return_value['yy'];
         $data = $format[$this->Settings['Key'][0]] . "/" . $format[$this->Settings['Key'][1]] . "/" . $format[$this->Settings['Key'][2]];        
         return $data;
 	}
-
 }
-
-?>

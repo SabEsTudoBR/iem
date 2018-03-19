@@ -61,7 +61,7 @@ class Subscribers_Manage extends Subscribers
 	*/
 	function Process($action=null)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$subscribersapi = $this->GetApi('subscribers');
 
 		$this->PrintHeader(false, false, false);
@@ -224,8 +224,9 @@ class Subscribers_Manage extends Subscribers
 			$query = "SELECT listid FROM [|PREFIX|]list_subscribers WHERE subscriberid IN (".implode(",",$subscribers).")";
 			$result = $db->Query($query);
 			if(!$result){
-				trigger_error(mysql_error()."<br />".$query);
-				FlashMessage(mysql_error(), SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                $error = mysqli_error($db->connection);
+                trigger_error($error."<br />".$query);
+				FlashMessage($error, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 				exit();
 			}
 			while($row = $db->Fetch($result)){
@@ -239,8 +240,9 @@ class Subscribers_Manage extends Subscribers
 			$query = "SELECT jobid FROM [|PREFIX|]jobs_lists WHERE listid IN (".implode(",",$listid).")";
 			$result = $db->Query($query);
 			if(!$result){
-				trigger_error(mysql_error()."<br />".$query);
-				FlashMessage(mysql_error(), SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                $error = mysqli_error($db->connection);
+                trigger_error($error."<br />".$query);
+				FlashMessage($error, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 				exit();
 			}
 			while($row = $db->Fetch($result)){
@@ -253,8 +255,9 @@ class Subscribers_Manage extends Subscribers
 			$query = "SELECT jobstatus FROM [|PREFIX|]jobs WHERE jobtype='send' AND jobid IN (" . implode(',', $jobs_to_check) . ")";
 			$result = $db->Query($query);
 			if(!$result){
-				trigger_error(mysql_error()."<br />".$query);
-				FlashMessage(mysql_error(), SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
+                $error = mysqli_error($db->connection);
+                trigger_error($error."<br />".$query);
+				FlashMessage($error, SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 				exit();
 			}
 			while($row = $db->Fetch($result)){
@@ -1139,7 +1142,7 @@ class Subscribers_Manage extends Subscribers
 	*/
 	function ManageSubscribers_Step2($listid=0, $msg=false)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$user_lists = $user->GetLists();
 
@@ -1206,7 +1209,7 @@ class Subscribers_Manage extends Subscribers
 			}
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$user_lists = $user->GetLists();
 
 		if (is_numeric($listid)) {
@@ -1382,7 +1385,7 @@ class Subscribers_Manage extends Subscribers
 		 * If we're going to look at more than one list, then load all of the visible fields stuff from the db in one go.
 		*/
 		if (!is_array($listid)) {
-			$user = GetUser();
+			$user = IEM::getCurrentUser();
 			$lists = $user->GetLists();
 			$listids = array_keys($lists);
 		} else {

@@ -80,7 +80,7 @@ class Settings extends SendStudio_Functions
 	{
 		$action = (isset($_GET['Action'])) ? strtolower($_GET['Action']) : null;
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('System', 'System');
 
 		$popup = (in_array($action, $this->PopupWindows)) ? true : false;
@@ -185,7 +185,7 @@ class Settings extends SendStudio_Functions
 				$GLOBALS['CharsetDescription'] = GetLang($charset);
 				$GLOBALS['ServerTimeZone'] = SENDSTUDIO_SERVERTIMEZONE;
 				$GLOBALS['ServerTimeZoneDescription'] = GetLang(SENDSTUDIO_SERVERTIMEZONE);
-				$GLOBALS['ServerTime'] = date('r');
+				$GLOBALS['ServerTime'] = date(GetLang('UserDateFormat'));
 				$GLOBALS['PHPVersion'] = phpversion();
 				$GLOBALS['ServerSoftware'] = htmlspecialchars($_SERVER["SERVER_SOFTWARE"], ENT_QUOTES, SENDSTUDIO_CHARSET);
 
@@ -199,7 +199,9 @@ class Settings extends SendStudio_Functions
 
 				$GLOBALS['GDVersion'] = GetLang('GD_NotDetected');
 				if (Settings_API::GDEnabled() && $php_mods !== false) {
-					$GLOBALS['GDVersion'] = $php_mods['gd']['GD Version'];
+				    $version = array_key_exists('GD Version', $php_mods['gd']) ? $php_mods['gd']['GD Version'] : 'unknown';
+				    $version = array_key_exists('GD library Version', $php_mods['gd']) ? $php_mods['gd']['GD library Version'] : $version;
+					$GLOBALS['GDVersion'] = $version;
 				}
 
 				$GLOBALS['ModSecurity'] = GetLang('ModSecurity_Unknown');
@@ -253,10 +255,12 @@ class Settings extends SendStudio_Functions
 					$this->ShowSettingsPage();
 					break;
 				}
+
+				/** @var Settings_API $api */
 				$api = $this->GetApi();
 				$result = false;
 
-				$errors = array();
+				$errors = [];
 
 				// Make sure that Contact email is filled in
 				if (!isset($_POST['email_address']) || trim($_POST['email_address']) == '') {
@@ -288,7 +292,7 @@ class Settings extends SendStudio_Functions
 
 				if ($api && count($errors) == 0) {
 					do {
-						$settings = array();
+						$settings = [];
 
 						// fix up the database settings first.
 						$all_areas = $api->Areas;
@@ -375,18 +379,6 @@ class Settings extends SendStudio_Functions
 								$val = false;
 							}
 
-							if ($area == 'DATABASE_USER') {
-								if (isset($_POST['database_u'])) {
-									$val = $_POST['database_u'];
-								}
-							}
-
-							if ($area == 'DATABASE_PASS') {
-								if (isset($_POST['database_p'])) {
-									$val = $_POST['database_p'];
-								}
-							}
-
 							if ($area == 'APPLICATION_URL') {
 								if (substr($val, -1) == '/') {
 									$val = substr($val, 0, -1);
@@ -437,12 +429,12 @@ class Settings extends SendStudio_Functions
 							$settings[$area] = $val;
 						}
 
-						// ----- Settings that cannot be changed
-							$settings['DEFAULTCHARSET'] = SENDSTUDIO_DEFAULTCHARSET;
-							if (!empty($settings['DEFAULTCHARSET'])) {
-								$settings['DEFAULTCHARSET'] = 'UTF-8';
-							}
-						// -----
+                        $settings['DEFAULTCHARSET'] = 'UTF-8';
+                        $settings['DATABASE_USER'] = SENDSTUDIO_DATABASE_USER;
+                        $settings['DATABASE_PASS'] = SENDSTUDIO_DATABASE_PASS;
+                        $settings['DATABASE_NAME'] = SENDSTUDIO_DATABASE_NAME;
+                        $settings['DATABASE_HOST'] = SENDSTUDIO_DATABASE_HOST;
+                        $settings['TABLEPREFIX'] = SENDSTUDIO_TABLEPREFIX;
 
 						// ----- Security settings
 							$settings['SECURITY_WRONG_LOGIN_WAIT'] = intval($settings['SECURITY_WRONG_LOGIN_WAIT']);
@@ -847,11 +839,6 @@ class Settings extends SendStudio_Functions
 		$GLOBALS['CronPath'] = $php_path . SENDSTUDIO_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR . 'cron.php';
 
 		$GLOBALS['DatabaseType'] = $SENDSTUDIO_DATABASE_TYPE;
-		$GLOBALS['DatabaseUser'] = $SENDSTUDIO_DATABASE_USER;
-		$GLOBALS['DatabaseHost'] = $SENDSTUDIO_DATABASE_HOST;
-		$GLOBALS['DatabasePass'] = $SENDSTUDIO_DATABASE_PASS;
-		$GLOBALS['DatabaseName'] = $SENDSTUDIO_DATABASE_NAME;
-		$GLOBALS['DatabaseTablePrefix'] = $SENDSTUDIO_TABLEPREFIX;
 		$GLOBALS['ApplicationURL'] = $SENDSTUDIO_APPLICATION_URL;
 		$GLOBALS['LicenseKey'] = $SENDSTUDIO_LICENSEKEY;
 		$GLOBALS['DatabaseVersion'] = $api->Db->FetchOne('SELECT version() AS version');

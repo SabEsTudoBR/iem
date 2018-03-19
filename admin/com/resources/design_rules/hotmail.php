@@ -113,10 +113,10 @@ $GLOBALS['Design_Rules']['Hotmail'] = array (
 		'match_offset' => 2
 	),
 	array(
-		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?position\s*?:.*?)(\2|;)%',
+		'regular_expression' => '%(style\s*?=\s*?)(["\'])(.*?)(\s*?position\s*?:.*?)(\2|;)%', 
 		'description' => 'Hotmail doesn\'t show the CSS style: position',
 		'use_preg_replace' => 1,
 		'replacement' => '$1$2$3$5',
 		'match_offset' => 2
-	),
+	),  
 );

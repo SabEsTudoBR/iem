@@ -296,56 +296,6 @@
 						</tr>
 						<tr>
 							<td class="FieldLabel">
-								{template="Required"}
-								%%LNG_DatabaseUser%%:
-							</td>
-							<td>
-								<input type="hidden" name="database_u" value="%%GLOBAL_DatabaseUser%%" />
-								<input type="text" value="%%GLOBAL_DatabaseUser%%" class="Field250 OnFocusSelect" readonly="readonly" disabled="disabled"> %%LNG_HLP_DatabaseUser%%
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel">
-								{template="Not_Required"}
-								%%LNG_DatabasePassword%%:
-							</td>
-							<td>
-								<input type="hidden" name="database_p" value="%%GLOBAL_DatabasePass%%" />
-								<input type="password" value="%%GLOBAL_DatabasePass%%" class="Field250 OnFocusSelect" readonly="readonly" disabled="disabled" autocomplete="off" /> %%LNG_HLP_DatabasePassword%%
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel">
-								{template="Required"}
-								%%LNG_DatabaseHost%%:
-							</td>
-							<td>
-								<input type="hidden" name="database_host" value="%%GLOBAL_DatabaseHost%%" />
-								<input type="text" name="database_host" value="%%GLOBAL_DatabaseHost%%" class="Field250 OnFocusSelect" readonly="readonly" disabled="disabled"> %%LNG_HLP_DatabaseHost%%
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel">
-								{template="Required"}
-								%%LNG_DatabaseName%%:
-							</td>
-							<td>
-								<input type="hidden" name="database_name" value="%%GLOBAL_DatabaseName%%" />
-								<input type="text" value="%%GLOBAL_DatabaseName%%" class="Field250 OnFocusSelect" readonly="readonly" disabled="disabled"> %%LNG_HLP_DatabaseName%%
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel">
-								{template="Not_Required"}
-								%%LNG_DatabaseTablePrefix%%:
-							</td>
-							<td>
-								<input type="hidden" name="tableprefix" value="%%GLOBAL_DatabaseTablePrefix%%" />
-								<input type="text" value="%%GLOBAL_DatabaseTablePrefix%%" class="Field250 OnFocusSelect" readonly="readonly" disabled="disabled"> %%LNG_HLP_DatabaseTablePrefix%%
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel">
 								{template="Not_Required"}
 								%%LNG_DatabaseVersion%%:
 							</td>

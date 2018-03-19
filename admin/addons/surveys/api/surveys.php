@@ -1,64 +1,42 @@
 <?php
-
 /**
  * Addons_surveys_api
  * API functions for surveys
- *
- * @author Fredrick Gabelmann <fredrick.gabelmann@interspire.com>
  */
 class Addons_survey_api extends API
 {
 	/**
 	 * Holds the different question types. Values are loaded in __construct
-	 * @var Array
+	 * @var array
 	 */
 	public $question_types;
 
 	/**
 	 * Holds values set using __set
-	 * @var Array
+	 * @var array
 	 */
-	private $data = array();
+	private $data = [];
 
 	/**
 	 * validSorts
 	 * Valid columns to sort surveys by. The first column is the default
-	 * @var Array
+	 * @var array
 	 */
-	public static $validSorts = array('name','created','updated','responsecount');
+	public static $validSorts = [
+	    'name',
+        'created',
+        'updated',
+        'responsecount'
+    ];
 
-	/**
-	 * __construct
-	 * Sets the question_types, loads the specified surveys and questions if given.
-	 *
-	 * @param Array $survey The survey to load
-	 * @param Array $questions The questions to load
-	 *
-	 * @see _loadData
-	 *
-	 * @return Void Returns nothing
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
-	/**
-	 * __set
-	 * Handles setting of members
-	 */
-	public function __set($var,$val)
+	public function __set($var, $val)
 	{
 		$this->data[$var] = $val;
 	}
 
-	/**
-	 * __get
-	 * Returns members
-	 */
 	public function __get($var)
 	{
-		if (array_key_exists($var,$this->data)) {
+		if (array_key_exists($var, $this->data)) {
 			return $this->data[$var];
 		}
 		return false;
@@ -95,7 +73,7 @@ class Addons_survey_api extends API
 	{
 		$surveyid = (int)$surveyid;
 		$prefix = $this->Db->TablePrefix;
-		$query = "SELECT * FROM {$prefix}surveys WHERE id = $surveyid";
+		$query = "SELECT * FROM {$prefix}surveys WHERE id = {$surveyid}";
 
 		$result = $this->Db->Query($query);
 		$survey = $this->Db->Fetch($result);
@@ -108,33 +86,12 @@ class Addons_survey_api extends API
 	 * _loadData
 	 * Loads a specified survey and questions
 	 *
-	 * @param Array $survey The survey to load. Supported fields are:
+	 * @param bool|array $survey The survey to load. Supported fields are:
 	 * array(
 	 *	'name' => 'Name of survey'
 	 * )
-	 * @param Array $questions The questions to load. Supported fields are:
-	 * array(
-	 * 	1 => // The id of the question
-	 * 	array(
-	 * 		'new' => 'true', // Specify this if the question is to be added (ie it doesn't yet exist in the database)
-	 * 		'title' => 'Title of question',
-	 * 		'type' => 'type', // One of the types from $question_types
-	 * 		'required' => 'on', // This question is required, omit this for a non-required question
-	 *
-	 * 		// For multiple choice questions:
-	 * 		'choices' => 'one,two,three', // List of choices
-	 * 		'multiplechoices' => 'on', // More than one choice is allowed (omit if only one is allowed)
-	 *
-	 * 		// For number questions:
-	 * 		'range' => '1-100', // Range of numbers, leave blank for any range
-	 *
-	 * 		// For file questions:
-	 * 		'filetypes' => 'jpg,gif', // File types that are accepted, leave blank for any file types
-	 *
-	 * 		// For country questions:
-	 * 		'country' => 'United States', // Default selection (leave blank to select instructional text)
-	 * 	)
-	 * )
+     *
+     * @return bool
 	 */
 	private function _loadData($survey = false)
 	{
@@ -154,18 +111,19 @@ class Addons_survey_api extends API
 
 	/**
 	 * Get
-	 * @param $varname
+	 * @param string $varname
 	 *
 	 * Overide the parent function to look inside the data container
 	 *
-	 * @return void
+	 * @return mixed
 	 */
-
-	public function Get($varname)
+	public function Get($varname = '', $default = null)
 	{
 		if (isset($this->data[$varname])) {
 			return $this->data[$varname];
 		}
+
+		return $default;
 	}
 
 
@@ -184,12 +142,10 @@ class Addons_survey_api extends API
 	{
 		$prefix = $this->Db->TablePrefix;
 		$this->created = $this->GetServerTime();
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$userid = $user->userid;
 
 		$tablefields = implode(',', $this->_columns);
-
-		//$_columns = array('name','userid','description','created','surveys_header','surveys_header_text','email','email_feedback','after_submit','show_message','show_uri','error_message','submit_button_text');
 
 		$query = "INSERT INTO {$prefix}surveys ({$tablefields})
 				  VALUES ('" . $this->Db->Quote($this->name) . "',"
@@ -228,51 +184,22 @@ class Addons_survey_api extends API
 		return $surveyid;
 	}
 
-	/**
-	 * Deleting all widgets ID that is no longer used,
-	 *  this is used when updating / saving process..
-	 */
-
-	public function deleteWidgetsNotIn(Array $widgetsIds)
+	public function deleteWidgetsNotIn(array $widgetsIds, $surveyId)
 	{
 		$prefix = $this->Db->TablePrefix;
-
-		// now delete the widgets
-		$sql = 	"DELETE FROM {$prefix}surveys_widgets
-				WHERE surveys_id = {$this->id} AND
-				id NOT IN (" . implode(',', $widgetsIds) . ");";
-
+		$widgetsIdString = implode(',', $widgetsIds);
+		$sql = 	"DELETE FROM {$prefix}surveys_widgets WHERE surveys_id = {$surveyId} AND id NOT IN ({$widgetsIdString})";
 		return $this->Db->Query($sql);
 	}
 
-	/**
-	 * Getwidgets
-	 * @
-	 * If the current form has any widgets associated to it, then it will
-	 * return them as an array of objects. If none are found, it returns
-	 * false.
-	 *
-	 * @return Mixed
-	 */
-
-	public function getWidgets($formId=0)
+	public function getWidgets($formId)
 	{
-		// if formId is not supplied then
-		// get the current ID from the Load
-		if ($formId == 0) {
-			$formId = $this->id;
-		}
-
-		$formId = intval($formId);
-		$widgets = array();
+		$widgets = [];
 		$prefix = $this->Db->TablePrefix;
 
-		$sql = 	"SELECT * FROM {$prefix}surveys_widgets
-				WHERE surveys_id =  $formId
-				ORDER BY  display_order ASC;";
+		$sql = 	"SELECT * FROM {$prefix}surveys_widgets WHERE surveys_id = {$formId} ORDER BY display_order ASC;";
 
 		$results = $this->Db->Query($sql);
-
 		if ($results === false || empty($results)) {
 			return false;
 		}
@@ -283,78 +210,48 @@ class Addons_survey_api extends API
 			}
 			$widgets[] = $row;
 		}
-
 		return $widgets;
 	}
 
 	/**
 	 * getFields
 	 * @param $widgetId
+     * @return bool|array
 	 *
 	 * Returns the field given a specific widget ID
 	 */
 	public function getFields($widgetId)
 	{
 		$widgetId = intval($widgetId);
-		$fields = array();
 		$prefix = $this->Db->TablePrefix;
 
-		$sql = "SELECT *
-				FROM  {$prefix}surveys_fields
-				WHERE
-					 surveys_widget_id = {$widgetId}";
+		$sql = "SELECT * FROM {$prefix}surveys_fields WHERE surveys_widget_id = {$widgetId}";
 
 		$results = $this->Db->Query($sql);
-
 		if ($results === false || empty($results)) {
 			return false;
 		}
 
-		while ($row = $this->Db->Fetch($results)) {
+        $fields = [];
+        while ($row = $this->Db->Fetch($results)) {
 			$fields[] = $row;
 		}
 		return $fields;
 	}
-
-
-	/**
-	 * setId
-	 * @param $formId
-	 *
-	 * Setting the form ID variable..
-	 */
 
 	public function setId($formId)
 	{
 		$this->id = (int)$formId;
 	}
 
-
-	/**
-	 * getId
-	 * @param void
-	 *
-	 * Return the ID of the survey
-	 */
-
 	public function getId()
 	{
 		return (int)$this->id;
 	}
 
-	/**
-	 * Update function
-	 * Update the survey table with the new values from the table POST
-	 * Please refer to function Load and function populateDataForm
-	 * @return unknown_type
-	 */
-
-	public function Update()
+	public function Update($surveyId)
 	{
-		$prefix = $this->Db->TablePrefix;
-		$user = GetUser();
-		$userid = $user->userid;
-		$where = 'id = ' . $this->id;
+		$where = 'id = ' . $surveyId;
 
 		$surveys_data = $this->data;
 
@@ -378,14 +275,11 @@ class Addons_survey_api extends API
 	 *
 	 * @return string rendered template
 	 *
-	 * @param int    $formId   The id of the survey to get the content for.
-	 * @param tpl 	 $tpl	   This is the actual template system parsed from the front end
+	 * @param int $surveyId
+	 * @param IEM_InterspireTemplate $tpl
 	 */
-	public function getSurveyContent($surveyId , $tpl)
+	public function getSurveyContent($surveyId, $tpl)
 	{
-		// give the form an action to handle the submission
-		// $tpl->Assign('action', 'admin/index.php?Page=Addons&Addon=surveys&Action=Submit&ajax=1&formId=' . $surveyId);
-
 		$success_message =  IEM::sessionGet('survey.addon.' . $surveyId . '.successMessage');
 		if ($success_message) {
 				IEM::sessionRemove('survey.addon.' . $surveyId . '.successMessage');
@@ -397,27 +291,19 @@ class Addons_survey_api extends API
 
 		// check for valid ID
 		if (!isset($surveyId)) {
-			return;
+			return '';
 		}
-
 
 		require_once('widgets.php');
 		$widgets_api = new Addons_survey_widgets_api();
 		$loadRes = $this->Load($surveyId);
 		if ($loadRes === false) {
-			echo 'invalid form id';
-			return;
+			return 'invalid form id';
 		}
 
 		$surveyData = $this->GetData();
 
-
-		$widgets = $this->getWidgets($this->id);
-
-		// and if there are widgets
-		// iterate through each one
-		$widgetErrors = array();
-
+		$widgets = $this->getWidgets($surveyId);
 		if ($widgets) {
 			$widgetErrors   = IEM::sessionGet('survey.addon.' . $surveyId . '.widgetErrors');
 
@@ -475,8 +361,6 @@ class Addons_survey_api extends API
 		IEM::sessionRemove('survey.addon.' . $surveyId . '.errorMessage');
 		IEM::sessionRemove('survey.addon.' . $surveyId . '.successMessage');
 
-
-		//return $this->template->parseTemplate('form', true);
 		return $tpl->ParseTemplate('survey');
 	}
 
@@ -488,7 +372,7 @@ class Addons_survey_api extends API
 	 * @param Int $ownerid The user to fetch surveys for
 	 * @param Int $pageid The page to start retrieving results from. This is ignored if perpage is set to 'all'
 	 * @param Int $perpage The number of entries per page. Specify 'all' to retrieve all results.
-	 * @param Array $search_info Restrict results to certain values. Key names should be the column names. Example:
+	 * @param array|bool $search_info Restrict results to certain values. Key names should be the column names. Example:
 	 * array(
 	 * 	'eventtype' => 'Email', 'listid' => 4
 	 * )
@@ -500,10 +384,10 @@ class Addons_survey_api extends API
 	 * array(
 	 * 	'restrictions' => 'eventdate >= 1216250000 AND eventdate < 1216252570'
 	 * )
-	 * @param Array $sort_details Column and direction to sort the results by
+	 * @param array $sort_details Column and direction to sort the results by
 	 * @param Boolean $count_only Specify true to return the number of surveys. Specify false (default) to return a list of surveys
 	 *
-	 * @return Array Returns an array of results
+	 * @return array Returns an array of results
 	 */
 	public function GetSurveys($ownerid = 0,$pageid=1,$perpage=20,$search_info = false,$sort_details = array(),$count_only = false)
 	{
@@ -637,30 +521,32 @@ class Addons_survey_api extends API
 	 * getResponses
 	 * Retrieves a list of responses for this form.
 	 *
+     * @param int $surveyId
 	 * @return Mixed
 	 */
 
-	public function getResponses()
+	public function getResponses($surveyId)
 	{
+	    if (empty($surveyId)) {
+	        return [];
+        }
+        
 		$prefix = $this->Db->TablePrefix;
 
 		$query = "
-				SELECT *
-				FROM  {$prefix}surveys_response
-				WHERE
-					surveys_id = {$this->id}
-				ORDER BY
-					datetime
-				;";
+            SELECT *
+            FROM  {$prefix}surveys_response
+            WHERE surveys_id = {$surveyId}
+            ORDER BY datetime
+        ";
 
 		$result = $this->Db->Query($query);
 
-		$return = array();
+		$return = [];
 		while ($row = $this->Db->Fetch($result)) {
 			$return[] = $row;
 		}
 
-		// get a list of responses
 		return $return;
 	}
 
@@ -672,41 +558,28 @@ class Addons_survey_api extends API
 	 * @return Mixed
 	 */
 
-	public function getResponsesId()
+	public function getResponsesId($surveyId)
 	{
 		$prefix = $this->Db->TablePrefix;
-		$query = "
-				SELECT id
-				FROM  {$prefix}surveys_response
-				WHERE
-					surveys_id = {$this->id}
-				ORDER BY
-					id
-				;";
-
+		$query = "SELECT id FROM  {$prefix}surveys_response WHERE surveys_id = {$surveyId} ORDER BY id";
 		$result = $this->Db->Query($query);
-
-		$return = array();
+		$return = [];
 		$counter = 1;
 		while ($row = $this->Db->Fetch($result)) {
 			$return[$counter] = $row['id'];
 			$counter++;
 		}
-
-		// get a list of responses
 		return $return;
 	}
-
-
 
 	/**
 	 * Retrieves the number of responses that are associated to this form.
 	 *
 	 * @return Integer
 	 */
-	public function getResponseCount()
+	public function getResponseCount($surveyId)
 	{
-		$responses = $this->getResponses();
+		$responses = $this->getResponses($surveyId);
 
 		if ($responses) {
 			return count($responses);
@@ -716,25 +589,18 @@ class Addons_survey_api extends API
 	}
 
 
-	/***
-	 *  checkValidSurvey
+	/**
+     * @param User_API $user
+     * @return bool
 	 */
-	public function checkValidSurveyAccess($user)
+	public function checkValidSurveyAccess($user, $surveyId)
 	{
 		$prefix = $this->Db->TablePrefix;
 
 		if (!$user->isAdmin()) {
-				$userId = $user->userid;
-				$query = "
-						SELECT *
-						FROM  {$prefix}surveys
-						WHERE
-							id = {$this->id} and
-							userid = {$user->userid}
-					;";
-
+				$query = "SELECT * FROM  {$prefix}surveys WHERE id = {$surveyId} and userid = {$user->userid}";
 				$result = $this->Db->Query($query);
-				$return = array();
+				$return = [];
 				if (!empty($result)) {
 					while ($row = $this->Db->Fetch($result)) {
 						$return[] = $row;
@@ -752,10 +618,11 @@ class Addons_survey_api extends API
 	 * Retrieves a response by its index.
 	 *
 	 * @param Mixed $index - An integer or string number of the response to retrieve by its index.
-	 *
+     * @param int $surveyId
+     *
 	 * @return Mixed
 	 */
-	public function getResponseByIndex($index = 0)
+	public function getResponseByIndex($index = 0, $surveyId)
 	{
 		// get a list of responses
 		$prefix = $this->Db->TablePrefix;
@@ -764,7 +631,7 @@ class Addons_survey_api extends API
 				SELECT *
 				FROM  {$prefix}surveys_response
 				WHERE
-					surveys_id = {$this->id}
+					surveys_id = {$surveyId}
 				ORDER BY
 					datetime
 				LIMIT {$index}, 1
@@ -785,11 +652,12 @@ class Addons_survey_api extends API
 	 * Retrieves a response by its index.
 	 *
 	 * @param Mixed $number - An integer or string number of the response to retrieve by its number.
+     * @param int $surveyId
 	 *
 	 * @return Mixed
 	 */
-	public function getResponseByNumber($number = 1)
+	public function getResponseByNumber($number = 1, $surveyId)
 	{
-		return $this->getResponseByIndex($number - 1);
+		return $this->getResponseByIndex($number - 1, $surveyId);
 	}
 }

@@ -46,7 +46,7 @@ class Subscribers_Banned extends Subscribers
 			$action = strtolower($action);
 		}
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		if ($action == 'processpaging') {
 			$this->SetPerPage($_GET['PerPageDisplay']);
@@ -575,7 +575,7 @@ class Subscribers_Banned extends Subscribers
 	 */
 	function _haveAccess($listid)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		/**
 		 * Admin user can always access the suppression list.

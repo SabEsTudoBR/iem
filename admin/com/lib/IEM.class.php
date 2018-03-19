@@ -24,22 +24,19 @@ class IEM
 	/**
 	 * Define current version
 	 */
-	const VERSION = '6.1.7';
+	const VERSION = '6.1.8';
 
 	/**
 	 * Define current database version
 	 *
 	 * @todo deprecate this... find a way to organize the upgrades based on versions instead
 	 */
-	const DATABASE_VERSION = '20161005';
+	const DATABASE_VERSION = '20171011';
 
 	/**
 	 * Session name that is used by IEM framework
 	 */
 	const SESSION_NAME = 'IEMSESSIONID';
-
-
-
 
 	/**
 	 * CONSTRUCTOR
@@ -49,9 +46,6 @@ class IEM
 	{
 		/* Cannot be instantiated */
 	}
-
-
-
 
 	/**
 	 * Initialize the framework
@@ -108,6 +102,8 @@ class IEM
 			unset($tempUserLanguage);
 			unset($tempUser);
 		// -----
+
+        return true;
 	}
 
 
@@ -124,7 +120,7 @@ class IEM
 
 		/**
 		 * Configuration variables
-		 * @var Array An associative array that is used by the framework as a whole
+		 * @var array An associative array that is used by the framework as a whole
 		 */
 		static private $_configVariables = array();
 
@@ -160,19 +156,18 @@ class IEM
 
 			self::$_configInitFlag = true;
 
-
-
 			return true;
 		}
 
-		/**
-		 * Enter description here...
-		 * @return Mixed Returns configuration
-		 * @todo all
-		 */
 		final static public function configGet()
 		{
-			$required_constants = array('SENDSTUDIO_DATABASE_TYPE', 'SENDSTUDIO_DATABASE_HOST', 'SENDSTUDIO_DATABASE_USER', 'SENDSTUDIO_DATABASE_PASS', 'SENDSTUDIO_DATABASE_NAME');
+			$required_constants = [
+			    'SENDSTUDIO_DATABASE_TYPE',
+                'SENDSTUDIO_DATABASE_HOST',
+                'SENDSTUDIO_DATABASE_USER',
+                'SENDSTUDIO_DATABASE_PASS',
+                'SENDSTUDIO_DATABASE_NAME',
+            ];
 
 			foreach ($required_constants as $required) {
 				if (!defined($required)) {
@@ -183,26 +178,19 @@ class IEM
 			return true;
 		}
 
-		/**
-		 * Enter description here...
-		 * @return Boolean Returns TRUE if successful, FALSE otherwise
-		 * @todo all
-		 */
-		final static public function configSet()
-		{ }
 
-		/**
-		 * Enter description here...
-		 * @return Boolean Returns TRUE if successful, FALSE otherwise
-		 * @todo all
-		 */
+		final static public function configSet() {}
+
+
 		final static public function configSave()
-		{ return true; }
+        {
+            return true;
+        }
 
 		/**
 		 * Enter description here...
 		 *
-		 * @param Array $values An associative array to replace the configuration with
+		 * @param array $values An associative array to replace the configuration with
 		 */
 		final static public function configReset($values = array())
 		{
@@ -264,6 +252,8 @@ class IEM
 				session_name(IEM::SESSION_NAME);
 
 				ini_set('session.use_cookies', 1);
+                ini_set('session.cookie_httponly', 1);
+                ini_set('session.use_strict_mode', 1);
 
 				ini_set('session.gc_probability', 1);
 				ini_set('session.gc_divisor', 100);
@@ -281,18 +271,16 @@ class IEM
 			// therefore we do not need to presists session variable for subsequent requests
 			// which means a simple array will do to emulate $_SESSION
 			} else {
-				self::$_sessionReference = array();
+				self::$_sessionReference = [];
 			}
 
 			// Structure check
 			if (!array_key_exists('initialized', self::$_sessionReference)) {
-
-				self::$_sessionReference = array(
+				self::$_sessionReference = [
 					'initialized' => true,
-					'storage' => array(),
-					'user' => array(
-					)
-				);
+					'storage' => [],
+					'user' => []
+                ];
 			}
 
 			return true;
@@ -362,11 +350,9 @@ class IEM
 		 * This method will wipe clean any session variables in the system.
 		 * It will generate a new session ID alongside if possible.
 		 *
-		 * @param boolean $resetLogin Specify whether or not to reset login information (OPTIONAL, Default = FALSE)
-		 *
 		 * @return boolean Returns TRUE if successful, FALSE otherwise
 		 */
-		final static public function sessionReset($resetLogin = false)
+		final static public function sessionReset()
 		{
 			// Generating new session ID is only possible when
 			// the server have not send out any output.
@@ -374,11 +360,18 @@ class IEM
 				session_regenerate_id();
 			}
 
-			self::$_sessionReference['storage'] = array();
-			self::$_sessionReference['user'] = array();
+			self::$_sessionReference['storage'] = [];
+			self::$_sessionReference['user'] = [];
 
 			return true;
 		}
+
+		final static public function generateCSRF()
+        {
+            $token = bin2hex(openssl_random_pseudo_bytes(32));
+            self::sessionSet('csrfToken', $token);
+            return $token;
+        }
 
 		/**
 		 * Destroy session
@@ -444,7 +437,7 @@ class IEM
 
 		/**
 		 * Initialize user related
-		 * @param $reset Flag to indicate whether or not the procedure can reset previously initialized session
+		 * @param bool $reset Flag to indicate whether or not the procedure can reset previously initialized session
 		 * @return Boolean Returns TRUE if successful, FALSE otherwise
 		 */
 		final static public function userInit($reset = false)
@@ -458,7 +451,7 @@ class IEM
 			// -----
 
 			self::$_userCacheObject = false;
-			self::$_userStack = self::sessionGet('__IEM_SYSTEM_CurrentUser_Stack', array(), 'intval');
+			self::$_userStack = self::sessionGet('__IEM_SYSTEM_CurrentUser_Stack', array());
 
 			return true;
 		}
@@ -562,7 +555,7 @@ class IEM
 		 */
 		final static public function userGetCurrent()
 		{
-			if (!self::$_userCacheObject instanceof Users_API ) {
+			if (!self::$_userCacheObject instanceof User_API ) {
 				$userStack = self::$_userStack;
 				if (empty($userStack)) {
 					return false;
@@ -634,72 +627,6 @@ class IEM
 		}
 
 		/**
-		 * requestGetCookie
-		 * Get request variable from $_COOKIE
-		 *
-		 * @param String $cookieName Cookie name
-		 * @param Mixed $defaultValue Default value if variable not found
-		 * @param String $callback Callback function to be applied to the returned value
-		 *
-		 * @return Mixed Return variable value from $_COOKIE if it exists, otherwise it will return defaultValue
-		 */
-		static public function requestGetCookie($cookieName, $devaultValue = '', $callback = null)
-		{
-			$value = $devaultValue;
-
-			if (isset($_COOKIE) && array_key_exists($cookieName, $_COOKIE)) {
-				$value = @unserialize(base64_decode($_COOKIE[$cookieName]));
-			}
-
-			return self::_requestProcess($value, $callback);
-		}
-
-		/**
-		 * requestSetCookie
-		 * Set a cookie
-		 *
-		 * You cannot set a cookie AFTER you made any output.
-		 * Any attempt to set cookie AFTER this will fail.
-		 *
-		 * @param String $cookieName Cookie name
-		 * @param Mixed $cookieValue Value to be stored in a cookie (it can be any variable that serialized)
-		 * @param Integer $expiry Cookie expiry (0 = non-presistant cookie)
-		 *
-		 * @return Boolean Returns TRUE if successful, FALSE otherwsie
-		 */
-		static public function requestSetCookie($cookieName, $cookieValue, $expiry = 0)
-		{
-			$value = @serialize($cookieValue);
-			if ($value === false) {
-				return false;
-			}
-
-			$expiry = intval(abs($expiry));
-			if ($expiry != 0) {
-				$expiry += time();
-			}
-
-			// TODO make sure the "path" is set only to the application directory and use secure HTTP?
-			return @setcookie($cookieName, base64_encode($value), $expiry, '/');
-		}
-
-		/**
-		 * requestRemoveCookie
-		 * Remove a cookie
-		 *
-		 * You cannot remove a cookie AFTER you made any output.
-		 * Any attempt to remove cookie AFTER this will fail.
-		 *
-		 * @param String $cookieName Cookie name to remove
-		 *
-		 * @return Boolean Retuns TRUE if successful, FALSE otherwise
-		 */
-		static public function requestRemoveCookie($cookieName)
-		{
-			return @setcookie($cookieName, '', time() - 100000, '/');
-		}
-
-		/**
 		 * _requestProcess
 		 * Process request variable
 		 *
@@ -746,7 +673,7 @@ class IEM
 		static public function langLoad($language)
 		{
 			$user = IEM::userGetCurrent();
-			$user_language = 'default';
+			$users_language = 'default';
 			$language = strtolower($language);
 
 			// If it has been loaded before, return
@@ -805,7 +732,7 @@ class IEM
 		 * Get the database object that is used by the framework
 		 *
 		 * @param Db $overwriteDB Database object to use (OPTIONAL)
-		 * @return Db|FALSE Returns a concrete implementation of the database object if successful, FALSE otherwise
+		 * @return MySQLDb|FALSE Returns a concrete implementation of the database object if successful, FALSE otherwise
 		 *
 		 * @uses Db
 		 * @uses SENDSTUDIO_DATABASE_TYPE
@@ -814,75 +741,41 @@ class IEM
 		 * @uses SENDSTUDIO_DATABASE_PASSWORD
 		 * @uses SENDSTUDIO_DATABASE_NAME
 		 */
-		final static public function getDatabase($overwriteDB = null)
+		final static public function getDatabase()
 		{
 			static $db = null;
-			static $characterset_defined = false;
-			if (!is_null($overwriteDB) && ($overwriteDB instanceof Db)) {
-				$db = $overwriteDB;
-			}
-			if (is_null($db)) {
-				while (true) {
-					$required_constants = array(
-						'SENDSTUDIO_DATABASE_TYPE',
-						'SENDSTUDIO_DATABASE_HOST',
-						'SENDSTUDIO_DATABASE_USER',
-						'SENDSTUDIO_DATABASE_PASS',
-						'SENDSTUDIO_DATABASE_NAME');
-					$all_ok = false;
-					foreach ($required_constants as $required) {
-						if (!defined($required)) {
-							break;
-						}
-						$all_ok = true;
-					}
-					if (!$all_ok) {
-						break;
-					}
-					try {
-						$db = IEM_DBFACTORY::manufacture(SENDSTUDIO_DATABASE_TYPE,
-							SENDSTUDIO_DATABASE_HOST, SENDSTUDIO_DATABASE_USER, SENDSTUDIO_DATABASE_PASS,
-							SENDSTUDIO_DATABASE_NAME);
-						$db->TablePrefix = SENDSTUDIO_TABLEPREFIX;
-					}
-					catch (exception $e) {
-						$db = false;
-						break;
-					}
-					break;
-				}
-				if (is_null($db)) {
-					$db = false;
-				}
-			}
-			while (!$characterset_defined) {
-				if (is_null($db) || $db === false || !defined('SENDSTUDIO_DATABASE_TYPE')) {
-					break;
-				}
-				if (SENDSTUDIO_DATABASE_TYPE != 'mysql') {
-					$characterset_defined = true;
-					break;
-				}
-				if (!defined('SENDSTUDIO_CHARSET')) {
-					break;
-				}
-				if (SENDSTUDIO_CHARSET != 'UTF-8') {
-					$characterset_defined = true;
-					break;
-				}
-				if (!defined('SENDSTUDIO_DATABASE_UTF8PATCH')) {
-					define('SENDSTUDIO_DATABASE_UTF8PATCH', false);
-				}
-				if (!SENDSTUDIO_DATABASE_UTF8PATCH) {
-					$characterset_defined = true;
-					break;
-				}
-				$db->Query("SET NAMES 'utf8'");
-				$db->charset = 'utf8';
-				$characterset_defined = true;
-				break;
-			}
-			return $db;
+            if ($db !== null) {
+			    return $db;
+            }
+
+            $required_constants = [
+                'SENDSTUDIO_DATABASE_HOST',
+                'SENDSTUDIO_DATABASE_USER',
+                'SENDSTUDIO_DATABASE_PASS',
+                'SENDSTUDIO_DATABASE_NAME'
+            ];
+
+            foreach ($required_constants as $required) {
+                if (!defined($required)) {
+                    return false;
+                }
+            }
+
+            try {
+                $db = IEM_DBFACTORY::manufacture(
+                    SENDSTUDIO_DATABASE_HOST,
+                    SENDSTUDIO_DATABASE_USER,
+                    SENDSTUDIO_DATABASE_PASS,
+                    SENDSTUDIO_DATABASE_NAME,
+                    [
+                        'charset' => 'utf8',
+                        'tablePrefix' => SENDSTUDIO_TABLEPREFIX,
+                    ]
+                );
+                return $db;
+            } catch (exception $e) {
+                return false;
+            }
 		}
 
 		/**
@@ -924,7 +817,7 @@ class IEM
 		 * Generates a URL for an internal IEM page based on the parameters.
 		 *
 		 * @param String $page The page to redirect to (e.g. 'Lists').
-		 * @param Array $params An associative array of param name => param value pairs that will be added to the GET request.
+		 * @param array $params An associative array of param name => param value pairs that will be added to the GET request.
 		 * @param Boolean $relative Whether the URL should be start with "index.php?Page=..." (true) or contain the domain, etc. (false).
 		 *
 		 * @return String The URL generated from the parameters.
@@ -950,7 +843,7 @@ class IEM
 		 * This means it has to be called before any output on the page has started.
 		 *
 		 * @param String $page The page to redirect to (e.g. 'Lists').
-		 * @param Array $params An associative array of param name => param value pairs that will be added to the GET request.
+		 * @param array $params An associative array of param name => param value pairs that will be added to the GET request.
 		 *
 		 * @return Void Does not return anything.
 		 */
@@ -996,8 +889,8 @@ class IEM
 		 *
 		 * @see decrypt
 		 *
-		 * @param string The string to encrypt.
-		 * @param string The key to encrypt it with.
+		 * @param $s string The string to encrypt.
+		 * @param $key string The key to encrypt it with.
 		 *
 		 * @return string|boolean The encrypted string (cipher) or false on error.
 		 */
@@ -1018,8 +911,8 @@ class IEM
 		 *
 		 * @see encrypt
 		 *
-		 * @param string The cipher to decrypt.
-		 * @param string The key to descrypt it with.
+		 * @param string $s The cipher to decrypt.
+		 * @param string $key The key to descrypt it with.
 		 *
 		 * @return string The decrypted string.
 		 */

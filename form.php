@@ -251,7 +251,12 @@ if ($customfields) {
 
 		$subscriber['CustomFields'][$fieldid] = $postvalue;
 
-		$subscriberinfo['CustomFields'][$fieldid] = array('data' => $customfields_api->GetRealValue($postvalue), 'fieldname' => $customfields_api->GetFieldName(), 'defaultvalue' => $customfields_api->GetDefaultValue());
+		$subscriberinfo['CustomFields'][$fieldid] = [
+		    'data' => $customfields_api->GetRealValue($postvalue),
+            'fieldname' => $customfields_api->GetFieldName(),
+            'fieldtype' => $customfields_api->GetFieldName(),
+            'defaultvalue' => $customfields_api->GetDefaultValue()
+        ];
 
 		$required = $customfields_api->IsRequired();
 

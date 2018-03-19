@@ -351,16 +351,11 @@ class Send_API extends Jobs_API
 	 */
 	function SetupJob($jobid=0, $queueid=0)
 	{
-		$is_queue = $this->IsQueue($queueid, 'send');
-		
-		if (!$is_queue) {
+		if (!$this->IsQueue($queueid, 'send')) {
 			return false;
 		}
 
-		// if we can't load the newsletter, pause it and immediately stop.
-		$news_loaded = $this->Newsletters_API->Load($this->jobdetails['Newsletter']);
-		
-		if (!$news_loaded) {
+		if (!$this->Newsletters_API->Load($this->jobdetails['Newsletter'])) {
 			return false;
 		}
 
@@ -539,7 +534,7 @@ class Send_API extends Jobs_API
 	* @uses queuetype
 	* @see language/language.php for descriptions and error codes you can use here.
 	*
-	* @return Array Returns an array of data which includes the following entries:
+	* @return array Returns an array of data which includes the following entries:
 	* - 'success' => $counter,
 	* - 'fail' => array ($recipient, $message);
 	*
@@ -551,7 +546,6 @@ class Send_API extends Jobs_API
 		
 		$this->jobdetails['EmailResults']['total']++;
 				
-		$subscriberinfo = array();
 		$subscriberinfo = $this->Subscriber_API->LoadSubscriberBasicInformation($recipient, $this->jobdetails['Lists']);
 		
 		// Removes subsriber from queue if we can't find it's record from list_subscribers table
@@ -564,7 +558,7 @@ class Send_API extends Jobs_API
 			$this->jobdetails['EmailResults']['failure']++;
 			$query = "UPDATE [|PREFIX|]jobs SET jobdetails='" . $this->Db->Quote(serialize($this->jobdetails)) . "' WHERE queueid={$queueid}";
 			$result = $this->Db->Query($query);
-			if (!$result) {trigger_error(mysql_error());}
+			if (!$result) {trigger_error(mysqli_error($this->Db->connection));}
 			return $mail_result;
 		}
 
@@ -705,7 +699,7 @@ class Send_API extends Jobs_API
 		}
 		$query = "UPDATE [|PREFIX|]jobs SET jobdetails='" . $this->Db->Quote(serialize($this->jobdetails)) . "' WHERE queueid={$queueid}";
 		$result = $this->Db->Query($query);
-		if (!$result) {trigger_error(mysql_error());}
+		if (!$result) {trigger_error(mysqli_error($this->Db->connection));}
 		$this->emailssent++;
 
 		/*

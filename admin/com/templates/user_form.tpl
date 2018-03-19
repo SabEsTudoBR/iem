@@ -1,6 +1,7 @@
 <link rel="stylesheet" type="text/css" href="includes/styles/thickbox.css" />
 <form name="users" method="post" action="index.php?Page=%%PAGE%%&%%GLOBAL_FormAction%%">
 	<input type="hidden" name="id_tab_num" id="id_tab_num" value="{$DefaultIdTab}" />
+	<input type="hidden" name="csrfToken" id="csrfToken" value="{$csrfToken}" />
 
 	<table cellspacing="0" cellpadding="0" width="100%" align="center">
 		<tr>

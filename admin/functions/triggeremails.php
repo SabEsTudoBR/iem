@@ -50,7 +50,7 @@ class TriggerEmails extends SendStudio_Functions
 	 * This handles working out what stage you are up to and so on with workflow.
 	 * @return Void Does not return anything
 	 *
-	 * @uses GetUser()
+	 * @uses IEM::getCurrentUser()
 	 * @uses User_API::HasAccess()
 	 * @uses SendStudio_Functions::PrintHeader()
 	 * @uses SendStudio_Functions::DenyAccess()
@@ -70,14 +70,14 @@ class TriggerEmails extends SendStudio_Functions
 	public function Process()
 	{
 		// ----- Define and sanitize "common" variables that is used by this function
-			$user = GetUser();
+			$user = IEM::getCurrentUser();
 
 			$reqAction		= IEM::requestGetGET('Action', '', 'strtolower');
 			$response		= '';
 			$parameters 	= array();
 
 			$parameters['message']	= GetFlashMessages();
-			$parameters['user']		= GetUser();
+			$parameters['user']		= IEM::getCurrentUser();
 			$parameters['action']	= $reqAction;
 		// ------
 

@@ -69,7 +69,7 @@ class Subscribers_View extends Subscribers
 	*/
 	function ViewSubscriber($listid = 0, $subscriberid = 0, $segmentid = 0, $msgtype = 'Error', $msg = false)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Subscribers', 'Manage');
 		if (!$access) {
 			$this->DenyAccess();

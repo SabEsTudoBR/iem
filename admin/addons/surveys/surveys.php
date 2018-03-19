@@ -1,14 +1,5 @@
 <?php
 /**
- * This file contains the 'surveys' addon wich logs pages recently viewed by each user and displays them on every page.
- *
- * @author Fredrick Gabelmann <fredrick.gabelmann@interspire.com>
- *
- * @package Interspire_Addons
- * @subpackage Addons_systemlog
- */
-
-/**
  * Make sure the base Interspire_Addons class is defined.
  */
 if (!class_exists('Interspire_Addons', false)) {
@@ -33,13 +24,20 @@ class Addons_surveys extends Interspire_Addons
 
 	static public $model;
 
-	/**
+    /**
+     * Default settings
+     *
+     * @var Int
+     */
+    protected $default_settings = [];
+
+    /**
 	 * getApi
 	 * Loads the surveys API
 	 *
 	 * @see Addons_survey_api
 	 *
-	 * @return Object Returns the Addons_survey_api
+	 * @return object Returns the Addons_survey_api
 	 */
 	public function getApi()
 	{
@@ -61,9 +59,8 @@ class Addons_surveys extends Interspire_Addons
 	 * need to exist under the addon directory
 	 * Will return false if no file is found.
 	 *
-	 * @return the API object
+	 * @return mixed API object or false
 	 */
-
 	public function getSpecificApi($api)
 	{
 		$className = 'Addons_survey_' . $api . '_api';
@@ -85,17 +82,17 @@ class Addons_surveys extends Interspire_Addons
      * @return boolean true if all the library loaded succesfully.
      *
 	 */
-	public function RequiresLib($library) {
-
+	public function RequiresLib($library)
+    {
 		$libfiles = array();
 		$library = ucwords($library);
 
-		if (file_exists(IEM_PATH . "/lib/Interspire/$library.php")) {
-			require_once(IEM_PATH . "/lib/Interspire/$library.php");
+		if (file_exists(IEM_PATH . "/lib/Interspire/{$library}.php")) {
+			require_once(IEM_PATH . "/lib/Interspire/{$library}.php");
 		}
 
-		if (is_dir(IEM_PATH . "/lib/Interspire/$library")) {
-				if ($handle = opendir(IEM_PATH . "/lib/Interspire/$library")) {
+		if (is_dir(IEM_PATH . "/lib/Interspire/{$library}")) {
+				if ($handle = opendir(IEM_PATH . "/lib/Interspire/{$library}")) {
 				    while (false !== ($file = readdir($handle))) {
 				        if ($file != "." && $file != ".." && (strstr($file, '.php') !== false )) {
 							$libfiles[] = $file;
@@ -107,20 +104,19 @@ class Addons_surveys extends Interspire_Addons
 				asort($libfiles);
 
 				foreach ($libfiles as $key=>$file) {
-					if (file_exists(IEM_PATH . "/lib/Interspire/$library/$file")) {
-						require_once(IEM_PATH . "/lib/Interspire/$library/$file");
+					if (file_exists(IEM_PATH . "/lib/Interspire/{$library}/$file")) {
+						require_once(IEM_PATH . "/lib/Interspire/{$library}/$file");
 					}
 				}
 		}
 		return true;
 	}
 
-
 	/**
 	 * loadModel
 	 * Loads the current model
 	 *
-	 * @return the Object of the model
+	 * @return object the Object of the model
 	 */
 	public function loadModel($model_type)
 	{
@@ -135,15 +131,6 @@ class Addons_surveys extends Interspire_Addons
 		return self::$model;
 	}
 
-
-
-	/**
-	 * Default settings
-	 *
-	 * @var Int
-	 */
-	protected $default_settings = array();
-
 	/**
 	 * Install
 	 * This is called when the addon is installed in the main application.
@@ -153,7 +140,8 @@ class Addons_surveys extends Interspire_Addons
 	 * @uses Interspire_Addons::Install
 	 * @uses Interspire_Addons_Exception
 	 *
-	 * @throws Throws an Interspire_Addons_Exception if something goes wrong with the install process.
+	 * @throws Interspire_Addons_Exception if something goes wrong with the install process.
+	 * @throws Exception
 	 * @return True Returns true if all goes ok with the install.
 	 */
 	public function Install()
@@ -166,7 +154,7 @@ class Addons_surveys extends Interspire_Addons
 		$result = $this->db->Query($query);
 		$row = $this->db->Fetch($result);
 		if (empty($row)) {
-			require_once dirname(__FILE__) . '/schema.' . SENDSTUDIO_DATABASE_TYPE . '.php';
+			require_once dirname(__FILE__) . '/schema.mysql.php';
 			foreach ($queries as $query) {
 				$qry = str_replace('%%TABLEPREFIX%%', $this->db->TablePrefix, $query);
 				$result = $this->db->Query($qry);
@@ -181,13 +169,12 @@ class Addons_surveys extends Interspire_Addons
 		try {
 			$status = parent::Install();
 		} catch (Interspire_Addons_Exception $e) {
-			throw new Exception("Unable to install addon $this->GetId();" . $e->getMessage());
+			throw new Exception("Unable to install addon {$this->GetId()}" . $e->getMessage());
 		}
 
 		$this->db->CommitTransaction();
 		return true;
 	}
-
 
 	/**
 	 * Uninstall
@@ -197,18 +184,15 @@ class Addons_surveys extends Interspire_Addons
 	 * @uses Interspire_Addons::Install
 	 * @uses Interspire_Addons_Exception
 	 *
-	 * @throws Throws an Interspire_Addons_Exception if something goes wrong with the install process.
+	 * @throws Interspire_Addons_Exception if something goes wrong with the install process.
+	 * @throws Exception
 	 * @return True Returns true if all goes ok with the install.
 	 */
 	public function Uninstall()
 	{
-		// $prefix = $this->db->TablePrefix;
-		// $query[] = "DROP TABLE {$prefix}surveys";
-		// $query[] = "DROP TABLE {$prefix}survey_questions";
-		// $query[] = "DROP TABLE {$prefix}survey_templates";
 		$this->db->StartTransaction();
 
-		require_once dirname(__FILE__) . '/schema.' . SENDSTUDIO_DATABASE_TYPE . '.php';
+		require_once dirname(__FILE__) . '/schema.mysql.php';
 		foreach ($tables as $tablename) {
 			$query = 'DROP TABLE [|PREFIX|]' . $tablename . ' CASCADE';
 			$result = $this->db->Query($query);
@@ -222,19 +206,16 @@ class Addons_surveys extends Interspire_Addons
 			$status = parent::Uninstall();
 		} catch (Interspire_Addons_Exception $e) {
 			$this->db->RollbackTransaction();
-			throw new Exception("Unable to uninstall addon $this->GetId();" . $e->getMessage());
+			throw new Exception("Unable to uninstall addon {$this->GetId()}" . $e->getMessage());
 		}
 
 		$this->db->CommitTransaction();
 		return true;
 	}
 
-	/**
-	 * LoadSelf
-	 * Creates an instance of Addons_surveys
-	 *
-	 * @return Mixed Returns an object on success, false on failure
-	 */
+    /**
+     * @return Addons_surveys|bool
+     */
 	public static function LoadSelf()
 	{
 		try {
@@ -260,92 +241,74 @@ class Addons_surveys extends Interspire_Addons
 	 *
 	 * @see Interspire_Addons::GetEventListeners
 	 *
-	 * @return Array Returns an array of events, what methods to call and which file to call the method from.
+	 * @return array Returns an array of events, what methods to call and which file to call the method from.
 	 */
 	public function GetEventListeners()
 	{
-
 		$my_file = '{%IEM_ADDONS_PATH%}/surveys/surveys.php';
-		$listeners = array();
+		$listeners = [];
 
-		$listeners[] =
-			array (
-				'eventname' => 'IEM_SENDSTUDIOFUNCTIONS_GENERATEMENULINKS',
-				'trigger_details' =>  array (
-					'Addons_surveys',
-					'SetMenuItems'
-				),
-				'trigger_file' => $my_file
-			);
-
-
-		$listeners[] =
-			array (
-				'eventname' => 'IEM_USERAPI_GETPERMISSIONTYPES',
-				'trigger_details' => array (
-					'Interspire_Addons',
-					'GetAddonPermissions',
-				),
-				'trigger_file' => $my_file
-			);
+		$listeners[] = [
+            'eventname' => 'IEM_SENDSTUDIOFUNCTIONS_GENERATEMENULINKS',
+            'trigger_details' =>  [
+                'Addons_surveys',
+                'SetMenuItems'
+            ],
+            'trigger_file' => $my_file
+        ];
 
 
-		$listeners[] =
-		array (
-			'eventname' => 'IEM_HTMLEDITOR_TINYMCEPLUGIN',
-			'trigger_details' =>  array (
-				'Addons_surveys',
-				'TinyMCEPluginHook'
-			),
-			'trigger_file' => $my_file
-		);
+		$listeners[] = [
+            'eventname' => 'IEM_USERAPI_GETPERMISSIONTYPES',
+            'trigger_details' => [
+                'Interspire_Addons',
+                'GetAddonPermissions',
+            ],
+            'trigger_file' => $my_file
+        ];
 
-		$listeners [] =
-		array (
-				'eventname' => 'IEM_EDITOR_SURVEY_BUTTON',
-				'trigger_details' => array (
-					'Addons_surveys',
-					'CreateInsertSurveyButton'
-		), 'trigger_file' => $my_file
-		);
 
-		$listeners[] =
-		array (
-			'eventname' => 'IEM_SURVEYS_VIEWCONTENT',
-			'trigger_details' =>  array (
-				'Addons_surveys',
-				'ViewContentHook'
-			),
-			'trigger_file' => $my_file
-		);
+		$listeners[] = [
+            'eventname' => 'IEM_HTMLEDITOR_TINYMCEPLUGIN',
+            'trigger_details' =>  [
+                'Addons_surveys',
+                'TinyMCEPluginHook'
+            ],
+            'trigger_file' => $my_file
+        ];
 
-		$listeners[] =
-		array (
+		$listeners [] = [
+            'eventname' => 'IEM_EDITOR_SURVEY_BUTTON',
+            'trigger_details' => [
+                'Addons_surveys',
+                'CreateInsertSurveyButton'
+            ], 'trigger_file' => $my_file
+        ];
+
+		$listeners[] = [
+            'eventname' => 'IEM_SURVEYS_VIEWCONTENT',
+            'trigger_details' =>  [
+                'Addons_surveys',
+                'ViewContentHook'
+            ],
+            'trigger_file' => $my_file
+        ];
+
+		$listeners[] = [
 			'eventname' => 'IEM_SURVEYS_REPLACETAG',
-			'trigger_details' =>  array (
+			'trigger_details' =>  [
 				'Addons_surveys',
 				'ReplaceSurveyTag'
-			),
+            ],
 			'trigger_file' => $my_file
-		);
+        ];
 
 		return $listeners;
 	}
 
 
-	public static function CreateInsertSurveyButton(EventData_IEM_EDITOR_SURVEY_BUTTON $data) {
-
-		$userAPI = GetUser();
-
-        // Permission checking
-        $access = true;
-        // $access = $access || $userAPI->Admin();
-
-        if (!$access) {
-            $data->tagButtonHtml = $data->tagButtonText = '';
-            return;
-        }
-
+	public static function CreateInsertSurveyButton(EventData_IEM_EDITOR_SURVEY_BUTTON $data)
+    {
         $data->surveyButtonText = '
             <li>
                     <a href="#" title="'.GetLang('SurveysInsert_Editor').'" onclick="javascript: InsertSurveyLink(\'TextContent\'); return false;">
@@ -359,50 +322,44 @@ class Addons_surveys extends Interspire_Addons
                             <img src="images/mnu_surveys_button.gif" alt="icon" />'.GetLang('SurveysInsert_Editor').'</a>
             </li>
         ';
-
-
 	}
 
 	/**
 	 * _checkSurveyAccess
-	 * @param $formId
+	 * @param $surveyId
 	 * Check if the right survey bellongs to the right user group
 	 */
-
 	private function _checkSurveyAccess($surveyId)
 	{
 		$surveysApi = $this->getApi();
 		$surveysApi->Load($surveyId);
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		// if the user is system admin free pass for everything
 		if (!empty($user->group->systemadmin)) {
 			return;
 		}
 
-		if (!$surveysApi->checkValidSurveyAccess($user)) {
+		if (!$surveysApi->checkValidSurveyAccess($user, $surveyId)) {
 			$redirect = 'index.php?Page=Addons&Addon=surveys';
 			FlashMessage(sprintf(GetLang('Addon_surveys_AccessError')), SS_FLASH_MSG_ERROR, $redirect);
 		}
 	}
-
 
 	/**
 	 * ViewContentHook,
 	 * Actually replace the string / content
 	 *  When the actual content get loaded..
 	 *
+     * @param EventData_IEM_SURVEYS_VIEWCONTENT $data
 	 */
-	public static function ViewContentHook(IEM_SURVEYS_VIEWCONTENT $data)
-	{
-
-
-	}
+	public static function ViewContentHook(EventData_IEM_SURVEYS_VIEWCONTENT $data) {}
 
 	/**
 	 * ReplaceSurveyTag
 	 * Replacing the survey placeholder with the right link
 	 *
+     * @param EventData_IEM_SURVEYS_REPLACETAG $data
 	 */
 	public static function ReplaceSurveyTag(EventData_IEM_SURVEYS_REPLACETAG $data)
 	{
@@ -425,8 +382,7 @@ class Addons_surveys extends Interspire_Addons
 	 * Listens for the tinymce plugin event.
 	 * dispatches the call to the tinymce plugin.
 	 *
-	 * @return Void
-	 * @param  iwp_event_admin_content_tinymceplugin $data
+	 * @param EventData_IEM_HTMLEDITOR_TINYMCEPLUGIN $data
 	 */
 	public static function TinyMCEPluginHook(EventData_IEM_HTMLEDITOR_TINYMCEPLUGIN $data)
 	{
@@ -438,13 +394,10 @@ class Addons_surveys extends Interspire_Addons
 	 * TinyMCE Survey List is for TinyMCE addons.
 	 * The list will render out the all the availble survey for that specific users.
 	 * This is used in the survey button from the TinyMCE editor
-	 *
-	 * @return unknown_type
 	 */
-
 	public function Admin_Action_tinymceSurveylist()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$ownerid = 	$user->userid;
 
 		$survey_api = $this->getApi();
@@ -475,76 +428,72 @@ class Addons_surveys extends Interspire_Addons
 	 *
 	 * @uses EventData_IEM_SENDSTUDIOFUNCTIONS_GENERATEMENULINKS
 	 */
-
 	static function SetMenuItems(EventData_IEM_SENDSTUDIOFUNCTIONS_GENERATEMENULINKS $data)
 	{
-		$self = new self;
-
-		$surveys_menu = array (
-			'surveys_button' => array (
-					array (
+		$surveys_menu = [
+			'surveys_button' => [
+					[
 						'text' => GetLang('Menu_Surveys_View'),
 						'link' => 'index.php?Page=Addons&amp;Addon=surveys',
-						'show' => array (
+						'show' => [
 							'CheckAccess' => 'HasAccess',
-							'Permissions' => array('surveys'),
-						),
+							'Permissions' => ['surveys'],
+                        ],
 						'description' => GetLang('Menu_Surveys_View_Description'),
 						'image' => 'surveys_views.gif',
-						'perm'	=> array('create', 'delete', 'edit')
-					),
-					array (
+						'perm'	=> ['create', 'delete', 'edit']
+                    ],
+					[
 						'text' => GetLang('Menu_Surveys_Create'),
 						'link' => 'index.php?Page=Addons&amp;Addon=surveys&amp;Action=create',
-						'show' => array (
+						'show' => [
 							'CheckAccess' => 'HasAccess',
-							'Permissions' => array('surveys'),
-						),
+							'Permissions' => ['surveys'],
+                        ],
 						'description' => GetLang('Menu_Surveys_Create_Description'),
 						'image' => 'surveys_add.gif',
-						'perm'	=> array('create')
-					),
-					array(
+						'perm'	=> ['create']
+                    ],
+					[
 						'text' => GetLang('Menu_Surveys_Results'),
 						'link' => 'index.php?Page=Addons&amp;Addon=surveys&amp;Action=resultdefault',
-						'show' => array (
+						'show' => [
 							'CheckAccess' => 'HasAccess',
-							'Permissions' => array('surveys'),
-						),
+							'Permissions' => ['surveys'],
+                        ],
 						'description' => GetLang('Menu_Surveys_Results_Description'),
 						'image' => 'surveys_results.png',
-						'perm'	=> array('resultdefault')
-					),
-					array (
+						'perm'	=> ['resultdefault']
+                    ],
+					[
 						'text' => GetLang('Menu_Surveys_Responses_Browse'),
 						'link' => 'index.php?Page=Addons&amp;Addon=surveys&amp;Action=viewResponsesDefault',
-						'show' => array (
+						'show' => [
 							'CheckAccess' => 'HasAccess',
-							'Permissions' => array('surveys'),
-						),
+							'Permissions' => ['surveys'],
+                        ],
 						'description' => GetLang('Menu_Surveys_Responses_Browse_Description'),
 						'image' => 'surveys_responses_view.gif',
-						'perm'	=> array('viewresponsesdefault', 'editresponse', 'deleteresponse')
-					),
-					array (
+						'perm'	=> ['viewresponsesdefault', 'editresponse', 'deleteresponse']
+                    ],
+					[
 						'text' => GetLang('Menu_Surveys_Responses_Export'),
 						'link' => 'index.php?Page=Addons&amp;Addon=surveys&amp;Action=exportDefault',
-						'show' => array (
+						'show' => [
 							'CheckAccess' => 'HasAccess',
-							'Permissions' => array('surveys'),
-						),
+							'Permissions' => ['surveys'],
+                        ],
 						'description' => GetLang('Menu_Surveys_Responses_Export_Description'),
 						'image' => 'surveys_responses_export.gif',
-						'perm'	=> array('exportdefault')
-					),
-				)
-		);
-
+						'perm'	=> ['exportdefault']
+                    ],
+            ]
+        ];
 
 		$menuItems = $data->data;
 
 		// Menubar filter for the right permission
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->isAdmin())  {
 			$perm = $user->group->permissions;
 
@@ -565,14 +514,10 @@ class Addons_surveys extends Interspire_Addons
 				}
 			}
 		}
-		
-		
-
 
 		/**
 		 * Putting the survey menu to where it belongs..
 		 */
-
 		$new_menuItems = array();
 		foreach ($menuItems as $key => $eachmenu) {
 			$new_menuItems[$key] = $eachmenu;
@@ -582,17 +527,17 @@ class Addons_surveys extends Interspire_Addons
 				$new_menuItems['surveys_button'] = $surveys_menu['surveys_button'];
 			}
 		}
-		
 	
 		$data->data = $new_menuItems;
 	}
 
-
-
-
 	/**
 	 * GetMenuItems
 	 * Adds the survey menu item after customfields_button
+     *
+     *
+     * @param InterspireEventData $data
+     * @return void
 	 */
 	static public function GetMenuItems(InterspireEventData $data)
 	{
@@ -607,57 +552,51 @@ class Addons_surveys extends Interspire_Addons
 			$menu_part1 = $menu;
 			$menu_part2 = array_splice($menu_part1,$index);
 			$menu_survey =
-			array('survey_button' =>
-				array(
-					array(
+			[
+                'survey_button' =>
+				[
+					[
 						'text' => GetLang('Addon_surveys_ViewSurveys'),
 						'link' => $me->admin_url,
 						'show' => 1,
 						'description' => GetLang('Addon_surveys_ViewSurveysDescription'),
 						'image' => 'forms_view.gif'
-					),
-					array(
+                    ],
+					[
 						'text' => GetLang('Addon_surveys_CreateSurveys'),
 						'link' => $me->admin_url,
 						'show' => 1,
 						'description' => GetLang('Addon_surveys_CreateSurveysDescription'),
 						'image' => ''
-					),
-					array(
+                    ],
+					[
 						'text' => GetLang('Addon_surveys_SurveyTemplates'),
 						'link' => $me->admin_url . "&Action=Templates",
 						'show' => 1,
 						'description' => GetLang('Addon_surveys_SurveyTemplatesDescription'),
 						'image' => ''
-					)
-				)
-			);
+                    ]
+                ]
+            ];
 			$menu = array_merge($menu_part1,$menu_survey,$menu_part2);
 		}
 	}
 
-	/**
-	 * Register Addon Permission
-	 *
-	 *
-	 */
 	static function RegisterAddonPermissions()
 	{
-		$description = self::LoadDescription('surveys');
-		$perms = array (
-			'surveys' => array (
+        self::RegisterAddonPermission([
+			'surveys' => [
 				'addon_description' => GetLang('Addon_Settings_Survey_Header'),
-				'create' => array('name' => GetLang('Addon_surveys_Permission_Create')),
-				'edit' => array('name' => GetLang('Addon_surveys_Permission_Edit')),
-				'delete' => array('name' => GetLang('Addon_surveys_Permission_Delete')),
-				'resultdefault' => array('name' => GetLang('Addon_surveys_results_Permission_View')),
-				'viewresponsesdefault' => array('name' => GetLang('Addon_surveys_responses_Permission_View')),
-				'editresponse' => array('name' => GetLang('Addon_surveys_responses_Permission_Edit')),
-				'deleteresponse' => array('name' => GetLang('Addon_surveys_responses_Permission_Delete')),
-				'exportdefault' => array('name' => GetLang('Addon_surveys_export_Permission'))
-			)
-		);
-		self::RegisterAddonPermission($perms);
+				'create' => ['name' => GetLang('Addon_surveys_Permission_Create')],
+				'edit' => ['name' => GetLang('Addon_surveys_Permission_Edit')],
+				'delete' => ['name' => GetLang('Addon_surveys_Permission_Delete')],
+				'resultdefault' => ['name' => GetLang('Addon_surveys_results_Permission_View')],
+				'viewresponsesdefault' => ['name' => GetLang('Addon_surveys_responses_Permission_View')],
+				'editresponse' => ['name' => GetLang('Addon_surveys_responses_Permission_Edit')],
+				'deleteresponse' => ['name' => GetLang('Addon_surveys_responses_Permission_Delete')],
+				'exportdefault' => ['name' => GetLang('Addon_surveys_export_Permission')]
+            ]
+        ]);
 	}
 
 
@@ -668,10 +607,9 @@ class Addons_surveys extends Interspire_Addons
 	 *
 	 * @return void
 	 */
-
 	public function Admin_Action_ViewResponsesdefault()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$ownerid = 	$user->userid;
 		$this->GetTemplateSystem();
 		$tpl = $this->template_system;
@@ -691,10 +629,8 @@ class Addons_surveys extends Interspire_Addons
 	 *
 	 * @return void
 	 */
-
 	public function Admin_Action_ViewResponses()
 	{
-
 		// a form id is required
 		$surveyId = IEM::requestGetGET('surveyId');
 		if (!$surveyId) {
@@ -721,18 +657,16 @@ class Addons_surveys extends Interspire_Addons
 			    $responseNumber = IEM::requestGetPOST('responseNumber');
 			}
 			$tpl->Assign('surveyId',$surveyId,false);
-			//$tpl->Assign('responseId',$responseId,false);
 
 			$survey_api = $this->getApi();
 			$survey_api->Load($surveyId);
 
 			$response_api = $this->getSpecificApi('responses');
 			$surveyData = $survey_api->GetData();
-			$responseCount  = $survey_api->getResponseCount();
+			$responseCount  = $survey_api->getResponseCount($surveyId);
 
 			// Getting all responses Id from specific survey, Responses Number map the actual ID with the number
-			$responseNumbers  = array();
-			$responseNumbers = $survey_api->getResponsesId();
+			$responseNumbers = $survey_api->getResponsesId($surveyId);
 
 			if (!$responseId) {
 					$responseId = $responseNumbers[1];
@@ -745,9 +679,6 @@ class Addons_surveys extends Interspire_Addons
 
 			if ($responseId) {
 				$response_api->Load($responseId);
-//				if (!$this->GetId()) {
-//					$this->setErrorMessage('errorMessage_responseDoesNotExist')->redirect('view.responses');
-//				}
 				// Getting which number is currently on by counting
 				$responseNumber   = $response_api->getResponseNumber();
 			}
@@ -759,7 +690,7 @@ class Addons_surveys extends Interspire_Addons
 				FlashMessage(GetLang('Addon_Surveys_viewResponseInvalidResponseId'), SS_FLASH_MSG_ERROR, $responseDefault);
 			} else {
 
-				$widgets          = $survey_api->getWidgets();
+				$widgets          = $survey_api->getWidgets($surveyId);
 				$widgetErrors     = IEM::sessionGet('survey.addon.widgetErrors');
 
 				// if there are responses at all then we will set the values
@@ -890,10 +821,7 @@ class Addons_surveys extends Interspire_Addons
 
 	public function Admin_Action_ResultDefault()
 	{
-//		if (!$this->userCan('viewResponses')) {
-//			$this->setErrorMessage('permission_sitemodules_cannotViewResponses')->redirect();
-//		}
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$ownerid = $user->userid;
 		$this->GetTemplateSystem();
 		$tpl = $this->template_system;
@@ -911,22 +839,17 @@ class Addons_surveys extends Interspire_Addons
 	 * This is an ajax call getting list 10 times at a time
 	 * @return void
 	 */
+    public function Admin_Action_Result_ResponsesList()
+    {
+        $limit = 10;
+        $offset  = IEM::requestGetGET('start');
+        $widgetId = IEM::requestGetGET('widgetId');
+        $surveyId = IEM::requestGetGET('surveyId');
+        $total_others = IEM::requestGetGET('total_others');
 
-	public function Admin_Action_Result_ResponsesList()
-	{
-		 $limit = 10;
-		 $offset  = IEM::requestGetGET('start');
-		 $widgetId = IEM::requestGetGET('widgetId');
-		 $surveyId = IEM::requestGetGET('surveyId');
-		 $total_others = IEM::requestGetGET('total_others');
-
-		 if (empty($startindex)) {
-		 	$startIndex = 0;
-		 }
-
-		 // initializing API...
-		$widget_api = $this->getSpecificApi('widgets');
-		$widget_api->Load($widgetId);
+        // initializing API...
+        $widget_api = $this->getSpecificApi('widgets');
+        $widget_api->Load($widgetId);
 
 		// Getting all 10 text, can be other options or actual survey option.
 		if (in_array($widget_api->type, array('radio', 'checkbox', 'select'))) {
@@ -934,11 +857,11 @@ class Addons_surveys extends Interspire_Addons
 		} else {
 			$other_answers = $widget_api->getResponseValuesByType($offset);
 			if ($widget_api->type == "file") {
-					foreach ($other_answers as &$answer) {
-						$file_path =  'temp/surveys/' . $surveyId . '/' . $answer['id'] . '/';
-						$answer['value'] = '<a href="' . $file_path . $answer['value'] .'">' . $answer['value'] . '</a>';
-					}
-				}
+                foreach ($other_answers as &$answer) {
+                    $file_path =  'temp/surveys/' . $surveyId . '/' . $answer['id'] . '/';
+                    $answer['value'] = '<a href="' . $file_path . $answer['value'] .'">' . $answer['value'] . '</a>';
+                }
+            }
 		}
 
 		$this->GetTemplateSystem();
@@ -986,6 +909,7 @@ class Addons_surveys extends Interspire_Addons
 		$this->_checkSurveyAccess($surveyId);
 
 		$tpl->assign('surveyId', $surveyId);
+		/** @var Addons_survey_api $survey_api */
 		$survey_api = $this->getApi();
 		$survey_api->Load($surveyId);
 
@@ -994,8 +918,8 @@ class Addons_surveys extends Interspire_Addons
 
 		// widget == question in this case..
 		$all_widgets = $survey_api->getWidgets($surveyId);
-		$all_responses = $survey_api->getResponses();
-		$responseCount  = $survey_api->getResponseCount();
+		$all_responses = $survey_api->getResponses($surveyId);
+		$responseCount  = $survey_api->getResponseCount($surveyId);
 		$survey_results = array();
 
 		// foreach questions...
@@ -1103,7 +1027,6 @@ class Addons_surveys extends Interspire_Addons
 			$question_number++;
 		}
 
-		//$title = sprintf(GetLang(''), $survey_name);
 		$tpl->Assign('survey_name', $survey_api->name);
 		$tpl->Assign('survey_id', $survey_api->id);
 		$tpl->Assign('responseCount', $responseCount);
@@ -1111,12 +1034,10 @@ class Addons_surveys extends Interspire_Addons
 		$tpl->parseTemplate('results_survey');
 	}
 
-
 	public function Admin_Action_EditResponse()
 	{
 		$this->Admin_Action_ViewResponses();
 	}
-
 
 	/**
 	 * Admin_Action_DeleteResponse
@@ -1126,11 +1047,6 @@ class Addons_surveys extends Interspire_Addons
 	 */
 	public function Admin_Action_DeleteResponse()
 	{
-		// can they even view responses
-//		if (!$this->userCan('viewResponses')) {
-//			$this->setErrorMessage('permission_sitemodules_cannotDeleteResponses')->redirect();
-//		}
-
 		$surveyId         = IEM::requestGetGET('surveyId');
 		$responseId       = IEM::requestGetGET('responseId');
 		$responseNumber   = IEM::requestGetGET('responseNumber');
@@ -1141,17 +1057,11 @@ class Addons_surveys extends Interspire_Addons
 		$response_api = $this->getSpecificApi('responses');
 		$response_api->Load($responseId);
 
-		// if they can't view this response, then they can't delete it
-//		if (!$this->userCan('viewResponses', $formId)) {
-//			$this->setErrorMessage('permission_sitemodules_cannotDeleteResponse')->redirect();
-//		}
-
-		$redirect = "";
 		if ($response_api->Delete($surveyId)) {
-			if ($survey_api->getResponseByNumber($responseNumber)) {
+			if ($survey_api->getResponseByNumber($responseNumber, $surveyId)) {
 				// go to the next response
 				$redirect = 'index.php?Page=Addons&Addon=surveys&Action=viewresponses&surveyId=' . $surveyId . '&responseNumber=' . $responseNumber;
-			} elseif ($survey_api->getResponseByNumber($responseNumber - 1)) {
+			} elseif ($survey_api->getResponseByNumber($responseNumber - 1, $surveyId)) {
 				// go to the previous response
 				$redirect = 'index.php?Page=Addons&Addon=surveys&Action=viewresponses&surveyId=' . $surveyId . '&responseNumber=' . ($responseNumber - 1);
 			} else {
@@ -1172,8 +1082,6 @@ class Addons_surveys extends Interspire_Addons
 	 * Admin_Action_Delete
 	 * Deletes a survey
 	 *
-	 * @param Int $surveyid The surveyid to delete
-	 *
 	 * @return Void Returns nothing
 	 */
 	public function Admin_Action_Delete()
@@ -1185,7 +1093,6 @@ class Addons_surveys extends Interspire_Addons
 
 		$totaldelete = count($surveyid);
 
-		$me = self::LoadSelf();
 		if ($surveyid === array()) {
 			$surveyid = 0;
 			if (isset($_REQUEST['id'])) {
@@ -1216,14 +1123,12 @@ class Addons_surveys extends Interspire_Addons
 			$api->Delete((int)$surveyid);
 			FlashMessage(GetLang('Addon_surveys_SurveyDeleted'), SS_FLASH_MSG_SUCCESS, $this->admin_url);
 		}
-		//$me->Admin_Action_Default();
 	}
 
 	/**
 	 * Admin_Action_DownloadAttach
 	 *
 	 * Enter description here...
-	 * @return unknown_type
 	 */
 	public function Admin_Action_DownloadAttach()
 	{
@@ -1236,15 +1141,9 @@ class Addons_surveys extends Interspire_Addons
 		if (!$ajaxcall) {
 			return;
 		}
-		// Checking authentication...
 
-		// say if user is authenticated fine.. then let them download..
 		$response_api = $this->getSpecificApi('responses');
-
-		// check user permission
-		$user =  GetUser();
 		$response_api->Load($responseId);
-
 
 		$upBaseDir = TEMP_DIRECTORY . DIRECTORY_SEPARATOR . 'surveys';
 		$upSurveyDir = $upBaseDir . DIRECTORY_SEPARATOR . $surveyId;
@@ -1256,7 +1155,6 @@ class Addons_surveys extends Interspire_Addons
 			$filename = $response_api->getRealFileValue($file_name);
 			$filepath = $upDir . DIRECTORY_SEPARATOR . $filename;
 		}
-
 
 		if (!file_exists($filepath)) {
 			die("file not exist");
@@ -1270,44 +1168,29 @@ class Addons_surveys extends Interspire_Addons
 		header("Content-Type: application/download");
 		header("Content-Description: File Transfer");
 		header("Content-Length: " . filesize($filepath));
-		// flush();  this doesn't really matter.
-
 
 		$fp = fopen($filepath, "r");
-		while (!feof($fp))
-		{
+		while (!feof($fp)) {
 		    echo fread($fp, 3840);
-		    flush(); // this is essential for large downloads
+		    flush();
 		}
 		fclose($fp);
-
-
 	}
 
 	/**
 	 * Admin Action Export
 	 *
 	 * Enter description here...
-	 * @return unknown_type
 	 */
 	public function Admin_Action_Export()
 	{
-		// can they view responses at all
-//		if (!$this->userCan('viewResponses')) {
-//			$this->setErrorMessage('permission_sitemodules_cannotExportResponses')->redirect();
-//		}
 		$surveyId =	IEM::requestGetPost('surveyId');
+        $surveyId = (int) trim($surveyId);
 		$this->_checkSurveyAccess($surveyId);
-
 
 		if (empty($surveyId)) {
 			$surveyId = IEM::requestGetGET('surveyId');
 		}
-
-		// can they view this response, cause if they can't, then they can't export it cause that would be viewing it
-//		if (!$this->userCan('viewResponses', $formId)) {
-//			$this->setErrorMessage('permission_sitemodules_cannotExportResponse')->redirect('export.responses');
-//		}
 
 		if ($surveyId) {
 			$data         = array();
@@ -1315,10 +1198,9 @@ class Addons_surveys extends Interspire_Addons
 			// get the survey API
 			$survey_api = $this->getApi();
 			$survey_api->Load($surveyId);
-			$surveyData = $survey_api->GetData();
 			$widgets      = $survey_api->getWidgets($surveyId);
-			$survy_api->id = $surveyId;
-			$responses    = $survey_api->getResponses();
+            $survey_api->id = $surveyId;
+			$responses    = $survey_api->getResponses($surveyId);
 
 			// create a header array
 			$data[0] = array();
@@ -1376,16 +1258,10 @@ class Addons_surveys extends Interspire_Addons
 	/**
 	 * Admin_Action_ExportDefault
 	 * Showing all the right option for the export..
-	 *
-	 * @return unknown_type
 	 */
-
 	public function Admin_Action_ExportDefault()
 	{
-//		if (!$this->userCan('viewResponses')) {
-//			$this->setErrorMessage('permission_sitemodules_cannotViewResponses')->redirect();
-//		}
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$ownerid = 	$user->userid;
 		$this->GetTemplateSystem();
 		$tpl = $this->template_system;
@@ -1439,12 +1315,8 @@ class Addons_surveys extends Interspire_Addons
 		$this->Admin_Action_PreConfig();
 
 		$me = self::LoadSelf();
-		$surveyid = 0;
-		if (isset($_REQUEST['id'])) {
-			$surveyid = (int)$_REQUEST['id'];
-		}
 		$api = self::getApi();
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$me->template_system->Assign('Add_Button',$me->template_system->ParseTemplate('add_survey_button',true),false);
 		$me->template_system->Assign('Delete_Button', $me->template_system->ParseTemplate('delete_survey_button', true), false);
@@ -1506,8 +1378,7 @@ class Addons_surveys extends Interspire_Addons
 			}
 
 			// Number of response to be zero first..
-			// now lets geat each number of response..
-
+			// now lets get each number of response..
 			$me->template_system->Assign('numresponses', $survey['responseCount']);
 
 			if (empty($survey['responseCount'])) {
@@ -1551,14 +1422,6 @@ class Addons_surveys extends Interspire_Addons
 		$this->GetTemplateSystem();
 		$tpl = $this->template_system;
 
-		$surveyid = 0;
-		if (isset($_REQUEST['id'])) {
-			$surveyid = (int)$_REQUEST['id'];
-		}
-
-		$api = self::getApi();
-		$QuestionTypes = '';
-
 		$tpl->Assign('TitleLabel',Getlang('Addon_surveys_Question_Title'));
 		$tpl->Assign('Heading',GetLang('Addon_surveys_Survey_Heading_Create'));
 		$tpl->Assign('Intro',GetLang('Addon_surveys_Survey_Intro_Create'));
@@ -1577,8 +1440,6 @@ class Addons_surveys extends Interspire_Addons
 	/**
 	 * Admin_Action_Build
 	 * This is for backend editor to call the template system and render the right widget for the editor.
-	 *
-	 * @return void
 	 */
 	public function Admin_Action_Build()
 	{
@@ -1599,7 +1460,7 @@ class Addons_surveys extends Interspire_Addons
 		$surveys_build = new Addons_surveys_build($this->template_system);
 		// check if method exist..
 		if (!method_exists($surveys_build, $widget_func)) {
-			throw new Interspire_Addons_Exception("Function " . $widget_func . " doesnt exist in " . $survey_build, Interspire_Addons_Exception::MethodDoesntExist);
+			throw new Interspire_Addons_Exception("Function " . $widget_func . " doesn't exist", Interspire_Addons_Exception::MethodDoesntExist);
 		}
 
 		// Calling the survey build function depending on whats being called.
@@ -1611,53 +1472,25 @@ class Addons_surveys extends Interspire_Addons
 	}
 
 	/**
-	 * Admin_Action_Submit
-	 *
-	 */
-	public function Admin_Action_Submit()
-	{
-		$this->_handleSubmitAction();
-	}
-
-	/**
-	 * Redirects back to the http referer.s
-	 *
-	 * @return Void
-	 */
-	private function redirectToReferer()
-	{
-		header('Location: ' . $_SERVER['HTTP_REFERER']);
-		exit;
-	}
-
-
-	/**
 	 * Admin_Action_Save
 	 * Saves and exit or Save and continue..
 	 *
 	 * @return Void Returns nothing
 	 */
-	// TODO: BUILDING THE SAVE FUNCTION NOW!!
 	public function Admin_Action_Save()
 	{
 		$form     = IEM::requestGetPost('form');
 		$widgets  = IEM::requestGetPost('widget');
 
-
 		if ($form) {
-				// Check for permission here to prevent URL attack..
 			if ($form['id']) {
 				$formId = $form['id'];
 				// check the right permission
 				$this->_checkSurveyAccess($formId);
-			} else {
-				// raise invalid survey here..
-
 			}
 		}
 
-		if (isset($form['surveys_header_logo_filename']))
-		{
+		if (isset($form['surveys_header_logo_filename'])) {
 			$form['surveys_header_logo'] = $form['surveys_header_logo_filename'];
 			unset($form['surveys_header_logo_filename']);
 		}
@@ -1666,251 +1499,250 @@ class Addons_surveys extends Interspire_Addons
 
 		// This is used to make sure count will return Zero if the array is empty.
 		if (empty($widgets)) {
-		//	unset($widgets);
-			$widgets = array();
+			$widgets = [];
 		}
 
+        // validation rules; since they are arrays, their names/values can't be pulled from $_POST
+        // otherwise we could go: new Interspire_Validator($_POST);
+        $validator = new Interspire_Validator([
+                'form[email]'              	=> $form['email'],
+                'form[surveys_header_logo]'	=> empty($form['surveys_header_logo']) ? null : $form['surveys_header_logo'],
+                'form[show_message]'       	=> $form['show_message'],
+                'form[show_uri]'           	=> $form['show_uri'],
+                'form[error_message]'      	=> $form['error_message'],
+                'form[submit_button_text]' 	=> $form['submit_button_text'],
+                'formMustHaveWidgets'      	=> count($widgets)
+        ]);
 
-			// validation rules; since they are arrays, their names/values can't be pulled from $_POST
-			// otherwise we could go: new Interspire_Validator($_POST);
-			$validator = new Interspire_Validator(array(
-					'form[email]'              	=> $form['email'],
-				//	'form[surveys_header_text]'	=> $form['surveys_header_text'],
-					'form[surveys_header_logo]'	=> @$form['surveys_header_logo'],
-					'form[show_message]'       	=> $form['show_message'],
-					'form[show_uri]'           	=> $form['show_uri'],
-					'form[error_message]'      	=> $form['error_message'],
-					'form[submit_button_text]' 	=> $form['submit_button_text'],
-					'formMustHaveWidgets'      	=> count($widgets)
-				));
+        if ($form['surveys_header'] == "headerlogo") {
+            // if its the headerlogo..
+            if (isset($_FILES['form'])) {
+                $file_data = $_FILES['form'];
+                $filepath = $file_data['tmp_name']['surveys_header_logo'];
+                $filesize = $file_data['size']['surveys_header_logo'];
+                $filename = $file_data['name']['surveys_header_logo'];
+                $filetype = $file_data['type']['surveys_header_logo'];
 
-			/*
-			if ($form['surveys_header'] == "headertext") {
-					$formHeaderText = new Interspire_Validator_Required;
-					$formHeaderText->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formEmail_headertext');
-					$validator->addValidators('form[surveys_header_text]', $formHeaderText);
-			} else
-			*/
-			if ($form['surveys_header'] == "headerlogo") {
-				// if its the headerlogo..
-				if (isset($_FILES['form'])) {
-					$file_data = $_FILES['form'];
-					$filepath = $file_data['tmp_name']['surveys_header_logo'];
-					$filesize = $file_data['size']['surveys_header_logo'];
-					$filename = $file_data['name']['surveys_header_logo'];
-					$filetype = $file_data['type']['surveys_header_logo'];
+                // Validation for checking the images file
+                $formHeaderLogoImageSize = new Interspire_Validator_ImageSize($filesize);
+                $formHeaderLogoImageSize->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_headerlogosize');
+                $validator->addValidators("form[surveys_header_logo]", $formHeaderLogoImageSize);
 
-					// Validation for checking the images file
-					$formHeaderLogoImageSize = new Interspire_Validator_ImageSize($filesize);
-					$formHeaderLogoImageSize->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_headerlogosize');
-					$validator->addValidators("form[surveys_header_logo]", $formHeaderLogoImageSize);
+                // Validation for checking the images type
+                $formHeaderLogoImageFile = new Interspire_Validator_ImageFile($filepath, $filesize, $filetype, $filename);
+                $formHeaderLogoImageFile->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_headerlogotype');
+            } else {
+                $formHeaderLogoImageFile = new Interspire_Validator_ImageFile('','','','');
+                $formHeaderLogoImageFile->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_headerlogotype');
+            }
 
-					// Validation for checking the images type
-					$formHeaderLogoImageFile = new Interspire_Validator_ImageFile($filepath, $filesize, $filetype, $filename);
-					$formHeaderLogoImageFile->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_headerlogotype');
-				} else {
-					$formHeaderLogoImageFile = new Interspire_Validator_ImageFile('','','','');
-					$formHeaderLogoImageFile->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_headerlogotype');
-				}
+            // If the form already have a logo, and the File Post is empty ignore..
+            if ($form['surveys_header_logo'] != "" && empty($file_data)) {
 
-				// If the form already have a logo, and the File Post is empty ignore..
-				if ($form['surveys_header_logo'] != "" && empty($file_data)) {
+            } else {
+                $validator->addValidators('form[surveys_header_logo]', $formHeaderLogoImageFile);
+            }
 
-				} else {
-					$validator->addValidators('form[surveys_header_logo]', $formHeaderLogoImageFile);
-				}
+            if (!empty($filename)) {
+                $form['surveys_header_logo'] = $filename;
+            }
+        }
 
-				if ($filename != "") {
-						$form['surveys_header_logo'] = $filename;
-				}
-			}
+        // email feedback validation
+        if (isset($form['email_feedback'])) {
+            $formEmailEmail                  = new Interspire_Validator_Email;
+            $formEmailEmail->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_email');
 
-			// email feedback validation
-			if (isset($form['email_feedback'])) {
-				$formEmailEmail                  = new Interspire_Validator_Email;
-				$formEmailEmail->errorMessage    = GetLang('Addon_Surveys_ErrorMessage_formEmail_email');
-
-				$validator->addValidators('form[email]', $formEmailEmail);
-			} else {
-				$form['email_feedback'] = 0;
-			}
+            $validator->addValidators('form[email]', $formEmailEmail);
+        } else {
+            $form['email_feedback'] = 0;
+        }
 
 
-			// after submit validation
-			if (isset($form['after_submit'])) {
-				if ($form['after_submit'] == 'show_message') {
-					$formShowMessageRequired               = new Interspire_Validator_Required;
-					$formShowMessageRequired->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formShowMessage_required');
-					$validator->addValidators('form[show_message]', $formShowMessageRequired);
-				} else {
-					// uri validation
-					$formShowUriRequired               = new Interspire_Validator_Required;
-					$formShowUriRequired->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formShowUri_required');
-					$validator->addValidators('form[show_uri]', $formShowUriRequired);
+        // after submit validation
+        if (isset($form['after_submit'])) {
+            if ($form['after_submit'] == 'show_message') {
+                $formShowMessageRequired               = new Interspire_Validator_Required;
+                $formShowMessageRequired->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formShowMessage_required');
+                $validator->addValidators('form[show_message]', $formShowMessageRequired);
+            } else {
+                // uri validation
+                $formShowUriRequired               = new Interspire_Validator_Required;
+                $formShowUriRequired->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formShowUri_required');
+                $validator->addValidators('form[show_uri]', $formShowUriRequired);
 
-					if ($form['show_uri']) {
-						$formUri = new Interspire_Validator_Uri;
-						$formUri->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formShowUri_uri');
-						$validator->addValidators('form[show_uri]', $formUri);
-					}
-				}
-			}
+                if ($form['show_uri']) {
+                    $formUri = new Interspire_Validator_Uri;
+                    $formUri->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formShowUri_uri');
+                    $validator->addValidators('form[show_uri]', $formUri);
+                }
+            }
+        }
 
-			// error message and submit button text validators
-			$formErrorMessageRequired                   = new Interspire_Validator_Required;
-			$formErrorMessageRequired->errorMessage     = GetLang('Addon_Surveys_ErrorMessage_formErrorMessage_required');
+        // error message and submit button text validators
+        $formErrorMessageRequired                   = new Interspire_Validator_Required;
+        $formErrorMessageRequired->errorMessage     = GetLang('Addon_Surveys_ErrorMessage_formErrorMessage_required');
 
-			$formSubmitButtonTextRequired               = new Interspire_Validator_Required;
-			$formSubmitButtonTextRequired->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formSubmitButtonText_required');
+        $formSubmitButtonTextRequired               = new Interspire_Validator_Required;
+        $formSubmitButtonTextRequired->errorMessage = GetLang('Addon_Surveys_ErrorMessage_formSubmitButtonText_required');
 
-			// error message and submit button text validation
-			$validator->addValidators(array(
-					'form[error_message]'      => $formErrorMessageRequired,
-					'form[submit_button_text]' => $formSubmitButtonTextRequired
-				));
+        // error message and submit button text validation
+        $validator->addValidators([
+                'form[error_message]'      => $formErrorMessageRequired,
+                'form[submit_button_text]' => $formSubmitButtonTextRequired
+        ]);
 
-			// the form must have widgets
-			$formMustHaveWidgets               = new Interspire_Validator_NumberRange(1);
-			$formMustHaveWidgets->errorMessage = GetLang('Addon_Surveys_ErrorMessage_mustHaveWidgets_numberRange');
+        // the form must have widgets
+        $formMustHaveWidgets               = new Interspire_Validator_NumberRange(1);
+        $formMustHaveWidgets->errorMessage = GetLang('Addon_Surveys_ErrorMessage_mustHaveWidgets_numberRange');
 
-			// the widget number validator
-			$validator->addValidators('formMustHaveWidgets', $formMustHaveWidgets);
+        // the widget number validator
+        $validator->addValidators('formMustHaveWidgets', $formMustHaveWidgets);
 
-			// validate the fields
-			$validator->validate();
+        // validate the fields
+        $validator->validate();
 
-			// if any error messages are found then do this..
-			if ($errors = $validator->getErrors()) {
-				echo json_encode(array(
-						'success'  => false,
-						'message'  => GetLang('Addon_Surveys_saveFormMessageError'),
-						'messages' => $validator->getErrorMessages(),
-						'errors'   => $errors
-					));
-				exit;
-			}
+        // if any error messages are found then do this..
+        if ($errors = $validator->getErrors()) {
+            echo json_encode([
+                    'success'  => false,
+                    'message'  => GetLang('Addon_Surveys_saveFormMessageError'),
+                    'messages' => $validator->getErrorMessages(),
+                    'errors'   => $errors
+            ]);
+            exit;
+        }
 
 		$surveysApi = $this->getApi();
 
 		// Loading the Form Data first using populateFormData then Create or Save it
-		$_columns = array('name','userid','description','created','surveys_header','surveys_header_text','surveys_header_logo','email','email_feedback','after_submit','show_message','show_uri','error_message','submit_button_text');
+		$_columns = [
+		    'name',
+            'userid',
+            'description',
+            'created',
+            'surveys_header',
+            'surveys_header_text',
+            'surveys_header_logo',
+            'email',
+            'email_feedback',
+            'after_submit',
+            'show_message',
+            'show_uri',
+            'error_message',
+            'submit_button_text',
+        ];
+
 		$surveysApi->populateFormData($_columns, $form);
 
 		// If there is no ID Create if exist then update
 		if (empty($formId)) {
-			$create_new = true;
 			$surveysApi->__set('created', date('Y-m-d h:i:s'));
 			$formId = $surveysApi->Create();
 		} else {
 			$surveysApi->setId($formId);
-			$surveysApi->Update();
+			$surveysApi->Update($formId);
 		}
 
-		//  if we are uploding a file need to take
-		// care of and copy the actual file
 		if ($form['surveys_header'] == "headerlogo") {
-				if (!empty($file_data)) {
-					$filepath = $file_data['tmp_name']['surveys_header_logo'];
-					$filesize = $file_data['size']['surveys_header_logo'];
-					$filename = $file_data['name']['surveys_header_logo'];
-					$filetype = $file_data['type']['surveys_header_logo'];
+            if (!empty($file_data)) {
+                $filepath = $file_data['tmp_name']['surveys_header_logo'];
+                $filename = $file_data['name']['surveys_header_logo'];
 
-					$surveys_dir = TEMP_DIRECTORY . '/surveys';
-					if (!is_dir($surveys_dir)) {
-						mkdir($surveys_dir);
-						chmod($surveys_dir, 0777);
-					}
+                $surveys_dir = TEMP_DIRECTORY . '/surveys';
+                if (!is_dir($surveys_dir)) {
+                    mkdir($surveys_dir);
+                    chmod($surveys_dir, 0777);
+                }
 
-					$surveys_dir .= '/' . $formId;
-					if (!is_dir($surveys_dir)) {
-						mkdir($surveys_dir);
-						chmod($surveys_dir, 0777);
-					}
+                $surveys_dir .= '/' . $formId;
+                if (!is_dir($surveys_dir)) {
+                    mkdir($surveys_dir);
+                    chmod($surveys_dir, 0777);
+                }
 
-					if (move_uploaded_file($filepath, "$surveys_dir/$filename") !== false) {
-
-					}
-				}
+                move_uploaded_file($filepath, "{$surveys_dir}/{$filename}");
+            }
 		}
 
 		if ($formId) {
 			// Now saving all the widgets here..
 			$widgetapi = $this->getSpecificApi('widgets');
 			if ($widgets) {
-					// a list of widget/field ids, we will use this to delete widgets that
-					// were removed from the front end after we have done the saving
-					$widgetIds          = array();
-					$fieldIds           = array();
-					$widgetDisplayOrder = 0;
-					// save the widgets
-					foreach ($widgets as $widget) {
-						// default required value if not provided
-						if (!isset($widget['is_required'])) {
-							$widget['is_required'] = 0;
-						}
-						if (!isset($widget['is_random'])) {
-							$widget['is_random'] = 0;
-						}
+                // a list of widget/field ids, we will use this to delete widgets that
+                // were removed from the front end after we have done the saving
+                $widgetIds          = [];
+                $fieldIds           = [];
+                $widgetDisplayOrder = 0;
+                // save the widgets
+                foreach ($widgets as $widget) {
+                    // default required value if not provided
+                    if (!isset($widget['is_required'])) {
+                        $widget['is_required'] = 0;
+                    }
+                    if (!isset($widget['is_random'])) {
+                        $widget['is_random'] = 0;
+                    }
 
-						// if all file types is selected, then clear the allowed file types
-						if (isset($widget['all_file_types']) && $widget['all_file_types'] == 1) {
-							$widget['allowed_file_types'] = '';
-						}
+                    // if all file types is selected, then clear the allowed file types
+                    if (isset($widget['all_file_types']) && $widget['all_file_types'] == 1) {
+                        $widget['allowed_file_types'] = '';
+                    }
 
-						// set the display order for the widget
-						$widget['display_order'] = $widgetDisplayOrder;
+                    // set the display order for the widget
+                    $widget['display_order'] = $widgetDisplayOrder;
 
-						// save the widget
-						$widgetapi->populateFormData($widget);
-						$widgetid = $widgetapi->saveWidget($formId);
+                    // save the widget
+                    $widgetapi->populateFormData($widget);
+                    $widgetid = $widgetapi->saveWidget($formId);
 
-						// if the widget was saved, look for fields to save
-						if ($widgetid !== false) {
-							// add the saved widget id to the list of widgets not to remove
-							$widgetIds[] = $widgetid;
+                    // if the widget was saved, look for fields to save
+                    if ($widgetid !== false) {
+                        // add the saved widget id to the list of widgets not to remove
+                        $widgetIds[] = $widgetid;
 
-							// save the widget fields
-							if (isset($widget['field']) && is_array($widget['field'])) {
-								$fieldDisplayOrder = 0;
+                        // save the widget fields
+                        if (isset($widget['field']) && is_array($widget['field'])) {
+                            $fieldDisplayOrder = 0;
 
-							// add / update fields
-								foreach ($widget['field'] as $widget_key => $field) {
-									// if the field isn't selected, we must mark it as not selected
-									// since the value doesn't exist if not checked and won't override
-									// a checked value
-									if (!isset($field['is_selected'])) {
-										$field['is_selected'] = 0;
-									}
+                        // add / update fields
+                            foreach ($widget['field'] as $widget_key => $field) {
+                                // if the field isn't selected, we must mark it as not selected
+                                // since the value doesn't exist if not checked and won't override
+                                // a checked value
+                                if (!isset($field['is_selected'])) {
+                                    $field['is_selected'] = 0;
+                                }
 
-									// set the display order of the widget field
-									$field['display_order'] = $fieldDisplayOrder;
+                                // set the display order of the widget field
+                                $field['display_order'] = $fieldDisplayOrder;
 
-									// save the field
+                                // save the field
 
-									if (!is_int($widget_key)) {
-										unset($field['id']);
-									}
+                                if (!is_int($widget_key)) {
+                                    unset($field['id']);
+                                }
 
-									$fieldId = $widgetapi->saveFields($widgetid, $field);
-									// if saved, add the saved field id to the list of fields not to remove
-									if ($fieldId) {
-										$fieldIds[] = $fieldId;
-									}
-									// field display order, doesn't affect random ordering
-									$fieldDisplayOrder++;
-								}
+                                $fieldId = $widgetapi->saveFields($widgetid, $field);
+                                // if saved, add the saved field id to the list of fields not to remove
+                                if ($fieldId) {
+                                    $fieldIds[] = $fieldId;
+                                }
+                                // field display order, doesn't affect random ordering
+                                $fieldDisplayOrder++;
+                            }
 
-								// Remove all fields that weren't included in the current post array that
-								// are associated to the current widget.
-								$widgetapi->deleteFieldsNotIn($fieldIds);
-							}
-						}
-						// widget display order
-						$widgetDisplayOrder++;
-					}
-					// remove any widgets that weren't saved that are associated to the current form
-					$surveysApi->id = $formId;
-					$surveysApi->deleteWidgetsNotIn($widgetIds);
+                            // Remove all fields that weren't included in the current post array that
+                            // are associated to the current widget.
+                            $widgetapi->deleteFieldsNotIn($fieldIds);
+                        }
+                    }
+                    // widget display order
+                    $widgetDisplayOrder++;
+                }
+                // remove any widgets that weren't saved that are associated to the current form
+                $surveysApi->id = $formId;
+                $surveysApi->deleteWidgetsNotIn($widgetIds, $formId);
 			}
 		} else {
 			$surveysApi->deleteAllWidgets($formId);
@@ -1928,15 +1760,13 @@ class Addons_surveys extends Interspire_Addons
 		}
 
 		// success message
-		echo json_encode(array(
-				'success'  => true,
-				'message'  => GetLang('Addon_Surveys_saveSurveysMessageSuccess'),
-				'redirect' => $redirect
-			));
+		echo json_encode([
+            'success'  => true,
+            'message'  => GetLang('Addon_Surveys_saveSurveysMessageSuccess'),
+            'redirect' => $redirect
+        ]);
 		exit;
 	}
-
-	//TODO: TO finish editing the actual survey..
 
 	/***
 	 * Admin_Action_Edit
@@ -1949,77 +1779,57 @@ class Addons_surveys extends Interspire_Addons
 		$this->Admin_Action_PreConfig();
 
 		$me = self::LoadSelf();
-		$formId = (int) IEM::requestGetGET('formId');
+		/** @var Addons_survey_api $surveysApi */
+        $surveysApi = $this->getApi();
 
-		// if a form id was given, load the corresponding form
-		$surveysApi = $this->getApi();
+        $formId = (int) IEM::requestGetGET('formId');
+		if (empty($formId)) {
+            FlashMessage(GetLang('Addon_Surveys_Edit_InvalidSurveyId'), SS_FLASH_MSG_ERROR);
+            $surveysApi->email_feedback = 1;
+            $surveysApi->after_submit = 'show_message';
+            $surveysApi->show_message = GetLang('Addon_surveys_Settings_ShowMessage');
+            $surveysApi->show_uri = GetLang('Addon_surveys_Settings_ShowUri');
+            $surveysApi->error_message = GetLang('Addon_surveys_Settings_ErrorMessage');
+            $surveysApi->submit_button_text = GetLang('Addon_surveys_Settings_Submit');
+            return $this->renderPage($surveysApi, $me);
+        }
 
 		$this->_checkSurveyAccess($formId);
-		$formId = $surveysApi->getId();
 
-		if (!empty($formId)) {
+        $widgetTemplates = [];
+        $widgetapi = $this->getSpecificApi('widgets');
 
-			$widgetTemplates = array();
+        $surveys_widgets = $surveysApi->getWidgets($formId);
+        foreach ($surveys_widgets as $widget) {
+            $widgetapi->SetId($widget['id']);
+            $me->template_system->Assign('randomId', 'widget_' . md5(microtime()));
+            $me->template_system->Assign('widget', $widget);
+            $me->template_system->Assign('widgetFields', $widgetapi->getFields());
+            $me->template_system->Assign('widgetFieldOther', $widgetapi->getOtherField());
+            $widgetTemplates[] = $me->template_system->ParseTemplate('widget.' . $widget['type'], true);
+        }
 
-			$widgetapi = $this->getSpecificApi('widgets');
+        $me->template_system->Assign('widgetTemplates', $widgetTemplates);
 
-			$surveys_widgets = $surveysApi->getWidgets($formId);
+        return $this->renderPage($surveysApi, $me);
 
-			foreach ($surveys_widgets as $widget) {
-				$widgetapi->SetId($widget['id']);
-
-				$me->template_system->Assign('randomId', 'widget_' . md5(microtime()));
-				$me->template_system->Assign('widget', $widget);
-				$me->template_system->Assign('widgetFields', $widgetapi->getFields());
-
-				$me->template_system->Assign('widgetFieldOther', $widgetapi->getOtherField());
-				$widgetTemplates[] = $me->template_system->ParseTemplate('widget.' . $widget['type'], true);
-			}
-
-			$me->template_system->Assign('widgetTemplates', $widgetTemplates);
-
-		} else {
-
-			// now die here..
-			FlashMessage(GetLang('Addon_Surveys_InvalidSurveyID'), SS_FLASH_MSG_ERROR);
-
-			// default checkbox state
-			$surveysApi->email_feedback = 1;
-
-			// default action after submitting a form
-			$surveysApi->after_submit = 'show_message';
-
-			// the default message to be shown
-			$surveysApi->show_message = GetLang('Addon_surveys_Settings_ShowMessage');
-
-			// the default uri to be shown
-			$surveysApi->show_uri = GetLang('Addon_surveys_Settings_ShowUri');
-
-			// the default error message to be shown
-			$surveysApi->error_message = GetLang('Addon_surveys_Settings_ErrorMessage');
-
-			// the default error message to be shown
-			$surveysApi->submit_button_text = GetLang('Addon_surveys_Settings_Submit');
-		}
-
-		// assign default form email
-		if (!$surveysApi->Get('email')) {
-			$surveysApi->email = $survey->emailaddress;
-		}
-
-		// assign survey and widget data
-		$form_data = $surveysApi->GetData();
-
-		foreach ($form_data as &$form_val) {
-			$form_val = htmlspecialchars($form_val);
-		}
-
-		$me->template_system->Assign('Heading',GetLang('Addon_surveys_Heading_Edit'));
-		$me->template_system->Assign('Intro',GetLang('Addon_surveys_Edit_Intro'));
-		$me->template_system->Assign('FlashMessages',GetFlashMessages(),false);
-		$me->template_system->Assign('form', $form_data);
-		$me->template_system->ParseTemplate('survey_form');
 	}
+
+	private function renderPage(Addons_survey_api $surveysApi, Addons_surveys $survey)
+    {
+        // assign survey and widget data
+        $form_data = $surveysApi->GetData();
+
+        foreach ($form_data as &$form_val) {
+            $form_val = htmlspecialchars($form_val);
+        }
+
+        $survey->template_system->Assign('Heading',GetLang('Addon_surveys_Heading_Edit'));
+        $survey->template_system->Assign('Intro',GetLang('Addon_surveys_Edit_Intro'));
+        $survey->template_system->Assign('FlashMessages',GetFlashMessages(),false);
+        $survey->template_system->Assign('form', $form_data);
+        $survey->template_system->ParseTemplate('survey_form');
+    }
 
 	/**
 	 * saveResponseAction
@@ -2028,7 +1838,6 @@ class Addons_surveys extends Interspire_Addons
 	 * @return void
 	 *
 	 */
-
 	public function Admin_Action_SaveResponse()
 	{
 		$surveyId       = (int) IEM::requestGetPOST('formId');
@@ -2036,7 +1845,6 @@ class Addons_surveys extends Interspire_Addons
 		$this->_checkSurveyAccess($surveyId);
 
 		$responseId     = IEM::requestGetPOST('responseId');
-		$responseNumber = IEM::requestGetPOST('responseNumber');
 		$postWidgets    = IEM::requestGetPOST('widget');
 		$errors         = 0;
 
@@ -2058,7 +1866,7 @@ class Addons_surveys extends Interspire_Addons
 
 			$survey_api = $this->getApi();
 			$survey_api->Load($surveyId);
-			$widgets      = $survey_api->getWidgets();
+			$widgets      = $survey_api->getWidgets($surveyId);
 			$widgetErrors = array();
 
 			foreach ($widgets as $widget) {
@@ -2140,11 +1948,7 @@ class Addons_surveys extends Interspire_Addons
 				echo '<pre style="border: 1px solid red";><b style="color:RED;">YUDI_DEBUG:'. __FILE__ .' ON LINE: ' . __LINE__ . '</b><br />';
 				print_r($widgetErrors);
 				echo '</pre>';
-				die;
-				// set the widget errors so we can retrieve them for the user
-				IEM::sessionSet('survey.addon.widgetErrors', $widgetErrors);
-				IEM::sessionSet('MessageText', GetLang('Addon_Surveys_saveResponseMessageError'));
-				IEM::sessionSet('MessageType', MSG_ERROR);
+				exit;
 			} else {
 				// isntantiate a new response object
 
@@ -2200,10 +2004,8 @@ class Addons_surveys extends Interspire_Addons
 								foreach ($fields as $fieldId => $field) {
 									// gather file information
 									$name    = $_FILES['widget']['name'][$widgetId]['field'][$fieldId]['value'];
-									$type    = $_FILES['widget']['type'][$widgetId]['field'][$fieldId]['value'];
 									$tmpName = $_FILES['widget']['tmp_name'][$widgetId]['field'][$fieldId]['value'];
 									$error   = $_FILES['widget']['error'][$widgetId]['field'][$fieldId]['value'];
-									$size    = $_FILES['widget']['size'][$widgetId]['field'][$fieldId]['value'];
 
 									// if the upload was successful to the temporary folder, move it
 									if ($error == UPLOAD_ERR_OK) {
@@ -2259,12 +2061,11 @@ class Addons_surveys extends Interspire_Addons
 	 * Admin_Action_Templates
 	 * Prints the survey templates page
 	 *
-	 * @return Void Returns nothing
+	 * @return mixed
 	 */
 	public function Admin_Action_Templates()
 	{
 		$me = self::LoadSelf();
-		$step = 1;
 		if (isset($_GET['SubAction'])) {
 			$method = $_GET['SubAction'];
 		} else {
@@ -2276,7 +2077,7 @@ class Addons_surveys extends Interspire_Addons
 		require dirname(__FILE__) . '/survey_templates.php';
 
 		$templates = new Addons_survey_templates;
-		$templates->template_system->Assign('AdminUrl',$me->admin_url);
+		$templates->template_system->Assign('AdminUrl', $me->admin_url);
 
 		if (method_exists($templates, $method)) {
 			return $templates->$method();
@@ -2298,10 +2099,10 @@ class Addons_surveys extends Interspire_Addons
 	 */
 	public function _refreshSurvey($surveyid)
 	{
-		$questions_html = $this->Admin_Action_Edit($surveyid,true);
-		$questions_html = str_replace(array('"',"\n"),array('\\"','\n'),$questions_html);
+		$questions_html = $this->Admin_Action_Edit();
+		$questions_html = str_replace(['"',"\n"], ['\\"','\n'], $questions_html);
 
-		echo "$('#questions_container').html(\"$questions_html\");";
+		echo "$('#questions_container').html(\"{$questions_html}\");";
 		echo "surveyRefresh();surveyUpdateControls();";
 	}
 
@@ -2309,11 +2110,11 @@ class Addons_surveys extends Interspire_Addons
 	 * _loadCountries
 	 * Loads list of countries from the data file
 	 *
-	 * @return Array Returns the list of countries in an array
+	 * @return array Returns the list of countries in an array
 	 */
 	public function _loadCountries()
 	{
-		$countries = array();
+		$countries = [];
 		$country_file = dirname(__FILE__) . "/data/countries.php";
 		if (is_readable($country_file)) {
 			require($country_file);
@@ -2361,8 +2162,8 @@ class Addons_surveys extends Interspire_Addons
 
 	/**
 	 * _validateIsBlank
-	 * @param $str the string
-	 * @param $trim whether or not to trim the str
+	 * @param string $str the string
+	 * @param bool $trim whether or not to trim the str
 	 *
 	 * Handles the form submission from all feedback forms on the front end.
 	 *

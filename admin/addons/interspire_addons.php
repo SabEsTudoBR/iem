@@ -204,7 +204,7 @@ class Interspire_Addons
 	 *
 	 * @see GetTemplateSystem
 	 *
-	 * @var Object
+	 * @var IEM_InterspireTemplate
 	 */
 	protected $template_system = null;
 
@@ -440,6 +440,8 @@ class Interspire_Addons
 	 * @uses Interspire_Addons_Exception::AddonDoesntExist
 	 * @uses Interspire_Addons_Exception::AddonDescriptionDoesntExist
 	 *
+     * @throws Interspire_Addons_Exception
+     *
 	 * @return Mixed If the addon doesn't exist or there is no description.xml file, it will throw an exception. Otherwise, particular variables are loaded from the xml and returned.
 	 *
 	 * @static
@@ -474,6 +476,8 @@ class Interspire_Addons
 	 * @uses Interspire_Addons_Exception::AddonNotLoaded
 	 * @uses Interspire_Addons_Exception::AddonLanguageFileDoesntExist
 	 *
+     * @throws Interspire_Addons_Exception
+     *
 	 * @return Mixed This will throw an exception if the addon hasn't been loaded (based on the id) or if the language file doesn't exist. If both of those conditions are met, this returns true.
 	 */
 	public function LoadLanguageFile()
@@ -513,6 +517,8 @@ class Interspire_Addons
 	 * @uses addon_id
 	 * @uses Interspire_Addons_Exception::AddonNotLoaded
 	 *
+     * @throws Interspire_Addons_Exception
+     *
 	 * @return Mixed Throws an exception if the addon id isn't set properly, otherwise it gets returned.
 	 */
 	public function GetId()
@@ -546,7 +552,7 @@ class Interspire_Addons
 	 * );
 	 * </code>
 	 *
-	 * @return Array Returns a multidimensional array containing the details of the addons with the addon_id as the 'key' for the array.
+	 * @return array Returns a multidimensional array containing the details of the addons with the addon_id as the 'key' for the array.
 	 *
 	 * @uses LoadDescription
 	 *
@@ -599,7 +605,7 @@ class Interspire_Addons
 	 *
 	 * @uses db
 	 *
-	 * @return Array Returns a multidimensional array of details for the addon.
+	 * @return array Returns a multidimensional array of details for the addon.
 	 */
 	public function GetAvailableAddons()
 	{
@@ -748,7 +754,7 @@ class Interspire_Addons
 	 * @see GetAddonPermissions
 	 * @see GetMenuItems
 	 *
-	 * @return Array Returns an empty array in the base class. Must be overridden to do anything.
+	 * @return array Returns an empty array in the base class. Must be overridden to do anything.
 	 */
 	public function GetEventListeners()
 	{
@@ -853,7 +859,7 @@ class Interspire_Addons
 	 *
 	 * That is, the item will show in the menu if the user has 'permission_1', 'permission_2' or 'permission_3'.
 	 *
-	 * @param Array $item An array containing the details of the menu item. It is temporarily stores in the $menuItems array for GetMenuItems to call.
+	 * @param array $item An array containing the details of the menu item. It is temporarily stores in the $menuItems array for GetMenuItems to call.
 	 *
 	 * @see GetMenuItems
 	 *
@@ -955,7 +961,7 @@ class Interspire_Addons
 	 * }
 	 * </code>
 	 *
-	 * @param Array $permissions The new permissions to include for the addon.
+	 * @param array $permissions The new permissions to include for the addon.
 	 *
 	 * @uses userPermissions
 	 * @see GetEventListeners
@@ -1690,7 +1696,7 @@ class Interspire_Addons
 	 */
 	function LoadSortDetails($page_name = null)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if ($page_name == null) {
 			$page_name = $this->GetPageName();
@@ -1720,7 +1726,7 @@ class Interspire_Addons
 		if (is_null($page_name)) {
 			$page_name = $this->GetPageName();
 		}
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$display_settings = $user->GetSettings('DisplaySettings');
 		if (!isset($display_settings['DisplayPage'])) {
 			$display_settings['DisplayPage'] = array();

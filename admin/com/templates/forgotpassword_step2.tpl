@@ -1,8 +1,3 @@
-<style type="text/css">
-	.popupContainer {
-		border: 0px;
-	}
-</style>
 <form action="index.php?Page=%%PAGE%%&Action=%%GLOBAL_SubmitAction%%" method="post" name="frmLogin" id="frmLogin">
 	<div id="box" class="loginBox">
 		<table><tr><td style="border:solid 2px #DDD; padding:20px; background-color:#FFF; width:300px;">

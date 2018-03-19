@@ -31,36 +31,19 @@ class CustomFields_Number_API extends CustomFields_API
 	*
 	* @var String
 	*/
-	var $fieldtype = 'number';
+    public $fieldtype = 'number';
 
 	/**
 	* Options for this custom field type.
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Options = array(
+    public $Options = [
 		'MinLength' => '0',
 		'MaxLength' => '0',
 		'FieldLength' => '50',
-                'ApplyDefault' => ''
-	);
-
-	/**
-	* Constructor
-	* Calls the parent object's constructor.
-	*
-	* @param Int $fieldid The field to load up. This is passed to the parent constructor for processing.
-	* @param Boolean $connect_to_db Whether to connect to the database or not. If this is set to false, you need to set the database up yourself.
-	*
-	* @see CustomFields_API::CustomFields_API
-	* @see Db
-	*
-	* @return Boolean Returns the parent's constructor.
-	*/
-	function CustomFields_Number_API($fieldid=0, $connect_to_db=true)
-	{
-		return $this->CustomFields_API($fieldid, $connect_to_db);
-	}
+		'ApplyDefault' => ''
+    ];
 
 	/**
 	* CheckData

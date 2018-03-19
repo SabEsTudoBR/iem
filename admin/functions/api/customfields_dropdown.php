@@ -31,34 +31,17 @@ class CustomFields_Dropdown_API extends CustomFields_API
 	*
 	* @var String
 	*/
-	var $fieldtype = 'dropdown';
+    public $fieldtype = 'dropdown';
 
 	/**
 	* Options for this custom field type.
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Options = array(
+    public $Options = [
 		'Key' => '',
 		'Value' => ''
-	);
-
-	/**
-	* Constructor
-	* Calls the parent object's constructor.
-	*
-	* @param Int $fieldid The field to load up. This is passed to the parent constructor for processing.
-	* @param Boolean $connect_to_db Whether to connect to the database or not. If this is set to false, you need to set the database up yourself.
-	*
-	* @see CustomFields_API::CustomFields_API
-	* @see Db
-	*
-	* @return Boolean Returns the parent's constructor.
-	*/
-	function CustomFields_Dropdown_API($fieldid=0, $connect_to_db=true)
-	{
-		return $this->CustomFields_API($fieldid, $connect_to_db);
-	}
+    ];
 
 	/**
 	* CheckData

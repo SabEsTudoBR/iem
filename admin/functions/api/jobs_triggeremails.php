@@ -571,7 +571,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 								// -----
 							}
 
-							if (array_key_exists('addlist', $trigger['triggeractions'])) {
+							if ($error === false && array_key_exists('addlist', $trigger['triggeractions'])) {
 								$status = $this->_ProcessJob_AddList($queue, $trigger, $recipientid);
 								if ($status['halt']) {
 									return false;
@@ -581,7 +581,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 								}
 							}
 
-							if (array_key_exists('removelist', $trigger['triggeractions'])) {
+							if ($error === false && array_key_exists('removelist', $trigger['triggeractions'])) {
 								$status = $this->_ProcessJob_RemoveList($queue, $trigger, $recipientid);
 								if ($status['halt']) {
 									return false;
@@ -597,7 +597,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 					if ($doactions) {
 						// Record summary
 						if (!$this->RecordLogSummary($trigger['triggeremailsid'], $recipientid)) {
-							$this->_log('Cannot write log summary to the database... exitting');
+							$this->_log('Cannot write log summary to the database... exiting');
 							return false;
 						}
 					}
@@ -605,13 +605,13 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 					// update lastupdatedtime so we can track what's going on.
 					// This is used so we can see if the server has crashed or the cron job has been stopped in mid-send.
 					if (!$this->UpdateJob('triggeremails_send', 'i', time())) {
-						$this->_log('Cannot update job... Exitting');
+						$this->_log('Cannot update job... Exiting');
 						return false;
 					}
 
 					// Mark queue record as processed, if cannot mark queue as processed, terminate
-					if (!$this->_markQueueRecordAsProcessed($queueid, $recipientid)) {
-						$this->_log('Cannot mark queue record qith queueueid:' . $queueid . ', and recipient:' . $recipientid . ' as processed');
+					if ($error === true || !$this->_markQueueRecordAsProcessed($queueid, $recipientid)) {
+						$this->_log('Cannot mark queue record with queueueid:' . $queueid . ', and recipient:' . $recipientid . ' as processed');
 						return false;
 					}
 				}
@@ -718,7 +718,6 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 			trigger_error('Trigger job error: Cannot send newsletter with queueid:' . $queue['queueid'] . ', and recipient:' . $recipientid);
 			// Log failed sending
 			$this->RecordLogActions($trigger['triggeremailsid'], $recipientid, 'send_failed', $result['email']);
-            $return['halt'] = true;
 			return $return;
 		}
 
@@ -1357,7 +1356,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 		 * Set up recipient
 		 */
 			$subscriberinfo = $subscriberAPI->LoadSubscriberList($recipientid, 0, true);
-            
+
 			if (empty($subscriberinfo)) {
 				trigger_error('Cannot fetch recipient details', E_USER_NOTICE);
 				return $return;
@@ -1382,7 +1381,6 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 
 			$subscriberinfo['subscriberid'] = $recipientid;
 			$subscriberinfo['newsletter'] = $triggerrecord['triggeractions']['send']['newsletterid'];
-			$subscriberinfo['listid'] = $subscriberinfo['listid'];
 			$subscriberinfo['statid'] = $triggerrecord['statid'];
 			$subscriberinfo['listname'] = $listinfo['name'];
 			$subscriberinfo['companyname'] = $listinfo['companyname'];
@@ -1409,14 +1407,14 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 				}
 			} else {
                 require_once(SENDSTUDIO_API_DIRECTORY.'/customfields_date.php');
- 
+
                 foreach($subscriberinfo['CustomFields'] as $ar_key => $ar_value){
                     if($ar_value['fieldtype'] == 'date'){
                         $cfdateapi = new CustomFields_Date_API($ar_value['fieldid']);
                         $real_order = $cfdateapi->GetRealValue($ar_value['data']);
                         $subscriberinfo['CustomFields'][$ar_key]['data'] = $real_order;
                     }
-                }           
+                }
 			}
 
 			// TODO refactor
@@ -1631,165 +1629,81 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 		$cutoff = (intval($now / 86400) - 1) * 86400;
 		$year = date('Y', $now);
 
-		switch (SENDSTUDIO_DATABASE_TYPE) {
-			case 'mysql':
-				$query = "
-					INSERT INTO [|PREFIX|]queues (queueid, queuetype, ownerid, recipient, processed, sent, processtime)
+        $query = "
+                INSERT INTO [|PREFIX|]queues (queueid, queuetype, ownerid, recipient, processed, sent, processtime)
 
-					SELECT  t.queueid,
-					        'triggeremail',
-					        t.ownerid,
-					        s.subscriberid,
-					        0,
-					        0,
-					        date_add(str_to_date(d.data, '%d/%m/%Y'), INTERVAL t.triggerhours HOUR)
 
-					FROM    -- Select All of the required trigger emails information
-					        (   SELECT  t.triggeremailsid       AS triggeremailsid,
-					                    t.queueid               AS queueid,
-					                    t.ownerid               AS ownerid,
-					                    t.triggerhours          AS triggerhours,
-					                    t.triggerinterval       AS triggerinterval,
-					                    tdc.datavalueinteger    AS customfieldid,
-					                    tdl.datavalueinteger    AS listid
-					            FROM    [|PREFIX|]triggeremails AS t
-					                        JOIN [|PREFIX|]triggeremails_data AS tdc
-					                            ON (    tdc.triggeremailsid = t.triggeremailsid
-					                                    AND tdc.datakey = 'customfieldid')
-					                        JOIN [|PREFIX|]triggeremails_data AS tdl
-					                            ON (    t.triggeremailsid = tdl.triggeremailsid
-					                                    AND tdl.datakey = 'listid')
-					            WHERE   t.active = '1'
-					                    AND t.triggertype = 'f') AS t
+                SELECT  t.queueid,
+                        'triggeremail',
+                        t.ownerid,
+                        s.subscriberid,
+                        0,
+                        0,
+                        date_add(str_to_date(d.data, '%d/%m/%Y'), INTERVAL t.triggerhours HOUR)
 
-					            -- Join with subscribers table, making sure that subscriber is not bounced and not unsubscribed
-					            JOIN [|PREFIX|]list_subscribers AS s
-					                ON (    s.listid = t.listid
-					                        AND (s.bounced IS NULL OR s.bounced = 0)
-					                        AND (s.unsubscribed IS NULL OR s.unsubscribed = 0))
+                FROM    -- Select All of the required trigger emails information
+                        (   SELECT  t.triggeremailsid       AS triggeremailsid,
+                                    t.queueid               AS queueid,
+                                    t.ownerid               AS ownerid,
+                                    t.triggerhours          AS triggerhours,
+                                    t.triggerinterval       AS triggerinterval,
+                                    tdc.datavalueinteger    AS customfieldid,
+                                    tdl.datavalueinteger    AS listid
+                            FROM    [|PREFIX|]triggeremails AS t
+                                        JOIN [|PREFIX|]triggeremails_data AS tdc
+                                            ON (    tdc.triggeremailsid = t.triggeremailsid
+                                                    AND tdc.datakey = 'customfieldid')
+                                        JOIN [|PREFIX|]triggeremails_data AS tdl
+                                            ON (    t.triggeremailsid = tdl.triggeremailsid
+                                                    AND tdl.datakey = 'listid')
+                            WHERE   t.active = '1'
+                                    AND t.triggertype = 'f') AS t
 
-					             -- Join with subscriber data to check custom field date against current date
-					            JOIN [|PREFIX|]subscribers_data AS d
-					                ON (    d.subscriberid = s.subscriberid
-					                        AND d.fieldid = t.customfieldid
-					                        AND d.data <> ''
-					                        AND d.data IS NOT NULL
-					                        AND d.data <> '0'
-					                        AND RIGHT(d.data, 4) <= {$year}
-					                        AND (  (    t.triggerinterval <> 0
-					                                    AND date_add(str_to_date(CONCAT(LEFT(d.data, 6), '{$year}'), '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) >= '{$startOfDayString}'
-					                                    AND date_add(str_to_date(CONCAT(LEFT(d.data, 6), '{$year}'), '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) <= '{$endOfDayString}')
-					                                OR  (   t.triggerinterval = 0
-					                                        AND date_add(str_to_date(d.data, '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) >= '{$startOfDayString}'
-					                                        AND date_add(str_to_date(d.data, '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) <= '{$endOfDayString}')))
+                            -- Join with subscribers table, making sure that subscriber is not bounced and not unsubscribed
+                            JOIN [|PREFIX|]list_subscribers AS s
+                                ON (    s.listid = t.listid
+                                        AND (s.bounced IS NULL OR s.bounced = 0)
+                                        AND (s.unsubscribed IS NULL OR s.unsubscribed = 0))
 
-					            -- Left join with triggeremails recipients used to check whether or not subscribers have received a particular trigger or not
-					            -- INCLUSION of a record for a subscriber will INDICATE that the SUBSCRIBER IS NOT ELIGIBLE to receive the trigger, because they either:
-					            -- (1) Have received more than the specified interval
-					            -- (2) Trigger has recently gone off (within 24 hours) for the particular subscriber
-					            LEFT JOIN [|PREFIX|]triggeremails_log_summary AS lo
-					                ON (    lo.triggeremailsid = t.triggeremailsid
-					                        AND lo.subscriberid = s.subscriberid
-					                        AND (   -- Exclude anything that doesn't have perpetual interval
-					                                t.triggerinterval <> -1
+                             -- Join with subscriber data to check custom field date against current date
+                            JOIN [|PREFIX|]subscribers_data AS d
+                                ON (    d.subscriberid = s.subscriberid
+                                        AND d.fieldid = t.customfieldid
+                                        AND d.data <> ''
+                                        AND d.data IS NOT NULL
+                                        AND d.data <> '0'
+                                        AND RIGHT(d.data, 4) <= {$year}
+                                        AND (  (    t.triggerinterval <> 0
+                                                    AND date_add(str_to_date(CONCAT(LEFT(d.data, 6), '{$year}'), '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) >= '{$startOfDayString}'
+                                                    AND date_add(str_to_date(CONCAT(LEFT(d.data, 6), '{$year}'), '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) <= '{$endOfDayString}')
+                                                OR  (   t.triggerinterval = 0
+                                                        AND date_add(str_to_date(d.data, '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) >= '{$startOfDayString}'
+                                                        AND date_add(str_to_date(d.data, '%d/%m/%Y'), INTERVAL t.triggerhours HOUR) <= '{$endOfDayString}')))
 
-					                                -- Or if it does have an interval, include record if the interval has already been exceeded
-					                                OR (t.triggerinterval >= 0 AND lo.actionedoncount >= t.triggerinterval)
+                            -- Left join with triggeremails recipients used to check whether or not subscribers have received a particular trigger or not
+                            -- INCLUSION of a record for a subscriber will INDICATE that the SUBSCRIBER IS NOT ELIGIBLE to receive the trigger, because they either:
+                            -- (1) Have received more than the specified interval
+                            -- (2) Trigger has recently gone off (within 24 hours) for the particular subscriber
+                            LEFT JOIN [|PREFIX|]triggeremails_log_summary AS lo
+                                ON (    lo.triggeremailsid = t.triggeremailsid
+                                        AND lo.subscriberid = s.subscriberid
+                                        AND (   -- Exclude anything that doesn't have perpetual interval
+                                                t.triggerinterval <> -1
 
-					                                -- Or include anything that has been sent out today
-					                                OR (lo.lastactiontimestamp >= {$cutoff})))
+                                                -- Or if it does have an interval, include record if the interval has already been exceeded
+                                                OR (t.triggerinterval >= 0 AND lo.actionedoncount >= t.triggerinterval)
 
-					             -- Left join with queue table to make sure that the trigger is not currently being queued.
-					            LEFT JOIN [|PREFIX|]queues AS q
-					                ON (    q.queueid = t.queueid
-					                        AND q.recipient = s.subscriberid)
+                                                -- Or include anything that has been sent out today
+                                                OR (lo.lastactiontimestamp >= {$cutoff})))
 
-					WHERE	q.queueid IS NULL
-					        AND lo.triggeremailsid IS NULL
-				";
-			break;
+                             -- Left join with queue table to make sure that the trigger is not currently being queued.
+                            LEFT JOIN [|PREFIX|]queues AS q
+                                ON (    q.queueid = t.queueid
+                                        AND q.recipient = s.subscriberid)
 
-			case 'pgsql':
-				$query = "
-					INSERT INTO [|PREFIX|]queues (queueid, queuetype, ownerid, recipient, processed, sent, processtime)
-
-					SELECT  t.queueid,
-					        'triggeremail',
-					        t.ownerid,
-					        s.subscriberid,
-					        0,
-					        0,
-					        CAST(('{$year}-' || substr(d.data, 4, 2) || '-' || substr(d.data, 1, 2)) AS DATE) + CAST(t.triggerhours || ' hour' AS INTERVAL)
-
-					FROM    -- Select All of the required trigger emails information
-					        (   SELECT  t.triggeremailsid       AS triggeremailsid,
-					                    t.queueid               AS queueid,
-					                    t.ownerid               AS ownerid,
-					                    t.triggerhours          AS triggerhours,
-					                    t.triggerinterval       AS triggerinterval,
-					                    tdc.datavalueinteger    AS customfieldid,
-					                    tdl.datavalueinteger    AS listid
-					            FROM    [|PREFIX|]triggeremails AS t
-					                        JOIN [|PREFIX|]triggeremails_data AS tdc
-					                            ON (    tdc.triggeremailsid = t.triggeremailsid
-					                                    AND tdc.datakey = 'customfieldid')
-					                        JOIN [|PREFIX|]triggeremails_data AS tdl
-					                            ON (    t.triggeremailsid = tdl.triggeremailsid
-					                                    AND tdl.datakey = 'listid')
-					            WHERE   t.active = '1'
-					                    AND t.triggertype = 'f') AS t
-
-					            -- Join with subscribers table, making sure that subscriber is not bounced and not unsubscribed
-					            JOIN [|PREFIX|]list_subscribers AS s
-					                ON (    s.listid = t.listid
-					                        AND (s.bounced IS NULL OR s.bounced = 0)
-					                        AND (s.unsubscribed IS NULL OR s.unsubscribed = 0))
-
-					             -- Join with subscriber data to check custom field date against current date
-					            JOIN [|PREFIX|]subscribers_data AS d
-					                ON (    d.subscriberid = s.subscriberid
-					                        AND d.fieldid = t.customfieldid
-					                        AND d.data <> ''
-					                        AND d.data IS NOT NULL
-					                        AND d.data <> '0'
-					                        AND TO_DATE(d.data, 'DD/MM/YYYY') <= '{$year}-01-01 00:00:00'
-					                        AND (  (    t.triggerinterval <> 0
-					                                    AND (TO_DATE(CAST(('{$year}-' || date_part('month', TO_DATE(d.data, 'DD/MM/YYYY')) || '-' || date_part('day', TO_DATE(d.data, 'DD/MM/YYYY'))) AS VARCHAR), 'YYYY-MM-DD') + CAST(t.triggerhours || ' hour' AS INTERVAL)) >= '{$startOfDayString}'
-					                                    AND (TO_DATE(CAST(('{$year}-' || date_part('month', TO_DATE(d.data, 'DD/MM/YYYY')) || '-' || date_part('day', TO_DATE(d.data, 'DD/MM/YYYY'))) AS VARCHAR), 'YYYY-MM-DD') + CAST(t.triggerhours || ' hour' AS INTERVAL)) <= '{$endOfDayString}'
-					                                OR  (   t.triggerinterval = 0
-					                                        AND (TO_DATE(d.data, 'DD/MM/YYYY') + CAST(t.triggerhours || ' hour' AS INTERVAL)) >= '{$startOfDayString}'
-					                                        AND (TO_DATE(d.data, 'DD/MM/YYYY') + CAST(t.triggerhours || ' hour' AS INTERVAL)) <= '{$endOfDayString}'))))
-
-					            -- Left join with triggeremails recipients used to check whether or not subscribers have received a particular trigger or not
-					            -- INCLUSION of a record for a subscriber will INDICATE that the SUBSCRIBER IS NOT ELIGIBLE to receive the trigger, because they either:
-					            -- (1) Have received more than the specified interval
-					            -- (2) Trigger has recently gone off (within 24 hours) for the particular subscriber
-					            LEFT JOIN [|PREFIX|]triggeremails_log_summary AS lo
-					                ON (    lo.triggeremailsid = t.triggeremailsid
-					                        AND lo.subscriberid = s.subscriberid
-					                        AND (   -- Exclude anything that doesn't have perpetual interval
-					                                t.triggerinterval <> -1
-
-					                                -- Or if it does have an interval, include record if the interval has already been exceeded
-					                                OR (t.triggerinterval >= 0 AND lo.actionedoncount >= t.triggerinterval)
-
-					                                -- Or include anything that has been sent out today
-					                                OR (lo.lastactiontimestamp >= {$cutoff})))
-
-					             -- Left join with queue table to make sure that the trigger is not currently being queued.
-					            LEFT JOIN [|PREFIX|]queues AS q
-					                ON (    q.queueid = t.queueid
-					                        AND q.recipient = s.subscriberid)
-
-					WHERE	q.queueid IS NULL
-					        AND lo.triggeremailsid IS NULL
-				";
-			break;
-
-			default:
-				die ('Unknown database type');
-			break;
-		}
+                WHERE	q.queueid IS NULL
+                        AND lo.triggeremailsid IS NULL
+        ";
 
 		if (!$this->Db->Query(trim($query))) {
 			list($msg, $errno) = $this->Db->GetError();
@@ -1798,7 +1712,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 			return false;
 		}
 
-		return true;
+        return true;
 	}
 
 	/**
@@ -1818,9 +1732,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 		$cutoff = (intval($now / 86400) - 1) * 86400;
 		$year = date('Y', $now);
 
-		switch (SENDSTUDIO_DATABASE_TYPE) {
-			case 'mysql':
-				$query = "
+        $query = "
 					INSERT INTO [|PREFIX|]queues (queueid, queuetype, ownerid, recipient, processed, sent, processtime)
 
 					SELECT  t.queueid,
@@ -1885,82 +1797,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 
 					WHERE	q.queueid IS NULL
 					        AND lo.triggeremailsid IS NULL
-				";
-			break;
-
-			case 'pgsql':
-				$query = "
-					INSERT INTO [|PREFIX|]queues (queueid, queuetype, ownerid, recipient, processed, sent, processtime)
-
-					SELECT  t.queueid,
-					        'triggeremail',
-					        t.ownerid,
-					        s.subscriberid,
-					        0,
-					        0,
-					        CAST(('{$year}' || substr(t.staticdate, 4)) AS DATE) + CAST(t.triggerhours || ' hour' AS INTERVAL)
-
-					FROM    -- Select All of the required trigger emails information
-					        (   SELECT  t.triggeremailsid       AS triggeremailsid,
-					                    t.queueid               AS queueid,
-					                    t.ownerid               AS ownerid,
-					                    t.triggerhours          AS triggerhours,
-					                    t.triggerinterval       AS triggerinterval,
-					                    td.datavaluestring      AS staticdate,
-					                    tdl.datavalueinteger    AS listid
-					            FROM    [|PREFIX|]triggeremails AS t
-					                        JOIN [|PREFIX|]triggeremails_data AS td
-					                            ON (    td.triggeremailsid = t.triggeremailsid
-					                                    AND td.datakey = 'staticdate'
-					                                    AND  CAST(substr(td.datavaluestring, 1, 4) AS INTEGER) <= {$year}
-					                                    AND (   (   t.triggerinterval <> 0
-					                                                AND CAST(('{$year}' || substr(td.datavaluestring, 4)) AS DATE) + CAST(t.triggerhours || ' hour' AS INTERVAL) >= '{$startOfDayString}'
-					                                                AND CAST(('{$year}' || substr(td.datavaluestring, 4)) AS DATE) + CAST(t.triggerhours || ' hour' AS INTERVAL) <= '{$endOfDayString}')
-					                                            OR (    t.triggerinterval = 0
-					                                                    AND CAST(td.datavaluestring AS DATE) + CAST(t.triggerhours || ' hour' AS INTERVAL) >= '{$startOfDayString}'
-					                                                    AND CAST(td.datavaluestring AS DATE) + CAST(t.triggerhours || ' hour' AS INTERVAL) <= '{$endOfDayString}')))
-					                        JOIN [|PREFIX|]triggeremails_data AS tdl
-					                            ON (    tdl.triggeremailsid = t.triggeremailsid
-					                                    AND tdl.datakey = 'staticdate_listids')
-					            WHERE   t.active = '1'
-					                    AND t.triggertype = 's') AS t
-
-					            -- Join with subscribers table, making sure that subscriber is not bounced and not unsubscribed
-					            JOIN [|PREFIX|]list_subscribers AS s
-					                ON (    s.listid = t.listid
-					                        AND (s.bounced IS NULL OR s.bounced = 0)
-					                        AND (s.unsubscribed IS NULL OR s.unsubscribed = 0))
-
-					            -- Left join with triggeremails recipients used to check whether or not subscribers have received a particular trigger or not
-					            -- INCLUSION of a record for a subscriber will INDICATE that the SUBSCRIBER IS NOT ELIGIBLE to receive the trigger, because they either:
-					            -- (1) Have received more than the specified interval
-					            -- (2) Trigger has recently gone off (within 24 hours) for the particular subscriber
-					            LEFT JOIN [|PREFIX|]triggeremails_log_summary AS lo
-					                ON (    lo.triggeremailsid = t.triggeremailsid
-					                        AND lo.subscriberid = s.subscriberid
-					                        AND (   -- Exclude anything that doesn't have perpetual interval
-					                                t.triggerinterval <> -1
-
-					                                -- Or if it does have an interval, include record if the interval has already been exceeded
-					                                OR (t.triggerinterval >= 0 AND lo.actionedoncount >= t.triggerinterval)
-
-					                                -- Or include anything that has been sent out today
-					                                OR (lo.lastactiontimestamp >= {$cutoff})))
-
-					             -- Left join with queue table to make sure that the trigger is not currently being queued.
-					            LEFT JOIN [|PREFIX|]queues AS q
-					                ON (    q.queueid = t.queueid
-					                        AND q.recipient = s.subscriberid)
-
-					WHERE	q.queueid IS NULL
-					        AND lo.triggeremailsid IS NULL
-				";
-			break;
-
-			default:
-				die ('Unknown database type');
-			break;
-		}
+        ";
 
 		if (!$this->Db->Query(trim($query))) {
 			list($msg, $errno) = $this->Db->GetError();

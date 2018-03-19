@@ -34,7 +34,7 @@ class Addons_checkpermissions extends Interspire_Addons
 	 * @uses Interspire_Addons::Install
 	 * @uses Interspire_Addons_Exception
 	 *
-	 * @throws Throws an Interspire_Addons_Exception if something in the install process fails.
+	 * @throws Exception if something in the install process fails.
 	 * @return True Returns true if everything works ok.
 	 */
 	public function Install()
@@ -42,9 +42,9 @@ class Addons_checkpermissions extends Interspire_Addons
 		$this->enabled = true;
 		$this->configured = true;
         try {
-			$status = parent::Install();
+			parent::Install();
 		} catch (Interspire_Addons_Exception $e) {
-			throw new Exception("Unable to install addon $this->GetId();" . $e->getMessage());
+			throw new Exception("Unable to install addon {$this->GetId()}" . $e->getMessage());
 		}
 		return true;
 	}
@@ -54,7 +54,7 @@ class Addons_checkpermissions extends Interspire_Addons
 	 * This addon puts itself in the 'tools' text menu at the top of the page.
 	 * It uses the 'IEM_SENDSTUDIOFUNCTIONS_GENERATETEXTMENULINKS' event to do this.
 	 *
-	 * @return Array Returns an array containing the 'IEM_SENDSTUDIOFUNCTIONS_GENERATETEXTMENULINKS' event to listen to.
+	 * @return array Returns an array containing the 'IEM_SENDSTUDIOFUNCTIONS_GENERATETEXTMENULINKS' event to listen to.
 	 */
 	function GetEventListeners()
 	{
@@ -88,8 +88,8 @@ class Addons_checkpermissions extends Interspire_Addons
 	 */
 	static function GetTextMenuItems(EventData_IEM_SENDSTUDIOFUNCTIONS_GENERATETEXTMENULINKS $data)
 	{
-		$user = GetUser();
-		if (!$user->Admin()) {
+		$user = IEM::getCurrentUser();
+		if (!$user->isAdmin()) {
 			return;
 		}
 

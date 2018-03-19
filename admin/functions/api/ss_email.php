@@ -209,8 +209,8 @@ class SS_Email_API extends Email_API
 	* AddCustomFieldInfo
 	* Adds custom field information (loaded previously) for this recipient. This saves loading it again from the database. It will overwrite the recipients current settings (if applicable).
 	*
-	* @param String $subscriber_email The recipients email address (this allows us to remember it easily).
-	* @param Array $customfields The custom field id's and settings for the recipient.
+	* @param bool|string $subscriber_email The recipients email address (this allows us to remember it easily).
+	* @param array $customfields The custom field id's and settings for the recipient.
 	*
 	* @see _RecipientsCustomFields
 	*
@@ -236,7 +236,7 @@ class SS_Email_API extends Email_API
 	* AddDynamicContentInfo
 	* Add information regarding what to be replaced for the email content
 	*
-	* @param Array $dynamicContentReplacement The combination of key and value for dynamic content of what to be replaced.
+	* @param array $dynamicContentReplacement The combination of key and value for dynamic content of what to be replaced.
 	*
 	* @see _RecipientsDynamicFields
 	*
@@ -253,7 +253,7 @@ class SS_Email_API extends Email_API
 	 * @param String $text Text contents
 	 * @param String $html HTML contents
 	 *
-	 * @return Array Returns an array of links
+	 * @return array Returns an array of links
 	 */
 	function GetLinks($text = '', $html = '')
 	{
@@ -706,181 +706,181 @@ class SS_Email_API extends Email_API
 
 	/**
 	* _ReplaceDynamicContentFields
-        * Replace the place holder to the correct Content Blocks
+    * Replace the place holder to the correct Content Blocks
 	*
-	* @param String $text Text to replace Content Blocks in
-	* @param String $subscriberaddress The subscriber address to replace.
+	* @param string $text Text to replace Content Blocks in
+	* @param int $subscriberId The subscriber address to replace.
 	*
 	* @return Void Nothing is returned because the information is passed in by reference.
 	*/
-        function _ReplaceDynamicContentFields(&$text, $subscriberId) {
-                if($this->_RecipientsDynamicFields){
-                	$text = str_replace($this->_RecipientsDynamicFields[$subscriberId]['tagsTobeReplaced'], $this->_RecipientsDynamicFields[$subscriberId]['tagsContentTobeReplaced'], $text);
+        function _ReplaceDynamicContentFields(&$text, $subscriberId)
+        {
+            if(!empty($this->_RecipientsDynamicFields[$subscriberId])){
+                $text = str_replace(
+                    $this->_RecipientsDynamicFields[$subscriberId]['tagsTobeReplaced'],
+                    $this->_RecipientsDynamicFields[$subscriberId]['tagsContentTobeReplaced'],
+                    $text
+                );
+            }
+
+            $pattern = '/%%\[[a-zA-Z0-9_ ]+\]%%/i';
+            $text = preg_replace($pattern, '', $text);
+
+            if (!$this->tracklinks) {
+                return;
+            }
+
+            $reallink = SENDSTUDIO_APPLICATION_URL . '/link.php?%%link_subscriber_info%%';
+
+            $matches = array();
+
+            $basehref = $this->_GetBaseHref();
+
+            preg_match_all('%<a.+(href\s*=\s*(["\']?[^>"\']+?))\s*.+>%isU', $text, $matches);
+            $links_to_replace = $matches[2];
+            $link_locations = $matches[1];
+
+            arsort($link_locations);
+            reset($links_to_replace);
+            reset($link_locations);
+
+            foreach ($link_locations as $tlinkid => $url) {
+                // so we know whether we need to put quotes around the replaced url or not.
+                $singles = false;
+                $doubles = false;
+
+                // make sure the quotes are matched up.
+                // ie there is either 2 singles or 2 doubles.
+                $quote_check = substr_count($url, "'");
+                if (($quote_check % 2) != 0) {
+                    $url .= "'";
+                    $singles = true;
                 }
-                $pattern = '/%%\[[a-zA-Z0-9_ ]+\]%%/i';
-                $text = preg_replace($pattern, '', $text);
 
-                if (!$this->tracklinks) {
-                        return;
+                $quote_check = substr_count($url, '"');
+                if (($quote_check % 2) != 0) {
+                    $url .= '"';
+                    $doubles = true;
                 }
-                
-                // TODO: This should be factored out since it duplicates _GetLinks() code
-                
-                $reallink = SENDSTUDIO_APPLICATION_URL . '/link.php?%%link_subscriber_info%%';
 
-                $matches = array();
-                $templinkid = 1;
+                /**
+                * Check if this is "customfield" link, skip if it is
+                *
+                * If the first and last characters are '%' then don't track the link.
+                * For example '%%unsubscribe%%' or '%%sendfriend_X%%' etc.
+                *
+                * It will also take account of 'http://%%unsubscribe%%/' or 'http://%%sendfriend_X%%/' etc
+                */
 
-                // this is used so we don't get the . in http://www.domain.com. or http://www.domain.com,
-                $invalid_last_chars = array(',', '.', ')', ']');
-
-                $basehref = $this->_GetBaseHref();
-
-                preg_match_all('%<a.+(href\s*=\s*(["\']?[^>"\']+?))\s*.+>%isU', $text, $matches);
-                $links_to_replace = $matches[2];
-                $link_locations = $matches[1];
-
-                arsort($link_locations);
-                reset($links_to_replace);
-                reset($link_locations);
-
-		foreach ($link_locations as $tlinkid => $url) {
-			// so we know whether we need to put quotes around the replaced url or not.
-			$singles = false;
-			$doubles = false;
-
-			// make sure the quotes are matched up.
-			// ie there is either 2 singles or 2 doubles.
-			$quote_check = substr_count($url, "'");
-			if (($quote_check % 2) != 0) {
-				$url .= "'";
-				$singles = true;
-			}
-
-			$quote_check = substr_count($url, '"');
-			if (($quote_check % 2) != 0) {
-				$url .= '"';
-				$doubles = true;
-			}
-
-			/**
-			* Check if this is "customfield" link, skip if it is
-			*
-			* If the first and last characters are '%' then don't track the link.
-			* For example '%%unsubscribe%%' or '%%sendfriend_X%%' etc.
-			*
-			* It will also take account of 'http://%%unsubscribe%%/' or 'http://%%sendfriend_X%%/' etc
-			*/
-
-            // Ignore unsubscribe custom field
-			if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%unsubscribelink%%/*?)["|\']$~i', $url)) {
-				continue;
-			}
-
-            // Ignore Web Version Link
-            if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%webversion%%/*?)["|\']$~i', $url)) {
-				continue;
-			}
-
-            // Ignore Mailing List Archive Link
-            if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%mailinglistarchive%%/*?)["|\']$~i', $url)) {
-				continue;
-			}
-
-            // Ignore Confirmation Link
-            if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%confirmlink%%/*?)["|\']$~i', $url)) {
-				continue;
-			}
-
-            // Ignore survey Link
-			if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%survey_[0-9]+_link%%/*?)["|\']$~i', $url)) {
-				continue;
-			}
-
-            // Ignore send to friend link
-            if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%sendfriend_[0-9]+%%/*?)["|\']$~i', $url)) {
+                // Ignore unsubscribe custom field
+                if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%unsubscribelink%%/*?)["|\']$~i', $url)) {
                     continue;
-            }    
-                    
-            // Ignore Mail Link
-			if (preg_match('%^href\s*?=\s*?["|\']mailto%i', $url)) {
-				continue;
-			}
+                }
 
-			// if there is a "#" as the first or second char, ignore it. Could be second if it is quoted: '#' or "#"
-			$check = str_replace('href=', '', $url);
-			if ($check{0} == '#' || $check{1} == '#') {
-				continue;
-			}
+                // Ignore Web Version Link
+                if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%webversion%%/*?)["|\']$~i', $url)) {
+                    continue;
+                }
 
-			$check = str_replace(array('"', "'"), '', $check);
-			if ($check == '') {
-				continue;
-			}
+                // Ignore Mailing List Archive Link
+                if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%mailinglistarchive%%/*?)["|\']$~i', $url)) {
+                    continue;
+                }
 
-			// we need to track things in the admin/temp folder so we'll do that here first.
+                // Ignore Confirmation Link
+                if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%confirmlink%%/*?)["|\']$~i', $url)) {
+                    continue;
+                }
 
-			// things like unsubscribe links, modify-details links should be left alone.
-			// so if it's based on the BaseURL, just replace it back.
-			if (strpos($url, SENDSTUDIO_APPLICATION_URL) !== false) {
+                // Ignore survey Link
+                if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%survey_[0-9]+_link%%/*?)["|\']$~i', $url)) {
+                    continue;
+                }
 
-				// however, if it's in the admin/temp url we do want to track it.
-				// strpos will fail (be "false") if the SENDSTUDIO_TEMP_URL isn't in the $url.
-				if (strpos($url, SENDSTUDIO_TEMP_URL) === false) {
-					continue;
-				}
-			}
+                // Ignore send to friend link
+                if (preg_match('~^href\s*?=\s*?["|\'](http://)*?(%%sendfriend_[0-9]+%%/*?)["|\']$~i', $url)) {
+                        continue;
+                }
 
-			$origurl = $url;
+                // Ignore Mail Link
+                if (preg_match('%^href\s*?=\s*?["|\']mailto%i', $url)) {
+                    continue;
+                }
 
-			$url = str_replace('href=', '', $url);
+                // if there is a "#" as the first or second char, ignore it. Could be second if it is quoted: '#' or "#"
+                $check = str_replace('href=', '', $url);
+                if ($check{0} == '#' || $check{1} == '#') {
+                    continue;
+                }
 
-			if ($singles) {
-				$url = str_replace("'", '', $url);
-			}
+                $check = str_replace(array('"', "'"), '', $check);
+                if ($check == '') {
+                    continue;
+                }
 
-			if ($doubles) {
-				$url = str_replace('"', '', $url);
-			}
+                // we need to track things in the admin/temp folder so we'll do that here first.
 
-			if (!preg_match('/^(http|ftp)/', $url)) {
-				if ($basehref) {
-					// if the url has a / at the start, then take it off
-					// _GetBaseHref normalizes the base href to always have a / at the end.
-					if (substr($url, 0, 1) == '/') {
-						$url = substr($url, 1);
-					}
+                // things like unsubscribe links, modify-details links should be left alone.
+                // so if it's based on the BaseURL, just replace it back.
+                if (strpos($url, SENDSTUDIO_APPLICATION_URL) !== false) {
 
-					$url = $basehref . $url;
-				}
-			}
+                    // however, if it's in the admin/temp url we do want to track it.
+                    // strpos will fail (be "false") if the SENDSTUDIO_TEMP_URL isn't in the $url.
+                    if (strpos($url, SENDSTUDIO_TEMP_URL) === false) {
+                        continue;
+                    }
+                }
 
-			if (!isset($this->_convertedlinks[$url])) {
-				$linkid = $this->SaveLink($url, $this->statid);
-				$this->_convertedlinks[$url] = $linkid;
-			} else {
-				$linkid = $this->_convertedlinks[$url];
-			}
+                $origurl = $url;
 
-			$newlink = 'href=';
-			if ($singles) {
-				$newlink .= "'";
-			}
-			if ($doubles) {
-				$newlink .= '"';
-			}
+                $url = str_replace('href=', '', $url);
 
-			$newlink .= $reallink . '&L=' . $linkid . '&F=H';
+                if ($singles) {
+                    $url = str_replace("'", '', $url);
+                }
 
-			if ($singles) {
-				$newlink .= "'";
-			}
-			if ($doubles) {
-				$newlink .= '"';
-			}
+                if ($doubles) {
+                    $url = str_replace('"', '', $url);
+                }
 
-			$text = str_replace($origurl, $newlink, $text);
-		}
+                if (!preg_match('/^(http|ftp)/', $url)) {
+                    if ($basehref) {
+                        // if the url has a / at the start, then take it off
+                        // _GetBaseHref normalizes the base href to always have a / at the end.
+                        if (substr($url, 0, 1) == '/') {
+                            $url = substr($url, 1);
+                        }
+
+                        $url = $basehref . $url;
+                    }
+                }
+
+                if (!isset($this->_convertedlinks[$url])) {
+                    $linkid = $this->SaveLink($url, $this->statid);
+                    $this->_convertedlinks[$url] = $linkid;
+                } else {
+                    $linkid = $this->_convertedlinks[$url];
+                }
+
+                $newlink = 'href=';
+                if ($singles) {
+                    $newlink .= "'";
+                }
+                if ($doubles) {
+                    $newlink .= '"';
+                }
+
+                $newlink .= $reallink . '&L=' . $linkid . '&F=H';
+
+                if ($singles) {
+                    $newlink .= "'";
+                }
+                if ($doubles) {
+                    $newlink .= '"';
+                }
+
+                $text = str_replace($origurl, $newlink, $text);
+            }
 
 		// restore the base href, as we don't want it to be link-tracked
 		if ($basehref) {
@@ -1068,40 +1068,37 @@ class SS_Email_API extends Email_API
 			$customfields = $info['CustomFields'];
 
 			foreach ($customfields as $p => $details) {
-                                // unserialize checkbox, ready for displaying in correct format.
-                                switch ($details['fieldtype']) {
-                                        case 'checkbox':
-                                                $data = $details['data'];
-                                                $value = @unserialize($data);
-                                                if (is_array($value) && sizeof($value)) {
-                                                    $data = implode(',', $value);
-                                                    $details['data'] = $data;
-                                                }
-                                        break;
-                                }
+			    if (!empty($details['fieldtype']) && $details['fieldtype'] == 'checkbox') {
+                    $data = $details['data'];
+                    $value = @unserialize($data);
+                    if (is_array($value) && sizeof($value)) {
+                        $data = implode(',', $value);
+                        $details['data'] = $data;
+                    }
+                }
 
-                                $fieldname = '%%' . strtolower($details['fieldname']) . '%%';
+                $fieldname = '%%' . strtolower($details['fieldname']) . '%%';
 
-                                $replacetext = '';
-                                if (is_null($details['data']) || $details['data'] == '') {
-                                        if (isset($details['defaultvalue'])) {
-                                                $replacetext = $details['defaultvalue'];
-                                        }
-                                } else {
-                                        $replacetext = $details['data'];
-                                }
-                                $text = str_ireplace($fieldname, $replacetext, $text);
+                $replacetext = '';
+                if (is_null($details['data']) || $details['data'] == '') {
+                        if (isset($details['defaultvalue'])) {
+                            $replacetext = $details['defaultvalue'];
+                        }
+                } else {
+                    $replacetext = $details['data'];
+                }
+                $text = str_ireplace($fieldname, $replacetext, $text);
 
-                                // Sometimes UTF-8 characters inside a custom field name were replaced with
-                                // an htmlentities (translated by TinyMCE), so we will need to check for this too.
-                                $temp_encoded_name = htmlentities($fieldname, ENT_QUOTES, SENDSTUDIO_CHARSET);
-                                if ($temp_encoded_name != $fieldname) {
-                                        $text = str_ireplace($temp_encoded_name, $replacetext, $text);
-                                }
+                // Sometimes UTF-8 characters inside a custom field name were replaced with
+                // an htmlentities (translated by TinyMCE), so we will need to check for this too.
+                $temp_encoded_name = htmlentities($fieldname, ENT_QUOTES, SENDSTUDIO_CHARSET);
+                if ($temp_encoded_name != $fieldname) {
+                    $text = str_ireplace($temp_encoded_name, $replacetext, $text);
+                }
 
-                                if (isset($details['fieldid'])) {
-                                        $text = str_ireplace('%field:' . $details['fieldid'] . '%', $replacetext, $text);
-                                }
+                if (isset($details['fieldid'])) {
+                    $text = str_ireplace('%field:' . $details['fieldid'] . '%', $replacetext, $text);
+                }
 			}
 		}
 
@@ -1553,7 +1550,7 @@ class SS_Email_API extends Email_API
 	*/
 	function GetDb()
 	{
-		if (is_object($this->Db) && is_resource($this->Db->connection)) {
+		if (is_object($this->Db) && $this->Db->connection instanceof mysqli) {
 			return true;
 		}
 
@@ -1562,7 +1559,7 @@ class SS_Email_API extends Email_API
 			$this->Db = &$Db;
 		}
 
-		if (!is_object($this->Db) || !is_resource($this->Db->connection)) {
+		if (!is_object($this->Db) || !$this->Db->connection instanceof mysqli) {
 			trigger_error('Unable to connect to database', SENDSTUDIO_ERROR_FATAL);
 			return false;
 		}

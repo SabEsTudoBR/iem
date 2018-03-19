@@ -1,16 +1,5 @@
 <?php
 /**
-* The Upgrade API.
-*
-* @version     $Id: upgrade.php,v 1.33 2008/02/25 06:24:05 chris Exp $
-* @author Chris <chris@interspire.com>
-* @author Fredrick Gabelmann <fredrick.gabelmann@interspire.com>
-*
-* @package API
-* @subpackage User_API
-*/
-
-/**
 * Include the base api class if we need to.
 */
 require_once(dirname(__FILE__) . '/api.php');
@@ -45,7 +34,7 @@ class Upgrade_API extends API
 
 	/**
 	* Versions of the database (left) correspond to which sendstudio versions?
-	* @var Array Version array
+	* @var array Version array
 	*/
 	var $versions = array (
 		'20070701' => 'NX1.3.1',
@@ -77,11 +66,12 @@ class Upgrade_API extends API
 		'20140909' => '6.1.5',
 		'20150825' => '6.1.6',
 		'20161005' => '6.1.7',
+		'20171011' => '6.1.8',
 	);
 
 	/**
 	 * Update file list for each version
-	 * @var Array file list
+	 * @var array file list
 	 */
 	var $upgrades_to_run = array (
 		'nx' => array (
@@ -693,32 +683,14 @@ class Upgrade_API extends API
             'users_remove_googlecalendarpassword',
             'update_db_version',
         ),
+        '20171011' => array (
+            'update_db_version',
+        ),
 	);
 
 	/**
-	* Constructor
-	* Sets up the database object, loads the user if the ID passed in is not 0.
-	*
-	* @param Int $userid The userid of the user to load. If it is 0 then you get a base class only. Passing in a userid > 0 will load that user.
-	*
-	* @see GetDb
-	* @see Load
-	*
-	* @return True|Load If no userid is present, this always returns true. Otherwise it returns the status from Load
-	*/
-	function Upgrade_API()
-	{
-		if (is_object($this->Db) && is_resource($this->Db->connection)) {
-			return true;
-		}
-
-		$this->Db = IEM::getDatabase();
-		$this->Db->TablePrefix = SENDSTUDIO_TABLEPREFIX;
-	}
-
-	/**
 	 * RunUpgrade
-	 * @param String $upgrade Upgrade to run
+	 * @param bool|String $upgrade Upgrade to run
 	 * @return Boolean Returns TRUE if successful, FALSE otherwise
 	 */
 	function RunUpgrade($upgrade=false)
@@ -811,7 +783,7 @@ class Upgrade_API extends API
 	 * GetUpgradesToRun
 	 * @param String $current_version Current version
 	 * @param String $latest Latest version
-	 * @return Array Returns an array of upgrade to be performed
+	 * @return array Returns an array of upgrade to be performed
 	 */
 	function GetUpgradesToRun($current_version=0, $latest=0)
 	{
@@ -881,20 +853,15 @@ class Upgrade_API extends API
 			return false;
 		}
 
-		$db = IEM::getDatabase();
-
 		if (SENDSTUDIO_DATABASE_TYPE == 'mysql') {
 			$query = "SHOW TABLES LIKE '" . SENDSTUDIO_TABLEPREFIX . $tablename . "'";
 		} else {
 			$query = "SELECT table_name FROM information_schema.tables WHERE table_name='" . SENDSTUDIO_TABLEPREFIX . $tablename . "'";
 		}
-		$result = $db->Query($query);
-		$row = $db->Fetch($result);
+		$result = $this->Db->Query($query);
+		$row = $this->Db->Fetch($result);
 
-		if (empty($row)) {
-			return false;
-		}
-		return true;
+        return empty($row) ? false : true;
 	}
 
 	/**
@@ -913,34 +880,13 @@ class Upgrade_API extends API
 			return false;
 		}
 
-		$db = IEM::getDatabase();
+        $query = "SHOW COLUMNS FROM " . SENDSTUDIO_TABLEPREFIX . $tablename . " LIKE '".$column."'";
 
-		if (SENDSTUDIO_DATABASE_TYPE == 'mysql') {
-			$query = "SHOW COLUMNS FROM " . SENDSTUDIO_TABLEPREFIX . $tablename . " LIKE '".$column."'";
+        $result = $this->Db->Query($query);
+        $row = $this->Db->Fetch($result);
 
-			$result = $db->Query($query);
-			$row = $db->Fetch($result);
-
-			if ($row['Field'] == $column) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		$query = "SELECT column_name FROM information_schema.columns WHERE table_name='" . SENDSTUDIO_TABLEPREFIX . $tablename . "' AND column_name='" . $column . "'";
-		$result = $db->Query($query);
-		$row = $db->Fetch($result);
-
-		if (empty($row)) {
-			return false;
-		}
-
-		if ($row['column_name'] == $column) {
-			return true;
-		}
-		return false;
-	}
+        return $row['Field'] == $column;
+    }
 
 	/**
 	* GetIndexInfo
@@ -950,7 +896,7 @@ class Upgrade_API extends API
 	*
 	* @param String $table The name of the table to get information about the indexes for
 	*
-	* @return Array The array containing the index information in the format
+	* @return bool|array The array containing the index information in the format
 		$indexes = array (
 			'indexname' => array (
 				'unique' => true/false,
@@ -1018,32 +964,14 @@ class Upgrade_API extends API
 			return false;
 		}
 
-		if (SENDSTUDIO_DATABASE_TYPE == 'pgsql') {
-			$db = IEM::getDatabase();
-			$query = "SELECT conname from pg_constraint where conname='" . SENDSTUDIO_TABLEPREFIX . $constraint_name . "'";
-			$result = $db->Query($query);
-			if (!$result) {
-				return false;
-			}
-			$row = $db->Fetch($result);
-			if (empty($row)) {
-				return false;
-			}
-			return true;
-		}
+        $indexes = $this->GetIndexInfo($table);
+        if (empty($indexes)) {
+            return false;
+        }
 
-		if (SENDSTUDIO_DATABASE_TYPE == 'mysql') {
-			$indexes = $this->GetIndexInfo($table);
-			if (empty($indexes)) {
-				return false;
-			}
+        $key_names = array_keys($indexes);
 
-			$key_names = array_keys($indexes);
-			if (in_array(SENDSTUDIO_TABLEPREFIX . $constraint_name, $key_names)) {
-				return true;
-			}
-			return false;
-		}
+        return in_array(SENDSTUDIO_TABLEPREFIX . $constraint_name, $key_names);
 	}
 
 	/**
@@ -1057,7 +985,7 @@ class Upgrade_API extends API
 	* If all of the tables are innodb tables, the constraint is run and the result is returned.
 	*
 	* @param String $constraint The foreign key constraint to run (if the database type is 'pgsql' or if all of the tables are innodb tables).
-	* @param Array $tables The tables to check if they are innodb tables and thus support foreign keys in the first place.
+	* @param array $tables The tables to check if they are innodb tables and thus support foreign keys in the first place.
 	*
 	* @return Boolean Returns true if adding the constraint worked. Also returns true if any of the database tables are not innodb tables.
 	*/
@@ -1070,20 +998,10 @@ class Upgrade_API extends API
 			return false;
 		}
 
-		if (SENDSTUDIO_DATABASE_TYPE == 'pgsql') {
-			$db = IEM::getDatabase();
-			$result = $db->Query($constraint);
-			if ($result) {
-				return true;
-			}
-			return false;
-		}
-
-		$db = IEM::getDatabase();
 		foreach ($tables as $table) {
 			$query = "SHOW TABLE STATUS LIKE '" . SENDSTUDIO_TABLEPREFIX . $table . "'";
-			$result = $db->Query($query);
-			$row = $db->Fetch($result);
+			$result = $this->Db->Query($query);
+			$row = $this->Db->Fetch($result);
 
 			// if the table isn't an innodb table, it doesn't support foreign keys
 			if (strtolower($row['Engine']) != 'innodb') {
@@ -1091,7 +1009,7 @@ class Upgrade_API extends API
 			}
 		}
 
-		$result = $db->Query($constraint);
+		$result = $this->Db->Query($constraint);
 		if ($result) {
 			return true;
 		}
@@ -1105,7 +1023,7 @@ class Upgrade_API extends API
 	* Check if an index exists on some table columns
 	*
 	* @param String $table The name of the table
-	* @param Array $columns The array of column names the index is on. Order counts.
+	* @param array $columns The array of column names the index is on. Order counts.
 	* @param Boolean $unique Is the index a unique index ?
 	* @param String $type The type of index to check for (BTREE or FULLTEXT)
 	*
@@ -1113,9 +1031,6 @@ class Upgrade_API extends API
 	*/
 	function IndexExists($table, $columns, $unique=false, $type='BTREE')
 	{
-		$keymatches = array();
-		$indexname = '';
-
 		if (empty($table)) {
 			return false;
 		}
@@ -1126,22 +1041,6 @@ class Upgrade_API extends API
 
 		if (!is_array($columns)) {
 			$columns = array($columns);
-		}
-
-		if (SENDSTUDIO_DATABASE_TYPE == 'pgsql') {
-			$db = IEM::getDatabase();
-
-			$indexlist = implode(', ', $columns);
-			$query = "SELECT indexdef FROM pg_indexes where tablename='" . SENDSTUDIO_TABLEPREFIX . $table . "' AND indexdef LIKE '%" . $indexlist . "%'";
-			$result = $db->Query($query);
-			if (!$result) {
-				return false;
-			}
-			$row = $db->Fetch($result);
-			if (empty($row)) {
-				return false;
-			}
-			return true;
 		}
 
 		if (!in_array($type, array('BTREE', 'FULLTEXT', 'UNDEFINED'))) {

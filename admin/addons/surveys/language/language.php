@@ -354,6 +354,8 @@ define('LNG_Addon_Surveys_tinymceNoSurveysAvailable', "No Surveys have been crea
 /**
 * Error Messages
 */
+define('LNG_Addon_Surveys_Edit_InvalidSurveyId',  "Survey does not exist");
+
 
 define('LNG_Addon_Surveys_ErrorMessage_formEmail_required',  "Please enter an email address.");
 define('LNG_Addon_Surveys_ErrorMessage_formEmail_email',  "Please enter a valid email address where you would like survey responses sent");

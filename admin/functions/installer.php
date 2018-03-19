@@ -49,12 +49,6 @@ class Installer extends SendStudio_Functions
 	 */
 	private $_api;
 
-	/**
-	* Constructor
-	* Doesn't do anything.
-	*
-	* @return Void Doesn't return anything.
-	*/
 	public function __construct()
 	{
 	    // if iem is already installed, then we redirect to the home page
@@ -62,7 +56,6 @@ class Installer extends SendStudio_Functions
 	        header('Location: index.php');
 	        exit;
 	    }
-	    
 		$this->_api = new IEM_Installer();
 	}
 
@@ -74,7 +67,7 @@ class Installer extends SendStudio_Functions
 	*/
 	public function Process()
 	{
-		$errors = $db_errors = $permission_errors = $server_errors = array();
+        $errors = $db_errors = $permission_errors = $server_errors = array();
 
 		// Check permissions
 		list($error, $msgs) = $this->_api->CheckPermissions();
@@ -825,10 +818,10 @@ class Installer extends SendStudio_Functions
 				// it is required
 				if (form.admin_username.value == '') {
 				    alert('Please enter an administrator username.');
-                    
+
 				    form.admin_username.select();
 				    form.admin_username.focus();
-                    
+
 				    return false;
 				}
 

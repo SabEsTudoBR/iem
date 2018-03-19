@@ -31,36 +31,19 @@ class CustomFields_Text_API extends CustomFields_API
 	*
 	* @var String
 	*/
-	var $fieldtype = 'text';
+    public $fieldtype = 'text';
 
 	/**
 	* Options for this custom field type.
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Options = array(
+    public $Options = [
 		'FieldLength' => '50',
 		'MinLength' => '0',
 		'MaxLength' => '0',
-                'ApplyDefault' => ''
-	);
-
-	/**
-	* Constructor
-	* Calls the parent object's constructor.
-	*
-	* @param Int $fieldid The field to load up. This is passed to the parent constructor for processing.
-	* @param Boolean $connect_to_db Whether to connect to the database or not. If this is set to false, you need to set the database up yourself.
-	*
-	* @see CustomFields_API::CustomFields_API
-	* @see Db
-	*
-	* @return Boolean Returns the parent's constructor.
-	*/
-	function CustomFields_Text_API($fieldid=0, $connect_to_db=true)
-	{
-		return $this->CustomFields_API($fieldid, $connect_to_db);
-	}
+		'ApplyDefault' => ''
+    ];
 
 	/**
 	* CheckData
@@ -76,13 +59,8 @@ class CustomFields_Text_API extends CustomFields_API
 	*/
 	function CheckData($data='')
 	{
-		if (!$this->IsLoaded()) {
-			return false;
-		}
-
-		return true;
+        return !$this->IsLoaded() ? false : true;
 	}
-
 
 	/**
 	* DisplayFieldOptions

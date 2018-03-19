@@ -32,35 +32,35 @@ class CustomFields_API extends API
 	*
 	* @var Int
 	*/
-	var $fieldid = 0;
+	public $fieldid = 0;
 
 	/**
 	* The type of field this is.
 	*
 	* @var String
 	*/
-	var $fieldtype = '';
+	public $fieldtype = '';
 
 	/**
 	* The userid of the owner of this custom field.
 	*
 	* @var Int
 	*/
-	var $ownerid = 0;
+	public $ownerid = 0;
 
 	/**
 	* The timestamp of when the custom field was created (integer)
 	*
 	* @var Int
 	*/
-	var $createdate = 0;
+	public $createdate = 0;
 
 	/**
 	 * Whether this field is global (1) or per-user (0).
 	 *
 	 * @var Boolean
 	 */
-	var $isglobal = 0;
+	public $isglobal = 0;
 
 	/**
 	* Default Order to show the fields in.
@@ -69,7 +69,7 @@ class CustomFields_API extends API
 	*
 	* @var String
 	*/
-	var $DefaultOrder = 'name';
+	public $DefaultOrder = 'name';
 
 	/**
 	* Default direction to show the fields in.
@@ -78,7 +78,7 @@ class CustomFields_API extends API
 	*
 	* @var String
 	*/
-	var $DefaultDirection = 'up';
+	public $DefaultDirection = 'up';
 
 	/**
 	* Options all custom fields share.
@@ -86,23 +86,23 @@ class CustomFields_API extends API
 	* @see Options
 	* @see GetFieldOptions
 	*
-	* @var Array
+	* @var array
 	*/
-	var $SharedOptions = array(
+	public $SharedOptions = [
 		'FieldName' => '',
 		'DefaultValue' => '',
 		'FieldRequired' => false
-	);
+    ];
 
 	/**
-	* @var Array
+	* @var array
 	* A list of options just for this custom field.
 	*
 	* @see SharedOptions
 	* @see GetFieldOptions
 	*
 	*/
-	var $Options = array();
+	public $Options = [];
 
 	/**
 	* Settings for the custom field - such as default value, field length etc.
@@ -112,9 +112,9 @@ class CustomFields_API extends API
 	* @see Load
 	* @see Set
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Settings = array();
+	public $Settings = [];
 
 	/**
 	* A list of assocations this custom field has with mailing lists.
@@ -123,18 +123,18 @@ class CustomFields_API extends API
 	* @see Save
 	* @see Load
 	*
-	* @var Array
+	* @var array
 	*/
-	var $Associations = array();
+	public $Associations = [];
 
 	/**
 	* An array of valid sorts that we can use here. This makes sure someone doesn't change the query to try and create an sql error.
 	*
 	* @see GetCustomFields
 	*
-	* @var Array
+	* @var array
 	*/
-	var $ValidSorts = array('name' => 'Name', 'date' => 'CreateDate', 'type' => 'FieldType');
+	public $ValidSorts = ['name' => 'Name', 'date' => 'CreateDate', 'type' => 'FieldType'];
 
 	/**
 	* Constructor
@@ -146,19 +146,16 @@ class CustomFields_API extends API
 	* @see GetDb
 	* @see Load
 	* @see Db
-	*
-	* @return Boolean If there is a field to load, returns the result of the load. If setting up the base class, always returns true.
 	*/
-	function CustomFields_API($fieldid=0, $connect_to_db=true)
+	public function __construct($fieldid=0, $connect_to_db=true)
 	{
 		if ($connect_to_db) {
 			$this->GetDb();
 		}
 
 		if ($fieldid > 0) {
-			return $this->Load($fieldid);
+			$this->Load($fieldid);
 		}
-		return true;
 	}
 
 	/**
@@ -226,12 +223,13 @@ class CustomFields_API extends API
 	* @see Load
 	* @see LoadSubField
 	*
+    * @param array $field
 	* @return Void Doesn't return anything.
 	*/
-	function SetAllOptions($field=array())
+	function SetAllOptions($field = [])
 	{
 		if (!isset($field['fieldid'])) {
-			return false;
+			return;
 		}
 
 		$this->fieldid = $field['fieldid'];
@@ -261,14 +259,14 @@ class CustomFields_API extends API
 	* Loads up a sub custom field based on the field type loaded and the fieldid loaded.
 	* If this custom field hasn't loaded or the fieldtype is blank, then nothing can be loaded.
 	*
-	* @param Array $field_options An array of options that have already been loaded. This will include all info about the custom field (apart from list associations). This is used by the import script so it can load the info once and set everything up properly to call CheckData. We only do a basic check to see if the fieldid & fieldtype are set.
+	* @param array $field_options An array of options that have already been loaded. This will include all info about the custom field (apart from list associations). This is used by the import script so it can load the info once and set everything up properly to call CheckData. We only do a basic check to see if the fieldid & fieldtype are set.
 	*
 	* @see SetAllOptions
 	* @see Load
 	*
 	* @return Mixed Returns the sub class if a field is loaded, otherwise false.
 	*/
-	function LoadSubField($field_options=array())
+	function LoadSubField($field_options = [])
 	{
 		if (empty($field_options) || !isset($field_options['fieldid'])) {
 			if ($this->fieldid <= 0 || $this->fieldtype == '') {
@@ -501,7 +499,7 @@ class CustomFields_API extends API
 	* @see SharedOptions
 	* @see Options
 	*
-	* @return Array List of options.
+	* @return array List of options.
 	*/
 	function GetOptions()
 	{
@@ -515,7 +513,7 @@ class CustomFields_API extends API
 	* If the field hasn't been loaded properly then this will return false.
 	* If you don't specify the user to check permissions for, this will return false.
 	*
-	* @param Array $associations List of assocations to match up to.
+	* @param array $associations List of assocations to match up to.
 	* @param Object $user_object The user object is passed in to see which lists the user has access to. Since the user object will already be loaded, then we don't have to do anything special with it.
 	*
 	* @see User_API
@@ -562,7 +560,7 @@ class CustomFields_API extends API
 		$query = "DELETE FROM " . SENDSTUDIO_TABLEPREFIX . "customfield_lists WHERE fieldid='" . $this->Db->Quote($this->fieldid) . "' AND listid IN (" . implode(',', $removeassocs) . ")";
 		$result = $this->Db->Query($query);
 		if (!$result) {
-			trigger_error(mysql_error());
+			trigger_error(mysqli_error($this->Db->connection));
 		}
 		if(!empty($def_only)){
             foreach($def_only as $p => $listid){
@@ -622,11 +620,7 @@ class CustomFields_API extends API
 	*/
 	function IsLoaded()
 	{
-		if ($this->fieldid > 0) {
-			return true;
-		}
-
-		return false;
+	    return $this->fieldid > 0;
 	}
 
 	/**
@@ -666,20 +660,6 @@ class CustomFields_API extends API
 	function GetFieldName()
 	{
 		return $this->Settings['FieldName'];
-	}
-
-	/**
-	* CheckData
-	* Checkdata makes sure the data passed in is valid for this field type.
-	* The base class always returns false. This needs to be overridden in each subclass.
-	*
-	* @see ValidData
-	*
-	* @return False The base class always returns false. The subclasses need to override this method and check the data properly.
-	*/
-	function CheckData()
-	{
-		return false;
 	}
 
 	/**
@@ -723,18 +703,6 @@ class CustomFields_API extends API
 		return $check;
 	}
 
-	/**
-	* DisplayFieldOptions
-	* This displays options for the custom field if it is loaded. Each type handles this differently.
-	* The base class returns a blank string.
-	*
-	* @return String Returns a blank string. Subclasses override this method and return proper options.
-	*/
-	function DisplayFieldOptions()
-	{
-		return '';
-	}
-
         /**
 	* GetRealValue
 	* This gets the 'real' value from the custom field. This is used when sending the list owner a notification of a subscription.
@@ -757,7 +725,7 @@ class CustomFields_API extends API
 	*
 	* @return String Returns an empty string.
 	*/
-	function CreateJavascript()
+	public function CreateJavascript()
 	{
 		return '';
 	}
@@ -767,21 +735,21 @@ class CustomFields_API extends API
 	 * Gets all custom fields and their settings for the list id's passed in and field id's (if available).
 	 * This is mainly used by 'Manage Subscribers' so instead of loading fields one by one, we load them all at once to save round trips to the database
 	 *
-	 * @param Array $listids The listid's to get custom fields for. This field is mandatory as it links custom fields and their lists. If you pass in a single list id, then it's turned into an array. Non-numeric list id's are removed automatically.
-	 * @param Array $fieldids The fields to get the data and settings for. This field is not mandatory but can be used to narrow down the query. This can either be an array or single field id.
-	 * @param Array $fieldTypes Field types to look for (Empty array means all type)
+	 * @param array $listids The listid's to get custom fields for. This field is mandatory as it links custom fields and their lists. If you pass in a single list id, then it's turned into an array. Non-numeric list id's are removed automatically.
+	 * @param array $fieldids The fields to get the data and settings for. This field is not mandatory but can be used to narrow down the query. This can either be an array or single field id.
+	 * @param array $fieldTypes Field types to look for (Empty array means all type)
 	 *
-	 * @return Returns an array of custom field settings (name, fieldsettings, defaultvalue etc).
+	 * @return array of custom field settings (name, fieldsettings, defaultvalue etc).
 	 */
-	function GetCustomFieldsForLists($listids = array(), $fieldids = array(), $fieldTypes = array())
+	function GetCustomFieldsForLists($listids = [], $fieldids = [], $fieldTypes = [])
 	{
 		if (!is_array($listids)) {
-			$listids = array($listids);
+			$listids = [$listids];
 		}
 
 		$listids = $this->CheckIntVars($listids);
 		if (empty($listids)) {
-			return array();
+			return [];
 		}
 
 		if (!empty($fieldids)) {
@@ -789,7 +757,7 @@ class CustomFields_API extends API
 		}
 
 		if (!is_array($fieldTypes)) {
-			$fieldTypes = array($fieldTypes);
+			$fieldTypes = [$fieldTypes];
 		}
 
 		$query = "SELECT cf.*, cl.listid FROM " . SENDSTUDIO_TABLEPREFIX . "customfields cf INNER JOIN " . SENDSTUDIO_TABLEPREFIX . "customfield_lists cl ON cf.fieldid = cl.fieldid WHERE cl.listid IN (" . implode(',', $listids) . ")";
@@ -802,7 +770,7 @@ class CustomFields_API extends API
 		$query .= ' ORDER BY cl.listid';
 
 		$result = $this->Db->Query($query);
-		$return = array();
+		$return = [];
 		while ($row = $this->Db->Fetch($result)) {
 			$return[] = $row;
 		}
@@ -810,5 +778,3 @@ class CustomFields_API extends API
 		return $return;
 	}
 }
-
-?>

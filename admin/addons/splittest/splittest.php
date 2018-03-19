@@ -658,7 +658,7 @@ class Addons_splittest extends Interspire_Addons
 	 */
 	public function Admin_Action_Default()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$this->template_system->Assign('AdminUrl', $this->admin_url, false);
 
@@ -785,7 +785,7 @@ class Addons_splittest extends Interspire_Addons
 	 */
 	public function Admin_Action_Create()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$copy = $this->_getGETRequest('Copy', null);
 		if ($copy != null) {
@@ -853,7 +853,7 @@ class Addons_splittest extends Interspire_Addons
 	 */
 	public function Admin_Action_Edit()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$split_api = $this->GetApi();
 		$id = $this->_getGETRequest('id', null);
 
@@ -916,7 +916,7 @@ class Addons_splittest extends Interspire_Addons
 	 */
 	public function Admin_Action_Delete()
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$api = $this->GetApi();
 
 		$split_ids = $this->_getPOSTRequest('splitids', null);
@@ -1001,7 +1001,7 @@ class Addons_splittest extends Interspire_Addons
 	 */
 	private function _ShowForm($splitid=null, $chosen_campaigns=array())
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$admin_url = $this->admin_url;
 		$action = $this->_getGETRequest('Action', null);
@@ -1494,7 +1494,7 @@ class Addons_splittest extends Interspire_Addons
 		$data->displaymessage .= GetFlashMessages();
 
 		// Append 'Create Split Test' button
-		$user =& GetUser();
+		$user =& IEM::getCurrentUser();
 		if (!$user->HasAccess('splittest', 'create')) {
 			return;
 		}
@@ -1696,7 +1696,7 @@ class Addons_splittest extends Interspire_Addons
 		$success = &$data->success;
 		$failure = &$data->failure;
 
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		require_once SENDSTUDIO_API_DIRECTORY . '/jobs.php';
 		require_once SENDSTUDIO_API_DIRECTORY . '/stats.php';
@@ -1818,7 +1818,7 @@ class Addons_splittest extends Interspire_Addons
 		$data->preventDefault();
 
 		$self = new self;
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$splitid = $jobinfo['jobdetails']['splitid'];
 

@@ -73,7 +73,7 @@ class Subscribers_Export extends Subscribers
 	*/
 	function Process($action=null)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 
 		$this->PrintHeader(false, false, false);
 
@@ -339,7 +339,7 @@ class Subscribers_Export extends Subscribers
 	*/
 	function ExportSubscribers_Step2($listid=0, $msg=false)
 	{
-		$user = GetUser();
+		$user = IEM::getCurrentUser();
 		$access = $user->HasAccess('Subscribers', 'Export');
 		if (!$access) {
 			$this->DenyAccess();
