@@ -82,8 +82,10 @@ class xmlController
 
         if ($this->getRequestType() == 'authentication' && $this->getRequestMethod() == 'xmlapitest') {
             self::SendResponse(true, [
-                'userid' => $userRecord['userid'],
-                'username' => $userRecord['username']
+                'user' => [
+                    'userid' => $userRecord['userid'],
+                    'username' => $userRecord['username']
+                ]
             ]);
             return;
         }
@@ -362,7 +364,7 @@ class xmlController
      *
      * @return string Returns a formatted xml document.
      */
-    public static function CreateOutput($output='') {
+    public static function CreateOutput($output='', $returnXML = true) {
         if (!is_array($output)) {
             return sprintf('%s', htmlspecialchars($output, ENT_QUOTES, SENDSTUDIO_CHARSET)) . "\n";
         }
@@ -382,9 +384,10 @@ class xmlController
             $xmlOutput .= sprintf('<%s>', $quoted_name);
 
             if (is_array($data)) {
+                $arrayXmlOutput = null;
                 foreach ($data as $k => $v) {
                     if (is_array($v)) {
-                        $xmlOutput .= '<item>' . self::CreateOutput($v) . '</item>';
+                        $arrayXmlOutput[] = self::CreateOutput([$k => $v], false);
                         continue;
                     }
                     if (is_numeric($k)) {
@@ -393,12 +396,27 @@ class xmlController
                     $k_quoted = htmlspecialchars($k, ENT_QUOTES, SENDSTUDIO_CHARSET);
                     $xmlOutput .= sprintf('<%s>%s</%s>', $k_quoted, htmlspecialchars($v, ENT_QUOTES, SENDSTUDIO_CHARSET), $k_quoted);
                 }
+
+                if(!is_null($arrayXmlOutput) && is_array($arrayXmlOutput)){
+                    $xmlOutput .= '<items>' . implode('', $arrayXmlOutput) . '</items>';
+                }
             }
             $xmlOutput .= sprintf('</%s>', $quoted_name);
         }
 
-        $xmlObj = new SimpleXmlElement($xmlOutput, LIBXML_PARSEHUGE);
-        return $xmlObj->asXML();
+        if($returnXML == false){
+            return $xmlOutput;
+        }
+
+        try {
+            $xmlObj = new SimpleXmlElement($xmlOutput, LIBXML_PARSEHUGE);
+        }
+        catch(Exception $e){
+            $xmlOutput = '<wrapper>' . $xmlOutput . '</wrapper>';
+            $xmlObj = new SimpleXmlElement($xmlOutput, LIBXML_PARSEHUGE);
+        }
+
+        return str_replace(['<?xml version="1.0"?>', '<wrapper>', '</wrapper>'], '', $xmlObj->asXML());
     }
 
     /**
