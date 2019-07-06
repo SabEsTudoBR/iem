@@ -28,8 +28,13 @@ class Jobs_Autoresponders_API extends Jobs_API
 	*
 	* @var Boolean
 	*/
-	var $Debug = false;
-
+	var $Debug = null;
+   /**
+	* Whether debug mode is on or not.
+	*
+	* @var Boolean
+	*/
+	var $Db= null;
 	/**
 	* Where to log messages if debug is enabled.
 	*
@@ -106,7 +111,13 @@ class Jobs_Autoresponders_API extends Jobs_API
 	* @var Int
 	*/
 	var $userpause = null;
-
+   /**
+	* The pause between sending each newsletter if applicable.
+	*
+	* @var Int
+	*/
+	 var $debug_db = null;
+   
 	/**
 	* The current statistic we are looking at.
 	*
@@ -132,8 +143,10 @@ class Jobs_Autoresponders_API extends Jobs_API
 	*
 	* @see Jobs_API::Jobs_API
 	*/
-	function Jobs_Autoresponders_API()
+	function __construct()
 	{
+		$this->Db = IEM::getDatabase();
+		$this->Debug = $this->debugging();
 		$this->LogFile = TEMP_DIRECTORY . '/autoresponder_debug.'.getmypid().'.log';
 
 		if ($this->Debug) {
@@ -141,8 +154,9 @@ class Jobs_Autoresponders_API extends Jobs_API
 		}
 
 		$this->currenttime = $this->GetServerTime();
-
-		Jobs_API::Jobs_API(false);
+		$jobs_api = new Jobs_API();
+		$jobs_api->__construct(false);
+ 
         $ssf = new SendStudio_Functions();
         $ssf->LoadLanguageFile('jobs_autoresponders');
 
@@ -198,7 +212,22 @@ class Jobs_Autoresponders_API extends Jobs_API
 
 		$this->_queues_done = array();
 	}
-
+	/**
+	* debugging
+	* Check the value of EMAIL_DEBUG in config_settings table.
+	*
+	* @return Boolean Returns false if it can't be set (invalid data), or true if it enabled.
+	*/
+	
+	function debugging()
+	{    	
+		//set up debug value from db settings config table
+		$this->debug_db = IEM::getDatabase();
+		$status_query1 = "SELECT areavalue FROM [|PREFIX|]config_settings where area='AUTORESPONDER_DEBUG '";
+		$AutorespondersDebug = $this->debug_db->FetchOne($status_query1);
+		
+		return ($AutorespondersDebug == 1)? true : false;
+	}
 	/**
 	* FetchJob
 	* Fetches the next autoresponder job from the queue that hasn't been looked at yet.
@@ -207,7 +236,7 @@ class Jobs_Autoresponders_API extends Jobs_API
 	*
 	* @return False|Int If there is no next queue, this returns false. If there is a next queue, it returns the queueid for handing to the ProcessJob function
 	*/
-	function FetchJob()
+	function FetchJob($jobtype='')
 	{
 
 		if ($this->Debug) {

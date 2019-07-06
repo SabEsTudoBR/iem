@@ -87,7 +87,7 @@ class module_Tracker_DataObject
 	 *
 	 * @abstract
 	 */
-	function module_Tracker_DataObject($record = array())
+	function __construct($record = array())
 	{
 		trigger_error('This class cannot be instantiated', E_USER_ERROR);
 	}

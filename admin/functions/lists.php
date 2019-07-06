@@ -118,7 +118,7 @@ class Lists extends SendStudio_Functions
 			}
 
 			if (!$access) {
-				$this->PrintHeader();
+				$this->PrintHeader($popup = false);
 				$this->DenyAccess();
 				$this->PrintFooter();
 				return;

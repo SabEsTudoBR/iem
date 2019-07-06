@@ -1,4 +1,7 @@
 <?php
+define('LNG_interspire_Contact_help_link', '<a href="https://www.interspire.com/contact-lists"   target="_blank">Read More</a>');
+define('LNG_interspire_Contact_subscribers_help_link', '<a href="https://www.interspire.com/importing-exporting-subscribers"   target="_blank">Read More</a>');
+define('LNG_interspire_unsubscriber_help_link', '<a href="https://www.interspire.com/unsubscribing-from-contact-lists"   target="_blank">Read More</a>');
 
 define('LNG_ChooseValueForCustomField', 'Choose a value for custom field \'%s\'');
 define('LNG_EnterValueForCustomField', 'Enter a value for custom field \'%s\'');
@@ -229,7 +232,7 @@ define('LNG_HLP_ConfirmedStatus', 'The confirmed option is usually used for the 
 define('LNG_HLP_Format', 'Which email format should these contacts be \\\'flagged\\\' to receive by default? HTML or Text? HTML contacts can receive both HTML and Text emails, but Text contacts can only receive Text emails.<br><br>If you are unsure, select HTML.');
 define('LNG_HLP_SubscriberStatus', 'Active contacts are those who have not bounced and have not unsubscribed from the contact list.<br/>The \\\'bounced\\\' status is for those who have been disabled on the contact list because they have had too many messages bounce from their email address, or have been detected as a hard bounce.<br/>The \\\'unsubscribed\\\' status is for those who have specifically unsubscribed from the contact list.');
 define('LNG_Subscribers_Import', 'Import Contacts from a File');
-define('LNG_Subscribers_Import_Intro', 'To import contacts from a CSV file on your computer, start by select which lists to import contacts to from those shown below.');
+define('LNG_Subscribers_Import_Intro', 'To import contacts from a CSV file on your computer, start by select which lists to import contacts to from those shown below.'.LNG_interspire_Contact_subscribers_help_link);
 define('LNG_Subscribers_Import_Step2', 'Import Contacts from a File');
 define('LNG_HLP_ImportType', 'How will you be importing your list of contacts?');
 define('LNG_Subscribers_Import_CancelPrompt', 'Are you sure you want to cancel importing contacts?');
@@ -271,8 +274,8 @@ define('LNG_ExportResults_InProgress_Message', 'Please wait while we attempt to 
 define('LNG_ExportResults_InProgress_Status', '%s of %s contacts have been exported so far...');
 define('LNG_ExportResults_Intro', 'The selected contacts have been exported successfully. <a href=%s target=_blank>Click here to download the export file</a>. You should delete this file once you have finished downloading.');
 define('LNG_ExportResults_Link', 'Click here to download your exported contacts.');
-define('LNG_ExportResults_InProgress', 'Exporting Contacts');
-define('LNG_ImportSubscribers_bads_One', '1 contact contains bad data');
+define('LNG_ExportResults_InProgress', 'Exporting Contacts'); 
+define('LNG_ImportSubscribers_bads_One', '1 contact contains bad data'); 
 define('LNG_ImportSubscribers_bads_Many', '%s contacts contained bad data');
 define('LNG_SubscriberIPAddress', 'Contacts IP Address');
 define('LNG_ImportSubscribers_duplicates_Many_Link', '%s contacts contained duplicate email addresses. <a href="#" style="color: blue;" onclick="javascript: ShowReport(\'%s\'); return false;">[ Click here for more information ]</a>');
@@ -284,20 +287,20 @@ define('LNG_ImportSubscribers_unsubscribes_One_Link', '1 contact is unsubscribed
 define('LNG_ImportSubscribers_bads_Many_Link', '%s contacts contained bad data. <a href="#" style="color: blue;" onclick="javascript: ShowReport(\'%s\'); return false;">[ Click here for more information ]</a>');
 define('LNG_ImportSubscribers_bads_One_Link', '1 contact contained bad data. <a href="#" style="color: blue;" onclick="javascript: ShowReport(\'%s\'); return false;">[ Click here for more information ]</a>');
 define('LNG_Subscribers_Manage', 'View Contacts');
-define('LNG_Subscribers_Manage_Intro', 'A contact is a person that has been added or subscribed to your contact list. You can view all of your contacts or you can use the filtering options to find specific contacts.');
+define('LNG_Subscribers_Manage_Intro', 'A contact is a person that has been added or subscribed to your contact list. You can view all of your contacts or you can use the filtering options to find specific contacts. '.LNG_interspire_Contact_help_link);
 define('LNG_Subscribers_Manage_CancelPrompt', 'Are you sure you want to cancel viewing contacts?');
 define('LNG_Subscribers_Add', 'Add a Contact');
 define('LNG_Subscribers_Add_Step1', LNG_Subscribers_Add);
-define('LNG_Subscribers_Remove_Step2_Intro', 'Use the form below to remove contacts from your list. You can set their status to unsubscribed, or you can delete them from your list permanently.');
+define('LNG_Subscribers_Remove_Step2_Intro', 'Use the form below to remove contacts from your list. You can set their status to unsubscribed, or you can delete them from your list permanently.'.LNG_interspire_unsubscriber_help_link);
 define('LNG_YesOverwriteExistingSubscriber', 'Yes, overwrite existing contact details');
 define('LNG_Subscribers_Export', 'Export Contacts to a File');
-define('LNG_Subscribers_Export_Intro', 'A copy of your contact list can be exported to a CSV file that you can download to your computer. Please choose which contact list you wish to export from.');
+define('LNG_Subscribers_Export_Intro', 'A copy of your contact list can be exported to a CSV file that you can download to your computer. Please choose which contact list you wish to export from.'.LNG_interspire_Contact_subscribers_help_link);
 define('LNG_Subscribers_Export_CancelPrompt', 'Are you sure you want to cancel exporting your contacts?');
 define('LNG_Subscribers_Export_Step3', 'Export Contacts to a File');
 define('LNG_Subscribers_Export_Step4', 'Export Contacts to a File');
 define('LNG_Subscribers_Edit_Intro', 'Update the details of the selected contact using the form below.');
-define('LNG_Subscribers_Add_Step1_Intro', 'To add a single contact to your list by typing in their details, start by choosing which list you want to add them to. Alternatively you can <a href="index.php?Page=Subscribers&Action=Import">import contacts from a file</a>.');
-define('LNG_Subscribers_Add_Step2_Intro', 'Type the details of the new contact into the form below. When you click Save they will be added to your list.');
+define('LNG_Subscribers_Add_Step1_Intro', 'To add a single contact to your list by typing in their details, start by choosing which list you want to add them to. Alternatively you can <a href="index.php?Page=Subscribers&Action=Import">import contacts from a file</a>. '.LNG_interspire_Contact_help_link);
+define('LNG_Subscribers_Add_Step2_Intro', 'Type the details of the new contact into the form below. When you click Save they will be added to your list.'.LNG_interspire_Contact_help_link);
 define('LNG_ImportSubscribers_bans_One_Link', '1 contact has been suppressed from joining this contact list. <a href="#" style="color: blue;" onclick="javascript: ShowReport(\'%s\'); return false;">[ Click here for more information ]</a>');
 define('LNG_ImportSubscribers_bans_Many_Link', '%s contacts have been suppressed from joining this contact list. <a href="#" style="color: blue;" onclick="javascript: ShowReport(\'%s\'); return false;">[ Click here for more information ]</a>');
 define('LNG_ImportSubscribers_bans_Many', '%s contacts are suppressed from joining this contact list');
@@ -349,9 +352,9 @@ define('LNG_BannedEmailsChooseList', 'I Want to Suppress Contacts from');
 define('LNG_BannedEmailsChooseList_Edit', LNG_BannedEmailsChooseList);
 define('LNG_ImportResults_Report_Banned_Intro', 'The following email addresses were not able to be imported because they are suppressed from joining this contact list.');
 define('LNG_SubscriberAddFail_Banned', 'The email address \'%s\' is suppressed from joining this contact list.');
-define('LNG_Subscribers_Remove_Intro', 'To <em>permanently</em> delete a contact from your list, start by choosing which list you want to remove them from. <u>Removing a contact from your list cannot be undone</u>.');
+define('LNG_Subscribers_Remove_Intro', 'To <em>permanently</em> delete a contact from your list, start by choosing which list you want to remove them from. <u>Removing a contact from your list cannot be undone</u>.'.LNG_interspire_unsubscriber_help_link);
 define('LNG_ImportFile_HeaderInMailingList', '... which should be saved as these fields in the contact list:');
-define('LNG_Help_SubscribersManage', 'A contact is a person that has been added or has subscribed to your contact list. Your existing contacts are shown below.');
+define('LNG_Help_SubscribersManage', 'A contact is a person that has been added or has subscribed to your contact list. Your existing contacts are shown below.'.LNG_interspire_Contact_help_link);
 define('LNG_Subscribers_Import_Step2_Intro', 'Choose the CSV file from your computer by clicking the <em>Browse...</em> button below. You can also specify advanced options if required.');
 define('LNG_ImportTutorialLink', 'Learn more about importing here.');
 define('LNG_HLP_ImportConfirmedStatus', 'Should imported contacts be marked as confirmed? The confirmed option is usually used for the double-optin process where users confirm there subscription by clicking a link in a confirmation email. If you select unconfirmed you can send the contacts an email at a later date which contains a confirmation link to make sure they want to be included your contact list.<br><br>If you have permission to email these contacts, select the Confirmed option, otherwise select the Unconfirmed option and send them an email later to confirm their subscription.');

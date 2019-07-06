@@ -82,7 +82,8 @@ class PrintStats extends Addons_splittest_Stats
 			}
 
 			// A Splittest can be sent multiple times hence we might have multiple campaign record sets here
-			while (list($id, $data) = each($stats)) {
+			foreach ($stats as $id=>$data) {
+							 
 				$charts = $this->generateCharts($data['splitname'], $data['campaigns'], $subaction);
 				foreach ($charts as $type=>$data) {
 					$stats[$id][$type] = $data;

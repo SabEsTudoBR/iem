@@ -29,7 +29,7 @@ class surveySubmit extends Interspire_Addons {
 	 */
 	static public $api;
 
-	public function __construct() {
+	public function __construct() {		
 		$this->_handleSubmitAction();
 	}
 
@@ -102,6 +102,14 @@ class surveySubmit extends Interspire_Addons {
 
 	private function _handleSubmitAction()
 	{
+		$this->db = IEM::getDatabase();
+		$enabled = $this->db->Query("SELECT enabled FROM [|PREFIX|]addons   where addon_id ='surveys' ");		 
+		$row = $this->db->Fetch($enabled);
+		$survey_enabled = $row['enabled'];
+		if ($survey_enabled == 0) {			 
+			 echo GetLang('Addon_surveys_AccessError');
+			 exit;
+		}		
 		// don't escape
 		$template_dir = SENDSTUDIO_BASE_DIRECTORY . '/addons/surveys/templates';
 		$this->_template = 	 GetTemplateSystem($template_dir);
@@ -109,8 +117,10 @@ class surveySubmit extends Interspire_Addons {
 		$this->_template->DefaultHtmlEscape = false;
 
 		$formId      = (int) IEM::requestGetGET('formId');
-		$postWidgets = IEM::requestGetPOST('widget');
-
+		$postWidgets = IEM::requestGetPOST('widget');       
+		$not_allowed_ext=['php2','cgi','sh','htm','asp','jsp','shtml','py','js','php','pl','php3','php4','php5','phtml'];	
+		
+		
 		// If there are files, take the values and place them in the $postWidgets array so they can
 		// get validated and entered into the response values in the same manner. Uploads will be
 		// handled separately.
@@ -156,10 +166,7 @@ class surveySubmit extends Interspire_Addons {
 				// the widget is assumed blank until one of it's fields is found not blank
 				$isBlank = true;
 				$isOther = false;
-
-
 				// make sure the required widget was even posted
-
 				if (isset($postWidgets[$widget['id']])) {
 					foreach ($postWidgets[$widget['id']]['field'] as $field) {
 						if (isset($field['value'])) {
@@ -205,31 +212,22 @@ class surveySubmit extends Interspire_Addons {
 					}					
 				}
 			}
-
-
-
-
 			// validate file types
 			if ($widget['type'] == 'file') {
 				
 				if (!empty($widget['allowed_file_types'])) {
 					$typeArr     = preg_split('/\s*,\s*/', strtolower($widget['allowed_file_types']));
-					$invalidType = false;
-
+					$invalidType = false; 
 
 					// foreach of the passed fields (most likely 1) check and see if they are valid file types
 					foreach ($postWidgets[$widget['id']]['field'] as $field) {
 						$parts = explode('.', $field['value']);
-						$ext   = strtolower(end($parts));
-
-
-
+						$ext   = strtolower(end($parts));                        
 						// only if the field has a value we will test its file type
 						if (trim($field['value']) != '' && !in_array($ext, $typeArr)) {
 							$invalidType = true;
 						}
 					}
-
 					// if the a file is not a valid file type, then the whole widget fails validation
 					if ($invalidType) {
 						$lastFileType   = '<em>.' . array_pop($typeArr) . '</em>';
@@ -237,6 +235,22 @@ class surveySubmit extends Interspire_Addons {
 						$widgetErrors[$widget['id']][] = sprintf(GetLang('Addon_Surveys_ErrorInvalidFileType'), $lastFileType, $firstFileTypes);
 						$errors++;
 					}
+				} else {
+					$invalidType = false; 
+					foreach ($postWidgets[$widget['id']]['field'] as $field) {
+						$parts = explode('.', $field['value']);
+						$ext   = strtolower(end($parts));
+                        if (in_array($ext, $not_allowed_ext)) {
+							$invalidType = true;
+						}
+					}
+					if ($invalidType) {
+						$lastFileType   = '<em>.' . array_pop($not_allowed_ext) . '</em>';
+						$firstFileTypes = '<em>.' . implode('</em>, <em>.', $not_allowed_ext) . '</em>';
+						$widgetErrors[$widget['id']][] = sprintf(GetLang('Addon_Surveys_ErrorNotAllowedFileType'), $lastFileType, $firstFileTypes);
+						$errors++;
+					}					
+								
 				}
 			}
 
@@ -262,7 +276,6 @@ class surveySubmit extends Interspire_Addons {
 
 		// associate the response to a particular form
 		$response->surveys_id = $formId;
-
 		// if the response was saved, then associate values to the response
 		if ($response->Save()) {
 			// foreach of the posted widgets, check to see if it belongs in this form and save it if it does
@@ -271,43 +284,43 @@ class surveySubmit extends Interspire_Addons {
 				// iterate through each field and enter it in the feedback
 
 				foreach ($postWidget['field'] as $field) {
+					
 					// make sure it has a value first
-
 					if (isset($field['value'])) {
 						// since multiple values can be given, we treat them as an array
-						$values = (array) $field['value'];
+						$values = (array) $field['value'];						 
+						if (count($values) > 0) {
+							foreach ($values as $value) {
 
-						foreach ($values as $value) {
+								$responseValue = $this->getSpecificApi('responsesvalue');
+								// foreign key for the response id
+								$responseValue->surveys_response_id = $response->GetId();
 
-							$responseValue = $this->getSpecificApi('responsesvalue');
-							// foreign key for the response id
-							$responseValue->surveys_response_id = $response->GetId();
+								// set the widget id foreign key; widgets can have multiple field values and
+								// should be treated as such
+								$responseValue->surveys_widgets_id =  $postWidgetId;
 
-							// set the widget id foreign key; widgets can have multiple field values and
-							// should be treated as such
-							$responseValue->surveys_widgets_id =  $postWidgetId;
+								// set the value of the feedback; this should be a single value since widgets
+								// can have multiple feed back values
+								if ($value == '__other__') {
+									$responseValue->value =  $field['other'];
+									$responseValue->is_othervalue = 1;
+								} else {
+									// if file value exist we need to save the md5 name of the file in the database
+									$responseValue->file_value = "";
+									if (substr($value, 0, 5) == "file_") {
+										$value = str_replace("file_", "", $value);
+										$responseValue->file_value = md5($value);
+									}
 
-							// set the value of the feedback; this should be a single value since widgets
-							// can have multiple feed back values
-							if ($value == '__other__') {
-								$responseValue->value =  $field['other'];
-								$responseValue->is_othervalue = 1;
-							} else {
-								// if file value exist we need to save the md5 name of the file in the database
-								$responseValue->file_value = "";
-								if (substr($value, 0, 5) == "file_") {
-									$value = str_replace("file_", "", $value);
-									$responseValue->file_value = md5($value);
+									$responseValue->value = $value;
+									$responseValue->is_othervalue = 0;
 								}
 
-								$responseValue->value = $value;
-								$responseValue->is_othervalue = 0;
+								// save it
+								$responseValue->Save();
 							}
-
-							// save it
-							$responseValue->Save();
 						}
-
 					}
 				}
 			}
@@ -398,7 +411,7 @@ class surveySubmit extends Interspire_Addons {
 
 			if (isset($_FILES['widget']['name'])) {
 				$files = $_FILES['widget']['name'];
-
+              
 				foreach ($files as $widgetId => $widget) {
 					foreach ($widget as $widgetKey => $fields) {
 						foreach ($fields as $fieldId => $field) {
@@ -429,9 +442,16 @@ class surveySubmit extends Interspire_Addons {
 								if (!is_dir($upDir)) {
 									mkdir($upDir, 0755);
 								}
-
-								// upload the file
-								move_uploaded_file($tmpName, $upDir . DIRECTORY_SEPARATOR . $name);
+							    $file_parts = explode('.', $name);
+								$file_ext   = strtolower(end($file_parts));
+								if (empty($widget['allowed_file_types'])){
+									if (!in_array($file_ext, $not_allowed_ext)) {
+									   // upload the file									  
+										move_uploaded_file($tmpName, $upDir . DIRECTORY_SEPARATOR . $name);
+									}
+								} else {
+									move_uploaded_file($tmpName, $upDir . DIRECTORY_SEPARATOR . $name);
+								}	
 							}
 						}
 					}

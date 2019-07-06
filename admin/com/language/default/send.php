@@ -14,7 +14,8 @@
 /**
 * Here are all of the variables for the send area... Please backup before you start!
 */
-
+define('LNG_interspire_email_campaign_send_link', '<a href="https://www.interspire.com/sending-email-campaigns"   target="_blank">Read More</a>');
+ 
 define('LNG_NoLiveNewsletters', 'None of your email campaigns are active.%s');
 
 define('LNG_Send_CancelPrompt', 'Are you sure you want to cancel sending an email campaign?');
@@ -215,7 +216,7 @@ define('LNG_SendProblem_Report_SMTPMailServer_Problem_Intro', 'The following con
 
 define('LNG_Send_Step5_KeepBrowserWindowOpen', '<div style="padding:10px; background-color:#FAD163">Please keep this browser window open. If you close it, your email campaign will stop sending which means some of your contacts will not receive your email.</div>');
 
-define('LNG_Send_Step1_Intro', 'Before you can send an email campaign, please select which contact list(s) you want to send to.');
+define('LNG_Send_Step1_Intro', 'Before you can send an email campaign, please select which contact list(s) you want to send to.'.LNG_interspire_email_campaign_send_link);
 
 define('LNG_Send_Step3_Intro', 'Fill out the form below to send an email campaign. If you are unsure what any of the advanced options mean then you can skip them.');
 

@@ -93,7 +93,7 @@ class Image_Graph_Plot_Bar_Multiple extends Image_Graph_Plot_MultipleData
 
             $keys = array_keys($this->_datasets);
             $number = 0;
-            while (list ($ID, $key) = each($keys)) {
+            foreach ($keys as $ID=>$key) {			 
                 $dataset = & $this->_datasets[$key];
                 $dataset->_reset();
                 while ($point = $dataset->_next()) {

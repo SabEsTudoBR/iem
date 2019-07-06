@@ -335,7 +335,7 @@
 			{if $currentPage == 'settings'}
 			%%LNG_HLP_SetDefaultBounceAccountDetails%%
 			{else}
-			<br/><a href="#" onClick="LaunchHelp('798'); return false;" style="margin-left:30px; color: gray;">%%LNG_ProcessBounceGuideLink%%</a>
+			<br/> %%LNG_ProcessBounceGuideLink%% 
 			{/if}
 		</td>
 	</tr>

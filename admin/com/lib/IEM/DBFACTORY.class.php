@@ -37,11 +37,14 @@ class IEM_DBFACTORY
 	static public function manufacture($host = 'localhost', $user = null, $password = null, $name = null, $options = [])
 	{
 		require_once IEM_PATH . "/ext/database/mysql.php";
-
+     
 		$db = new MySQLDb();
-
+  
 		if (array_key_exists('charset', $options)) {
 		    $db->charset = $options['charset'];
+        }
+		if (array_key_exists('collate', $options)) {
+		    $db->collate = $options['collate'];
         }
 		if (array_key_exists('timezone', $options)) {
 		    $db->timezone = $options['timezone'];

@@ -31,7 +31,7 @@ class Infotips extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Infotips()
+	function __construct()
 	{
 		$this->LoadLanguageFile();
 	}

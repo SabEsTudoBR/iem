@@ -48,7 +48,7 @@ class module_TrackerFactory_API extends module_Factory_API
 	/**
 	 * CONSTRUCTOR
 	 */
-	function module_TrackerFactory_API()
+	function __construct()
 	{
 		$this->VERSION = 1;
 		$this->_init();

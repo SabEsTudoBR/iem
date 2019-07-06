@@ -115,7 +115,7 @@ class Templates_API extends API
 	*
 	* @return True|Load If no templateid is passed in, this will always return true. If a templateid is passed in, this will return the status from Load.
 	*/
-	function Templates_API($templateid=0)
+	function __construct($templateid=0)
 	{
 		$this->GetDb();
 		if ($templateid > 0) {

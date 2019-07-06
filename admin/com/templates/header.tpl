@@ -42,6 +42,7 @@
     </script>
 
 	<script type="text/javascript">
+		 
 		var UnsubLinkPlaceholder = "%%LNG_UnsubLinkPlaceholder%%";
 		var UsingWYSIWYG = '%%GLOBAL_UsingWYSIWYG%%';
 		var Searchbox_Type_Prompt = "%%LNG_Searchbox_Type_Prompt%%";

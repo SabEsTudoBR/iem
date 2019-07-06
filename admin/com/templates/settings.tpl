@@ -27,22 +27,7 @@
 				event.stopPropagation();
 				return false;
 			}
-			{if trim($AgencyEdition.agencyid) != ''}
-				if ($(document.settings.lng_accountupgrademessage).val().trim() == '') {
-					alert('%%LNG_ErrorAlertMessage_BlankAccountUpgradeMessage%%');
-					document.settings.lng_accountupgrademessage.focus();
-					event.preventDefault();
-					event.stopPropagation();
-					return false;
-				}
-				if ($(document.settings.lng_freetrial_expiry_login).val().trim() == '') {
-					alert('%%LNG_ErrorAlertMessage_BlankExpiredLogin%%');
-					document.settings.lng_freetrial_expiry_login.focus();
-					event.preventDefault();
-					event.stopPropagation();
-					return false;
-				}
-			{/if}
+			 
 
 			var temp = $('input.percentage_credit_warning', document.settings);
 			var selected = {};
@@ -908,36 +893,7 @@
 								</div>
 							</td>
 						</tr>
-						{if trim($AgencyEdition.agencyid) != ''}
-							<tr>
-								<td class="FieldLabel" >
-									{template="Required"}
-									{$lang.PrivateLabelSettings_ExpiredTrial_LoginMessage}:
-								</td>
-								<td >
-									<textarea name="lng_freetrial_expiry_login" rows="3" cols="28" wrap="virtual" class="Field300">{$lang.FreeTrial_Expiry_Login}</textarea>
-									<div class="HelpToolTipPos">
-										{$lnghlp.PrivateLabelSettings_ExpiredTrial_LoginMessage}
-									</div>
-									<p />
-								</td>
-							</tr>
-
-							<tr>
-								<td class="FieldLabel" >
-									{template="Required"}
-									{$lang.PrivateLabelSettings_UpgradeMessage}:
-								</td>
-								<td >
-									<textarea name="lng_accountupgrademessage" rows="3" cols="28" wrap="virtual" class="Field300">{$lang.AccountUpgradeMessage}</textarea>
-									<div class="HelpToolTipPos">
-										{$lnghlp.PrivateLabelSettings_UpgradeMessage}
-									</div>
-									<p />
-								</td>
-							</tr>
-						{/if}
-						<tr>
+						 <tr>
 							<td class="FieldLabel" >
 								{template="Not_Required"}
 								{$lang.PrivateLabelSettings_ApplicationLogoImage}:

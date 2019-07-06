@@ -384,7 +384,8 @@ function array_contents(&$array, $max_depth=0, $depth=0, $ignore_ints=false)
 		return $indent."[Empty]\n";
 	}
 	reset($array);
-	while ( list($key,$value) = each($array) ) {
+	foreach ($array as $key=>$value) {
+			 
 		$print_key = str_replace("\n","\\n",str_replace("\r","\\r",str_replace("\t","\\t",addslashes($key))));
 		if ($ignore_ints && gettype($key) == "integer") {
 			continue;

@@ -259,7 +259,7 @@ class Autoresponders_API extends API
 	*
 	* @return True Always returns true
 	*/
-	function Autoresponders_API($autoresponderid=0)
+	function __construct($autoresponderid=0)
 	{
 		$this->GetDb();
 		if ($autoresponderid > 0) {

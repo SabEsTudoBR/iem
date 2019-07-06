@@ -89,7 +89,7 @@ class Stats_API extends API
 	*
 	* @return True Always returns true.
 	*/
-	function Stats_API()
+	function __construct()
 	{
 		$this->GetDb();
 		return true;
@@ -3168,7 +3168,7 @@ class Stats_API extends API
 	*
 	* @return Boolean Returns false on
 	*/
-	function DeleteUserStats($userid=0, $jobid=0)
+	function DeleteUserStats($userid = 0, $jobid = 0, $remove_amount = 0, $delete_all = false)
 	{
 		$userid = (int)$userid;
 		$jobid = (int)$jobid;

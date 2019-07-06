@@ -466,7 +466,8 @@ class Image_Graph_Element extends Image_Graph_Common
             reset($this->_elements);
 
             $keys = array_keys($this->_elements);
-            while (list ($ID, $key) = each($keys)) {
+			 //while (list ($ID, $key) = each($keys)) {
+			foreach ($keys as $ID=>$key) {				 
                 $this->_elements[$key]->shrink($left, $top, $right, $bottom);
             }
         }

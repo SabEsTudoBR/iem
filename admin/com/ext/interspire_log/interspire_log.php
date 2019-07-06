@@ -222,7 +222,7 @@ class Interspire_Log
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Interspire_Log($general_logging=true, $admin_logging=true)
+	function __construct($general_logging=true, $admin_logging=true)
 	{
 		$this->GeneralLogging = (int)$general_logging;
 		$this->AdminLogging = (int)$admin_logging;

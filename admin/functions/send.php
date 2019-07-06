@@ -43,7 +43,7 @@ class Send extends SendStudio_Functions
 	*
 	* @return Void Loads up the language file and adds 'send' as a valid popup window type.
 	*/
-	function Send()
+	function __construct()
 	{
 		$this->PopupWindows[] = 'send';
 		$this->PopupWindows[] = 'view_report';

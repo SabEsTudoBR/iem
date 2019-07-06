@@ -68,7 +68,7 @@ class Subscribers_Event extends Subscribers
 	*
 	* @return Void Prints out the step, doesn't return anything.
 	*/
-	function Process($subaction)
+	function Process($subaction='')
 	{
 		$user = IEM::getCurrentUser();
 

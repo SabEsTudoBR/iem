@@ -10,10 +10,12 @@
 * @package SendStudio
 * @subpackage Language
 */
-
+ 
 /**
 * Here are all of the variables for the customfields area... Please backup before you start!
 */
+define('LNG_interspire_customfields_help_link', '<a href="https://www.interspire.com/custom-fields-mail-merge"   target="_blank">Read More</a>');
+
 define('LNG_CustomFieldsName', 'Custom Field');
 define('LNG_CustomFieldsType', 'Type');
 
@@ -149,8 +151,8 @@ define('LNG_CustomFieldDeleteSuccess_One', '1 custom field has been deleted. You
 
 define('LNG_CustomFieldDeleteSuccess_Many', '%s custom fields have been deleted. You should update your website forms to make sure they don\'t use the custom field you deleted.');
 
-define('LNG_Help_CustomFieldsManage', 'Custom fields allows you to collect and store more information that just a contact\'s email address, such as their name, country, etc.');
-define('LNG_CreateCustomFieldIntro', 'To create a custom field, start by giving it a name and choosing the type of field you want to create below. Click <em>Next &gt;&gt;</em> to continue. <a href="Javascript:LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'810\')">Learn about custom fields here.</a>');
+define('LNG_Help_CustomFieldsManage', 'Custom fields allows you to collect and store more information that just a contact\'s email address, such as their name, country, etc.'.LNG_interspire_customfields_help_link);
+define('LNG_CreateCustomFieldIntro', 'To create a custom field, start by giving it a name and choosing the type of field you want to create below. Click <em>Next &gt;&gt;</em> to continue.'.LNG_interspire_customfields_help_link);
 
 define('LNG_HLP_CustomFieldRequired', 'To make this field mandatory, select this option. When contacts are added or when they subscribe to your contact list, they will be forced to fill in this custom field. For example, if you want to make sure that all contacts enter in their \\\'First Name\\\' then you would select this option for your \\\'First Name\\\' custom field. If you are unsure, leave this option unselected');
 
@@ -167,7 +169,7 @@ define('LNG_EditCustomField_Step3_Intro', LNG_CreateCustomField_Step3_Intro);
 
 define('LNG_CustomFields_NoLists', 'You need access to a contact list before you can create custom fields. %s');
 
-define('LNG_WhatAreCustomFields', 'Learn about custom fields here.');
+define('LNG_WhatAreCustomFields', '');
 
 define('LNG_CustomFieldDoesntExist', 'The custom field you are trying to edit does not exist. Please try again.');
 define('LNG_CustomFieldRequired1', 'Mandatory');

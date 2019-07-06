@@ -415,7 +415,7 @@ class xmlController
             $xmlOutput = '<wrapper>' . $xmlOutput . '</wrapper>';
             $xmlObj = new SimpleXmlElement($xmlOutput, LIBXML_PARSEHUGE);
         }
-
+        
         return str_replace(['<?xml version="1.0"?>', '<wrapper>', '</wrapper>'], '', $xmlObj->asXML());
     }
 

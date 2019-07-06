@@ -31,7 +31,7 @@ class Index extends SendStudio_Functions
 	 *
 	 * @return Void Doesn't return anything.
 	 */
-	function Index()
+	function __construct()
 	{
 		$this->LoadLanguageFile();
 		$this->LoadLanguageFile('Stats');

@@ -528,10 +528,9 @@ class SplitTest_Send_API extends Send_API
 	 *
 	 * @return Array Returns an array of the mailing results, same as Send_API::SendToRecipient
 	 */
-	function SendToRecipient($recipient=0, $queueid=0)
+	function SendToRecipient($recipient=0, $queueid=0,$queuetype='splittest')
 	{
-		$this->SetupEmail();
-
+		$this->SetupEmail();		 
 		/**
 		 * These are for the send_api sendtorecipient method to use.
 		 */

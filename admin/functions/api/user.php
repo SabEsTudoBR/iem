@@ -983,26 +983,7 @@ class User_API extends API
         $userid = intval($this->userid);
         $upgrade = 0;
 
-        // ----- Check if they were trial user before they save
-        $query = "SELECT trialuser FROM [|PREFIX|]users WHERE userid=" . $userid;
-        $result = $this->Db->Query($query);
-        if (!$result) {
-            list($error, $level) = $this->Db->GetError();
-            trigger_error($error, $level);
-            return false;
-        }
-
-        $row = $this->Db->Fetch($result);
-        if (!empty($row) && isset($row['trialuser'])) {
-            if ($this->trialuser != $row['trialuser']) {
-                // If it this object trialuser property is set to 1, that means it is downgrading
-                // 1 = Upgrading from free
-                // 2 = Downgrading from paid
-                $upgrade = ($this->trialuser == '1' ? 2 : 1);
-            }
-        }
-
-        $this->Db->FreeResult($result);
+        
         // -----
 
         $this->Db->StartTransaction();

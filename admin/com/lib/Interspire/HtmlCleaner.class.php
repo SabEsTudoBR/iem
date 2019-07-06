@@ -797,7 +797,7 @@ class Interspire_HtmlCleaner
 	 * @param array $protocolWhitelist
 	 * @param string $replacement Optional. Default 'javascript:;'. Invalid URIs will be replaced with this string.
 	 */
-	public function SanitiseHrefAttributes ($xpath, $element, &$protocolWhitelist, $replacement = 'javascript:;')
+	public function SanitiseHrefAttributes ($xpath, $element, $protocolWhitelist, $replacement = 'javascript:;')
 	{
 		$nodes = $xpath->query("//@href", $element);
 		foreach ($nodes as $node) {

@@ -48,7 +48,7 @@ class ConvertDate {
      *
      * @return Void Doesn't return anything.
      */
-    function ConvertDate($server_timezone='GMT', $user_timezone='GMT') {
+    function __construct($server_timezone='GMT', $user_timezone='GMT') {
         $user_hours = $user_mins = 0;
         $user_offset = str_replace('GMT', '', $user_timezone);
         if (strpos($user_offset, ':') !== false) {

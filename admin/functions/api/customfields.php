@@ -154,8 +154,9 @@ class CustomFields_API extends API
 		}
 
 		if ($fieldid > 0) {
-			$this->Load($fieldid);
+			return $this->Load($fieldid);
 		}
+		return true;
 	}
 
 	/**
@@ -229,7 +230,7 @@ class CustomFields_API extends API
 	function SetAllOptions($field = [])
 	{
 		if (!isset($field['fieldid'])) {
-			return;
+			return false;
 		}
 
 		$this->fieldid = $field['fieldid'];
@@ -396,8 +397,7 @@ class CustomFields_API extends API
 		$options = $this->Options;
 		foreach ($options as $name => $val) {
 			$settings[$name] = $this->Settings[$name];
-		}
-
+		}		
 		$settings = serialize($settings);
 
 		$query = "UPDATE " . SENDSTUDIO_TABLEPREFIX . "customfields SET name='" . $this->Db->Quote($this->Settings['FieldName']) . "', defaultvalue='" . $this->Db->Quote($this->Settings['DefaultValue']) . "', required='" . $this->Db->Quote($required) . "', fieldsettings='" . $this->Db->Quote($settings) . "', isglobal='" . $this->Db->Quote($this->isglobal) . "' WHERE fieldid='" . (int)$this->fieldid . "'";
@@ -580,6 +580,7 @@ class CustomFields_API extends API
     				trigger_error($this->Db->Error());
     				return false;
     			}
+	if(isset($this->Settings['ApplyDefault'])){
     			if ($this->Settings['ApplyDefault']=='on' && !empty($this->Settings['DefaultValue'])) {			 
         			$query = "SELECT subscriberid FROM [|PREFIX|]list_subscribers WHERE listid = {$listid}";
         			$result = $this->Db->Query($query);
@@ -587,7 +588,8 @@ class CustomFields_API extends API
                     $subid =  $this->Db->FetchOne($result);
     				$query = "INSERT INTO [|PREFIX|]subscribers_data (subscriberid, fieldid, data)VALUES({$subid},{$this->fieldid},'".$this->Db->Quote($this->Settings['DefaultValue'])."')";
     				$this->Db->Query($query);	
-    			}
+    				}	
+			}
     		}
         }
 		return true;

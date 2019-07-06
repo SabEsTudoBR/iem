@@ -261,11 +261,13 @@ class Chart_Image {
 
 		$blackindex = imagecolorexact($canvas,0,0,0);
 		reset($this->colors);
-
+        	$list_arry = [];
 		foreach ($labels as $label) {
 			if ($label != '') {
-				list($key,$color) = each($this->colors);
-
+				foreach ($this->colors as $key=>$color) {
+					$list_arry[$key] = $color;			
+				}
+				list ($key, $color) = $list_arry;	
 				$colorindex = imagecolorexact($canvas,
 					(eval("return 0x{$color};") & 0xFF0000) >> 16,
 					(eval("return 0x{$color};") & 0x00FF00) >> 8,

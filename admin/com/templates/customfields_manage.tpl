@@ -15,7 +15,7 @@
 	</tr>
 	<tr>
 		<td class="body pageinfo">
-			<p>%%LNG_Help_CustomFieldsManage%% <a href="Javascript:LaunchHelp('%%WHITELABEL_INFOTIPS%%','810')">%%LNG_WhatAreCustomFields%%</a></p>
+			<p>%%LNG_Help_CustomFieldsManage%%  %%LNG_WhatAreCustomFields%% </p>
 		</td>
 	</tr>
 	<tr>

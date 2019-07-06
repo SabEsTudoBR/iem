@@ -50,7 +50,7 @@ class Templates extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything, just loads up the language files.
 	*/
-	function Templates()
+	function __construct()
 	{
 		$this->LoadLanguageFile('Templates');
 		$this->LoadLanguageFile('Newsletters');
@@ -104,6 +104,7 @@ class Templates extends SendStudio_Functions
 			'save' => 'edit',
 			'step1' => 'view',
 			'view' => 'view',
+			'delete' => 'delete',
 			'viewcompatibility' => null,
 			);
 

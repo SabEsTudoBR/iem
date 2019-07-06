@@ -79,7 +79,7 @@ class RemoteStats extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function RemoteStats()
+	function __construct()
 	{
 		if (!IEM::getCurrentUser()) {
 			if (defined('SENDSTUDIO_APPLICATION_URL') && SENDSTUDIO_APPLICATION_URL !== false) {

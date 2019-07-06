@@ -118,7 +118,7 @@ define('LNG_ExtraMailSettingsOthers', 'Other Extra Mail Settings');
 define('LNG_HLP_ExtraMailSettingsOthers', 'Please add any other extra options that may be required to properly connect to a bounce email account.');
 
 define('LNG_YesProcessBounces', 'Yes I want to process bounced emails for this list');
-define('LNG_ProcessBounceGuideLink', 'What are bounced emails and how are they processed?');
+define('LNG_ProcessBounceGuideLink', '');
 define('LNG_ProcessBouncesLabel', 'Process Bounced Emails');
 define('LNG_ProcessBounceDelete', 'I understand that bounced emails will be removed from the inbox I am using to manage them');
 define('LNG_AgreeDeleteLabel', 'Agree to Delete Emails');

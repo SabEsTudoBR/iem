@@ -46,7 +46,7 @@ class Newsletters extends SendStudio_Functions {
      *
      * @return Void Doesn't return anything.
      */
-    function Newsletters() {
+    function __construct() {
         $this->PopupWindows[] = 'sendpreviewdisplay';
         $this->PopupWindows[] = 'checkspamdisplay';
         $this->PopupWindows[] = 'viewcompatibility';

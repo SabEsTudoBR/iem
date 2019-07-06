@@ -184,7 +184,7 @@ define('LNG_HLP_SettingsShowSMTPCOM', 'Tick this option if you would like users 
 /**
  * 5.0.6
  */
-define('LNG_ViewKB_ExplainDefaultFooter', '<a href="#" onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'847\'); return false;">How do I change the default footer?</a>');
+define('LNG_ViewKB_ExplainDefaultFooter', '');
 
 
 
@@ -226,10 +226,7 @@ define('LNG_ConfirmRemoveUsersWithData', 'Are you sure you want to delete the se
  */
 define('LNG_UserDeleteNoData', 'Keep User Data');
 define('LNG_UserDeleteWithData', 'Delete User Data');
-define('LNG_UserType_NormalUser', 'Regular User Account');
-define('LNG_UserType_TrialUser', 'Free Trial Account');
-define('LNG_AdministratorType_TrialUser', LNG_UserType_TrialUser);
-define('LNG_HLP_UserType', "What kind of user account would you like to create? Choose '" . LNG_UserType_NormalUser . "' to create a regular user account which doesn't expire and over which you have full control. Choose '" . LNG_UserType_TrialUser . "' to create a trial account which expires after %%IEM_SYSTEM_LICENSE_TRIALUSER_TRIALDAYS%% days and has a limit of %%IEM_SYSTEM_LICENSE_TRIALUSER_EMAILLIMIT%% total emails during the free trial period.");
+define('LNG_UserType_NormalUser', 'Regular User Account');  
 define('LNG_AdminNotifications_Heading', 'Admin Notifications');
 define('LNG_AdminNotifications_SubHeading', 'Activity-Based Notification Emails');
 define('LNG_AdminNotifications_EmailInstruction', '(Separate multiple email addresses with commas)');

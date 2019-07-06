@@ -29,7 +29,7 @@ class module_Google_Tracker_DataObject extends module_Tracker_DataObject
 	 *
 	 * @return Void Doesn't return anything.
 	 */
-	function module_Google_Tracker_DataObject($record = array())
+	function __construct($record = array())
 	{
 		parent::_init($record);
 	}

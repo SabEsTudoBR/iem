@@ -118,12 +118,19 @@ class CustomFields_Date_API extends CustomFields_API
 
 		if (!is_array($data)) {
             $data = (string) $data;
+			if (empty($data)) {
+				return false;
+			}
 			if (strpos($data, '/') !== false) {
 				$data = explode('/', $data);
+			}
+			if (!is_array($data)) {
+				return false;
 			}
 			if (sizeof($data) != 3) {
 				return false;
 			}
+			
             $format = [];
             $format["dd"] = $data[0];
     		if ((int)$format["dd"] <= 0 || (int)$format["dd"] > 31) {return false;}            

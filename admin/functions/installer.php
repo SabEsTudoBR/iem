@@ -155,7 +155,7 @@ class Installer extends SendStudio_Functions
 
 				switch ($error) {
 					case IEM_Installer::FIELD_INVALID:
-						$errors[] = 'The license key that you entered is invalid. The URL that you generated this license key must match the URL that you are attempting to install on. You can generate your license key from the Interspire client area or purchase one from Interspire.com.';
+						$errors[] = 'The license key that you entered is invalid. The URL that you generated this license key must match the URL that you are attempting to install on. Please contact Interspire at support@interspire.com to obtain a new key or purchase one from <a href="https://www.interspire.com/pricing" target="_blank">Interspire</a>.';
 					break;
 					case IEM_Installer::DB_UNSUPPORTED:
 						$errors[] = $msg;
@@ -331,7 +331,7 @@ class Installer extends SendStudio_Functions
 						</table>
 						</td></tr></table>
 						<div style="padding:10px; margin-bottom:20px; text-align:center" class="InstallPageFooter">
-							Powered by <a href="http://www.interspire.com/emailmarketer/" target="_blank">Interspire Email Marketer</a> &copy; 2004-<?php echo date('Y'); ?> Interspire Pty. Ltd.
+							Powered by <a href="http://www.interspire.com/" target="_blank">Interspire Email Marketer</a> &copy; 2004-<?php echo date('Y'); ?> Interspire Pty. Ltd.
 						</div>
 					</div>
 				<?php
@@ -436,7 +436,7 @@ class Installer extends SendStudio_Functions
 																style="width: 200px;"
 																value="<?php echo (isset($_POST['licensekey'])) ? htmlentities($_POST['licensekey'], ENT_QUOTES, 'UTF-8') : ''; ?>" />
 														<img	onmouseout="HideHelp('keyhelp');"
-																onmouseover="ShowHelp('keyhelp', 'License Key', 'Your license key allows you to install Interspire Email Marketer on one web site. You need to generate your license key from the Interspire client area before you can proceed with the installation wizard. Once you\'ve generated your license key, paste it into this box.')"
+																onmouseover="ShowHelp('keyhelp', 'License Key', 'Your license key allows you to install Interspire Email Marketer on one web site. You need to check your license key in your IEM order email before you can proceed with the installation wizard. Once you\'ve received your license key, paste it into this box.')"
 																src="images/help.gif"
 																width="24"
 																height="16"
@@ -709,11 +709,6 @@ class Installer extends SendStudio_Functions
 												<td colspan="2" class="HelpInfo">
 													<h3 style="padding-bottom:10px">What is a MySQL Database?</h3>
 													A MySQL database is where Interspire Email Marketer saves your list of products, orders, customers, etc. You need to create a MySQL database before the installer can continue:
-													<ul>
-														<li><a href="#" onclick="DBHelp('cpanel'); return false;">Help on how to create a database in CPanel</a></li>
-														<li><a href="#" onclick="DBHelp('plesk'); return false;">Help on how to create a database in Plesk</a></li>
-														<li><a href="#" onclick="DBHelp('other'); return false;">My hosting company runs a different control panel</a></li>
-													</ul>
 												</td>
 											</tr>
 										</table>
@@ -749,7 +744,7 @@ class Installer extends SendStudio_Functions
 				</table>
 
 				<div style="padding:10px; margin-bottom:20px; text-align:center" class="InstallPageFooter">
-					Powered by <a href="http://www.interspire.com/emailmarketer/" target="_blank">Interspire Email Marketer</a> &copy; 2004-<?php echo date('Y'); ?> Interspire Pty. Ltd.
+					Powered by <a href="https://www.interspire.com/" target="_blank">Interspire Email Marketer</a> &copy; 2004-<?php echo date('Y'); ?> Interspire Pty. Ltd.
 				</div>
 			</div>
 		</form>

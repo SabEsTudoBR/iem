@@ -10,6 +10,8 @@
 * @package SendStudio
 * @subpackage Language
 */
+define('LNG_interspire_Contact_lists_help_link', '<a href="https://www.interspire.com/contact-lists"   target="_blank">Read More</a>');
+define('LNG_interspire_email_stats_help_link', '<a href="https://www.interspire.com/statistics"   target="_blank">Read More</a>');
 
 define('LNG_EmailAddress', 'Email Address');
 
@@ -848,10 +850,10 @@ define('LNG_HLP_Filter_Number', 'To restrict filtering of this field, you can us
 define('LNG_HLP_Filter_Date', 'Choose the date or date range to filter contacts.<br/>To search between months, put * as the year.<br/>This only works when searching between dates.');
 
 define('LNG_Newsletter_SendSize_Approximate', '<li>Each email will be about <b>%s</b> in size, which totals <b>%s</b> for the entire send</li>');
-
+ 
 define('LNG_Menu_Members_Title', 'Create, view and delete contacts.');
 
-define('LNG_Subscribers_Search_Step2', 'Search for contacts by entering search keywords and changing options in the form below. Learn how to search contacts more efficiently by reading <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'832\'); return false;">this article</a>.');
+define('LNG_Subscribers_Search_Step2', 'Search for contacts by entering search keywords and changing options in the form below.');
 
 define('LNG_Format_HTML_Description', 'Your contacts must be using an HTML capable email client to be able to view this type of email. This type of email will produce the best results for open rates and link tracking.');
 define('LNG_Format_TextAndHTML_Description', 'This will allow your contacts to view your email in any type of client they wish. This type of email will produce limited results for open rates and link tracking.');
@@ -859,8 +861,8 @@ define('LNG_Format_TextAndHTML_Description', 'This will allow your contacts to v
 define('LNG_Newsletter_Size_Over_EmailSize_Warning', 'This email campaign is larger than %s which means it may take a while for your contacts to download if you embed images.');
 
 define('LNG_Newsletter_Size_Over_EmailSize_Warning_Send', 'This email campaign is larger than %s which means it may take a while for your contacts to download.');
-
-define('LNG_Help_ListsManage', 'Contact lists are used to store details about subscribers or leads, which include their email address and other details such as name, company, age, etc.');
+ 
+define('LNG_Help_ListsManage', 'Contact lists are used to store details about subscribers or leads, which include their email address and other details such as name, company, age, etc.'.LNG_interspire_Contact_lists_help_link);
 
 define('LNG_Import_Add_NoList_Message', 'import your contacts');
 define('LNG_Export_Add_NoList_Message', 'export your contacts');
@@ -995,7 +997,7 @@ define('LNG_Editor_WaitToLoad', 'Please wait for the editor to load before savin
 
 define('LNG_CustomFieldsInsert_Editor', 'Insert a Custom Field');
 
-define('LNG_TextWidthLimit_Explaination', 'If possible, keep your text to the left of the gray line above. <a href="#" onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'839\'); return false;" style="color:#999999;">Why</a>?');
+define('LNG_TextWidthLimit_Explaination', 'If possible, keep your text to the left of the gray line above.');
 
 define('LNG_Menu_Autoresponders_Statistics_Description', 'See statistics for autoresponder emails you\'ve setup.');
 define('LNG_Menu_Statistics_Lists_Description', 'See how your contact lists are growing over time.');
@@ -1017,7 +1019,7 @@ define('LNG_FilterFormat', LNG_Format);
 define('LNG_FilterStatus', LNG_Status);
 
 define('LNG_Pages', 'Pages');
-define('LNG_GuideToFiltering', '<a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'832\'); return false;">Learn more about filtering contacts.</a>');
+define('LNG_GuideToFiltering', '');
 define('LNG_SaveAndKeepEditing', 'Save &amp; Keep Editing');
 
 define('LNG_Jan_Long', 'January');
@@ -1143,8 +1145,7 @@ define('LNG_PreviewHTMLContent','Preview Content');
 *************************
 */
 define('LNG_PrivateLabelSettings_Heading','Private&nbsp;Label&nbsp;Settings');
-define('LNG_TrialUserLimitReached', 'You have reached your maximum number of trial users. You can still create normal user account.');
-
+ 
 define('LNG_OverLimit_MaxEmails', 'You do not have enough total credit.');
 define('LNG_OverLimit_PerMonth', 'You do not have enough monthly credit.');
 
@@ -1155,14 +1156,7 @@ define('LNG_OverLimit_PerMonth', 'You do not have enough monthly credit.');
 *************************
 */
 define('LNG_CurrentUserReport_Unlimited', 'Current assigned user accounts: %s&nbsp;/&nbsp;admin accounts: %s&nbsp;(Your license key allows you to create unlimited accounts)');
-define('LNG_AgencyCurrentUserReport', 'Admin accounts: <strong style="font-size:14px;">%s</strong>&nbsp;/&nbsp;Regular accounts: <strong style="font-size:14px;">%s</strong>&nbsp;/&nbsp;Trial accounts: <strong style="font-size:14px;">%s</strong>&nbsp;&#151;&nbsp;');
-define('LNG_AgencyCurrentUserReport_CreateUnlimitedNormalUnlimitedTrial', 'Your license key allows you to create unlimited regular and trial users');
-define('LNG_AgencyCurrentUserReport_CreateUnlimitedNormalFiniteTrial', 'Your license key allows you to create unlimited regular accounts and %s more trial account(s)');
-define('LNG_AgencyCurrentUserReport_CreateFiniteNormalUnlimitedTrial', 'Your license key allows you to create %s more regular account(s) and unlimited trial account(s)');
-define('LNG_AgencyCurrentUserReport_CreateNormalAndTrial', 'Your license key allows you to create %s more regular account(s) and %s more trial account(s)');
-define('LNG_AgencyCurrentUserReport_NormalOnly', 'Your license only allows you to create %s more regular account(s)');
-define('LNG_AgencyCurrentUserReport_TrialOnly', 'Your license only allows you to create %s more trial account(s)');
-
+ 
 /**
 *************************
 * Changed/added in 5.7.3

@@ -169,9 +169,9 @@ class SS_Email_API extends Email_API
 	*
 	* @see Email_API
 	*/
-	function SS_Email_API()
+	function __construct()
 	{
-		$this->Email_API();
+		parent::__construct();
 
 		if (defined('SENDSTUDIO_APPLICATION_URL')) {
 			$url_parts = parse_url(SENDSTUDIO_APPLICATION_URL);

@@ -31,7 +31,7 @@ class ShowCustomFields extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function ShowCustomFields()
+	function __construct()
 	{
 		$this->LoadLanguageFile();
 	}

@@ -29,7 +29,7 @@ define('LNG_Infotip_Form_Intro', 'Use double-optin to reduce spam reports.');
 * This gets shown before any info tip.
 */
 define('LNG_Infotip_Intro', 'Email Marketing Tip #');
-define('LNG_Infotip_ReadMore', 'Read&nbsp;more...');
+define('LNG_Infotip_ReadMore', '');
 
 define('LNG_Infotip_List_Intro', '15 "Simple Yet Effective" Email Marketing Tips');
 
@@ -98,7 +98,7 @@ define('LNG_Infotip_Cron_Intro', 'Want faster sending?');
 
 define('LNG_Infotip_Spam_Intro', 'Reduce your email being marked as spam.');
 define('LNG_Infotip_Spam_Details', 'By testing your email in various email clients, including free accounts such as hotmail, gmail and yahoo you can reduce the chances of your email being marked as spam.');
-define('LNG_Infotip_Spam_ReadMore', 'Read&nbsp;Tutorial...');
+define('LNG_Infotip_Spam_ReadMore', '');
 
 // The tutorials live in a specific folder - this simply points to a html file.
 
@@ -106,28 +106,28 @@ $GLOBALS['ContextSensitiveTips']['newsletters']['create'] = array('Spam');
 
 
 define('LNG_Infotip_Autoresponders_Intro', 'How to Setup an Autoresponder.');
-define('LNG_Infotip_Autoresponders_ReadMore', 'Read guide...');
+define('LNG_Infotip_Autoresponders_ReadMore', '');
 $GLOBALS['ContextSensitiveTips']['autoresponders']['create'] = array('Autoresponders');
 
 define('LNG_Infotip_AutoHowto_Intro', 'Autoresponders - The marketers magic trick.');
 define('LNG_Infotip_AutoHowto_Details', 'Sending a series of emails to potential customers automatically is a great way to increase sales and customer loyalty with minimal fuss whether or not you run an online business.');
-define('LNG_Infotip_AutoHowto_ReadMore', 'Find out how...');
+define('LNG_Infotip_AutoHowto_ReadMore', '');
 
 $GLOBALS['ContextSensitiveTips']['autoresponders']['manage'] = array('AutoHowto');
 
 
 define('LNG_Infotip_GettingStarted_Intro', 'Getting started.');
-define('LNG_Infotip_GettingStarted_ReadMore', 'See the guide...');
+define('LNG_Infotip_GettingStarted_ReadMore', '');
 define('LNG_Infotip_GettingStarted_ReadMoreLink', '812');
 //$GLOBALS['ContextSensitiveTips']['index'] = array('GettingStarted');
 
 
 define('LNG_Infotip_AddForm_Intro', 'Add a Subscription form to your website.');
-define('LNG_Infotip_AddForm_ReadMore', 'Here\'s how...');
+define('LNG_Infotip_AddForm_ReadMore', '');
 
 $GLOBALS['ContextSensitiveTips']['forms']['manage'] = array('AddForm');
 
-define('LNG_Infotip_CustomFields_ReadMore', 'Here\'s how...');
+define('LNG_Infotip_CustomFields_ReadMore', '');
 
 $GLOBALS['ContextSensitiveTips']['customfields']['manage'] = array('CustomFields');
 
@@ -239,7 +239,7 @@ define('LNG_Infotip_AddForm_Details', 'To collect leads from your website, you s
 $GLOBALS['Did_You_Know_Tips'][] = ' If you save your bounce account details with your contact lists you can start to process your bounced emails automatically. This will keep your contact lists cleaner.';
 
 
-define('LNG_Infotip_Cron_Details', 'Did you know that enabling cron (see <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'819\'); return false;">documentation</a> or contact your administrator) will allow you to schedule email campaigns to be sent at a future date, as well as sending emails much faster? It will also stop you from having to keep the popup window open.');
+define('LNG_Infotip_Cron_Details', 'Did you know that enabling cron contact your administrator  will allow you to schedule email campaigns to be sent at a future date, as well as sending emails much faster? It will also stop you from having to keep the popup window open.');
 
 define('LNG_Infotip_Spam_ReadMoreLink', '802');
 define('LNG_Infotip_Autoresponders_ReadMoreLink', '815');

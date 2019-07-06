@@ -376,15 +376,17 @@ class Addons_splittest_Stats extends Addons_splittest
 		$f = fopen($file, 'w');
 		fwrite($f, $headers);
 		fwrite($f, "\n");
-
-		while (list($job_id, $statistics) = each($stats)) {
+		      		$sendStudio_Functions = new SendStudio_Functions;
+		foreach ($stats as $job_id=>$statistics) {
+					 		
 			if (in_array($job_id, $jobids, false)) {
-				while (list($id, $data) = each($statistics['campaigns'])) {
+				foreach ($statistics['campaigns'] as $id=>$data) {
+								    
 					fwrite($f, $data['campaign_name'] . ',');
 					fwrite($f, $statistics['splitname'] . ',');
 					fwrite($f, $statistics['splittype'] . ',');
-					fwrite($f, SendStudio_Functions::PrintDate($statistics['starttime'], $dateFormat) . ',');
-					fwrite($f, SendStudio_Functions::PrintDate($statistics['finishtime'], $dateFormat) . ',');
+					fwrite($f, $sendStudio_Functions->PrintDate($statistics['starttime'], $dateFormat) . ',');
+					fwrite($f, $sendStudio_Functions->PrintDate($statistics['finishtime'], $dateFormat) . ',');
 					fwrite($f, $data['stats_newsletters']['recipients'] . ',');
 					fwrite($f, $data['stats_newsletters']['emailopens'] . ',');
 					fwrite($f, $data['stats_newsletters']['emailopens_unique'] . ',');

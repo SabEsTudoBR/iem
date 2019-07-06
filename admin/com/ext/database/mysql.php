@@ -120,14 +120,19 @@ class MySQLDb extends Db
 		$this->_hostname = $hostname;
 		$this->_username = $username;
 		$this->_password = $password;
-		$this->_databasename = $databasename;
-		
+		$this->_databasename = $databasename;	 
 		// Set the character set if we have one
 		if($this->charset) {
-			$this->Query('SET NAMES '.$this->charset);
-			$this->Query("SET CHARACTER SET " .$this->charset);
+	        
+			 $this->Query('SET NAMES '.$this->charset);
+			 $this->Query("SET CHARACTER SET " .$this->charset);
+			 
 		}
-		
+       		
+		if($this->collate) {
+	        	$this->Query("ALTER DATABASE " .$this->_databasename ." COLLATE ". $this->collate);	 
+		}
+		 
 		// Do we have a timezone? Set it
 		if($this->timezone) {
 			$this->Query("SET time_zone = '".$this->timezone."'");
@@ -175,14 +180,14 @@ class MySQLDb extends Db
 	* @return Mixed Returns false if the query is empty or if there is no result. Otherwise returns the result of the query.
 	*/
 	public function Query($query='')
-	{
+	{  
 		// if we're retrying a query, we have to kill the old connection and grab it again.
 		// if we don't, we get a cached connection which won't work.
 		if ($this->_retry) {
 			$this->Connect();
 		}
-
-		// Trim query
+		 
+       // Trim query
 		$query = trim($query);
 
 		if (!$query) {
@@ -209,13 +214,13 @@ class MySQLDb extends Db
 			$timestart = $this->GetTime();
 		}
 
-		if (!$this->_unbuffered_query) {
+		if (!$this->_unbuffered_query) {		 
 			$result = mysqli_query($this->connection, $query);
-		} else {
+		} else {			 
 			$result = mysqli_query($this->connection, $query, MYSQLI_USE_RESULT);
 			$this->_unbuffered_query = false;
 		}
-
+ 
 		if ($this->TimeLog !== null && !empty($timestart)) {
 			$timeend = $this->GetTime();
 			$this->TimeQuery($query, $timestart, $timeend);

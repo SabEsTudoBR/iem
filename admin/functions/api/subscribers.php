@@ -3424,7 +3424,7 @@ class Subscribers_API extends API
 	 * @uses Db::AddLimit()
 	 * @uses Db::Query()
 	 * @uses Db::Fetch()
-	 */
+	 */ 
 	function FetchSubscribersFromSegment($pageid=1, $perpage=20, $segments, $sortdetails=array(), $searchemail = null)
 	{
 		if ($pageid < 1) {
@@ -3497,7 +3497,7 @@ class Subscribers_API extends API
 		$selectQuery .= ' ORDER BY ';
 
 		if (strtolower($sortdetails['SortBy']) == 'sd.data') {
-			$selectQuery = preg_replace(	'/^(SELECT .*? FROM ' . SENDSTUDIO_TABLEPREFIX . 'list_subscribers AS subscribers)(.*)/i',
+			$selectQuery = preg_replace('/^(SELECT .*? FROM ' . SENDSTUDIO_TABLEPREFIX . 'list_subscribers AS subscribers)(.*)/i',
 			('$1 LEFT JOIN ' . SENDSTUDIO_TABLEPREFIX . 'subscribers_data AS subscriberdata'
 			. ' ON subscribers.subscriberid = subscriberdata.subscriberid AND subscriberdata.fieldid=' . intval($sortdetails['CustomFields'][0]) . ' $2'),
 			$selectQuery);
@@ -3524,6 +3524,7 @@ class Subscribers_API extends API
 		/**
 		 * Get subscriber records
 		 */
+		 
 		$tempRecords = array();
 		$result = $this->Db->Query($selectQuery);
 		while ($row = $this->Db->Fetch($result)) {
@@ -4297,7 +4298,7 @@ class Subscribers_API extends API
 
 		$userid = $specificuser;
 		if (empty($userid)) {
-			$user = &IEM::getCurrentUser();
+			$user = IEM::getCurrentUser();
 			if ($user) {
 				$userid = $user->userid;
 			}
@@ -4409,7 +4410,7 @@ class Subscribers_API extends API
 	{
 		$userid      = intval($userid);
 		$user        = API_USERS::getRecordById($userid);
-		$checkedUser = &GetUser($userid);
+		$checkedUser = GetUser($userid);
 
 		if ($checkedUser->Admin() || $checkedUser->ListAdmin() || $checkedUser->ListAdminType() == 'a') {
 			return true;

@@ -50,12 +50,13 @@ class Settings extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Settings()
-	{
+	function __construct()
+	{     
 		$this->LoadLanguageFile();
 		$this->LoadLanguageFile('CharacterSets');
 		$this->LoadLanguageFile('TimeZones');
 		$this->LoadLanguageFile('Lists');
+		 
 	}
 
 
@@ -518,8 +519,8 @@ class Settings extends SendStudio_Functions
 	 * @return Void Prints out the settings form, doesn't return anything.
 	 */
 	function ShowSettingsPage()
-	{
-		require_once(SENDSTUDIO_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . 'interspire_addons.php');
+	{   
+	    require_once(SENDSTUDIO_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . 'interspire_addons.php');
 		$addonSystem = new Interspire_Addons();
 		$addonStatus = $addonSystem->GetAvailableAddons();
 
@@ -1081,7 +1082,7 @@ class Settings extends SendStudio_Functions
 				)
 			));
 		// -----
-
+         
 		// ----- Login Security settings
 			$security_settings = array(
 				'login_wait' => SENDSTUDIO_SECURITY_WRONG_LOGIN_WAIT,
@@ -1089,7 +1090,7 @@ class Settings extends SendStudio_Functions
 				'threshold_login_duration' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_DURATION / 60,
 				'ip_login_ban_duration' => SENDSTUDIO_SECURITY_BAN_DURATION / 60
 			);
-
+      
 			$security_settings_options = array(
 				'login_wait' => array(1, 2, 3, 4, 5),
 				'threshold_login_count' => array(3, 4, 5, 10, 15),

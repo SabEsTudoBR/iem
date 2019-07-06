@@ -58,7 +58,7 @@ class Stats extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Stats()
+	function __construct()
 	{
 		$this->LoadLanguageFile();
 	}

@@ -40,28 +40,8 @@
 									%%LNG_UserDetails%%
 								</td>
 							</tr>
-							{if trim($AgencyEdition.agencyid) != 0}
-							<tr>
-								<td class="FieldLabel">
-									{template="Required"}
-									{$lang.UserType}:
-								</td>
-								<td>
-									{if $EditOwn}<input type="hidden" name="trialuser" value="{$TrialUser}" />{/if}
-									<select {if $EditOwn}disabled="disabled"{else} name="trialuser"{/if}>
-										{if $AvailableNormalUsers === true || $AvailableNormalUsers > 0 || ($EditMode && $TrialUser == '0')}
-										<option value="0" {if $TrialUser == '0'}selected="selected"{/if}>{$lang.UserType_NormalUser}</option>
-										{/if}
-										{if $AvailableTrialUsers === true || $AvailableTrialUsers > 0 || ($EditMode && $TrialUser == '1')}
-										<option value="1" {if $TrialUser == '1'}selected="selected"{/if}>{$lang.UserType_TrialUser}</option>
-										{/if}
-									</select>
-									{$lnghlp.UserType}
-								</td>
-							</tr>
-							{else}
-								<input type="hidden" name="trialuser" value="0" />
-							{/if}
+							  <input type="hidden" name="trialuser" value="0" />
+							 
 							<tr>
 								<td class="FieldLabel">
 									{template="Required"}
