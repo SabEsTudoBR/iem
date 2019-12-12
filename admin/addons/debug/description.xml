@@ -1,0 +1,9 @@
+<addon_description>
+	<name>Debugging Management</name>
+	<description>Enable/Disable Email,Bounce,Trigger email and Autoresponder debugging function</description>
+	<author>Imran Khan for interspire</author>
+	<version>1.0</version>
+	<hasconfiguration>0</hasconfiguration>
+	<license>Commercial</license>
+	<licenseurl>https://www.interspire.com</licenseurl>
+</addon_description>

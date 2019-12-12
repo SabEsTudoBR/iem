@@ -1,0 +1,1 @@
+<a href="%%GLOBAL_Trigger_LogFileLink%%" target="_blank">%%LNG_ViewLogFile%%</a>
