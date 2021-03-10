@@ -816,7 +816,7 @@ class Subscribers_Export extends Subscribers
 			foreach ($exportsettings['FieldOptions'] as $pos => $type) {
 				switch (strtolower($type)) {
 					case 'n':
-						continue;
+						break;
 					break;
 					case 'e':
 						$parts[] = GetLang('EmailAddress');
@@ -961,7 +961,7 @@ class Subscribers_Export extends Subscribers
 		foreach ($exportsettings['FieldOptions'] as $pos => $type) {
 			switch (strtolower($type)) {
 				case 'n':
-					continue;
+					break;
 				break;
 
 				case 'e':
@@ -1043,12 +1043,12 @@ class Subscribers_Export extends Subscribers
                                 if($subf->fieldtype != 'dropdown'){
                                     $customfield_data['data'] = $subf->GetRealValue($customfield_data['data']);
                                 }
-                            }
+                            }   
 						}
 
 						if (!isset($customfield_data['data'])) {
 							$parts[] = '';
-							continue;
+							break;
 						}
 
 						$customfield_data = $customfield_data['data'];
@@ -1061,7 +1061,7 @@ class Subscribers_Export extends Subscribers
 							}
 
 							$parts[] = $customfield_data;
-							continue;
+							break;
 						}
 
 						if ($exportsettings['FieldEnclosedBy'] != '') {

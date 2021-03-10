@@ -16,7 +16,7 @@
 */
 
 define('LNG_AutorespondersManage', 'View Autoresponders');
-define('LNG_interspire_help_link', '<a href="https://www.interspire.com/autoresponders"   target="_blank">Read More</a>');
+define('LNG_interspire_help_link', "<a href=https://www.interspire.com/autoresponders  target=_blank>Read More</a>");
 
 define('LNG_AutoresponderCreate', '&nbsp;Click the "Create Autoresponder" button below to create one.');
 

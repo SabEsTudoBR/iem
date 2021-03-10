@@ -534,6 +534,7 @@ class Autoresponders extends SendStudio_Functions
 					break;
 
 					case 'step4':
+					
 						$sessionauto = IEM::sessionGet('Autoresponders');
 
 						$sessionauto['sendfromname'] = $_POST['sendfromname'];
@@ -1733,7 +1734,7 @@ class Autoresponders extends SendStudio_Functions
 								$over_max_size_no_embed++;
 							}
 							$save_autoresponder = false;
-							continue;
+							break;
 						}
 					}
 

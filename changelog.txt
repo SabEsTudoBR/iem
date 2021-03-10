@@ -1,5 +1,40 @@
 # Interspire Email Marketer Changelog
 
+
+Version: 6.2.2
+Released: 07 September, 2020
+- PHP 7.3 supported
+- Added 'Outlook 2016' Email Client Compatibility
+- Removed deprecated PHP methods causing notices/errors
+- Fixed Auto Open Statistics bug
+- Fixed XSS security hole in Survey Addon function
+- Fixed Autoresponder preview email campaign bug
+- Misc. minor fixes and code cleanup
+
+Files Changed:
+-------------
+	surveys_submit.php
+	admin/stats_chart.php
+	admin/com/lib/IEM.class.php
+	admin/functions/api/customfields.php
+	admin/functions/api/customfields_dropdown.php
+	admin/functions/api/ss_email.php
+	admin/functions/api/stats.php
+	admin/functions/api/upgrade.php
+	admin/functions/autoresponders.php
+	admin/functions/process.php
+	admin/functions/remote_stats.php
+	admin/functions/sendstudio_functions.php
+	admin/functions/stats.php
+	admin/functions/stats_chart.php
+	admin/functions/subscribers_export.php
+	admin/functions/subscribers_manage.php
+	admin/resources/email_templates/Business/Furniture (1 Column)/index.html
+	changelog.txt
+	upgrade.txt
+	version.txt
+
+
 Version: 6.2.1
 Released: 26th June, 2019
 - PHP 7.2 supported

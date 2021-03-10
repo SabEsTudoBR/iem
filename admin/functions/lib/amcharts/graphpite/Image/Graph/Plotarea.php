@@ -99,7 +99,7 @@ class Image_Graph_Plotarea extends Image_Graph_Layout
      * @param Image_Graph_Axis $axisX The X axis (if false or omitted a std. axis is created)
      * @param Image_Graph_Axis $axisY The Y axis (if false or omitted a std. axis is created)
      */
-    function &Image_Graph_Plotarea($axisX = false, $axisY = false)
+    function &__construct($axisX = false, $axisY = false)
     {
         parent::__construct();       
         

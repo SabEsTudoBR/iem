@@ -1060,12 +1060,12 @@ class Subscribers_Manage extends Subscribers
 							* This could happen if you view all lists but a field is only associated with one particular list
 							*/
 							if (!isset($subscriber_customfields[$subid])) {
-								continue;
+								break;
 							}
 
 							foreach ($subscriber_customfields[$subid] as $cf_p => $cf_details) {
 								if ($cf_details['fieldid'] != $fieldname) {
-									continue;
+									break;
 								}
 								$GLOBALS['FieldValue'] = htmlspecialchars($subfield->GetRealValue($cf_details['data'],','), ENT_QUOTES, SENDSTUDIO_CHARSET);
 							}

@@ -53,6 +53,8 @@ define('LNG_Addon_surveys_Settings_ShowUri','http://');
 define('LNG_Addon_surveys_Settings_Email','admin@yourdomain.com');
 define('LNG_Addon_surveys_Settings_ErrorMessage','Oops... something went wrong when trying to save your survey responses. Take a look at the errors below and try again.');
 define('LNG_Addon_surveys_Settings_Submit','Submit Form');
+define('LNG_Addon_surveys_Settings_ErrorMessage_XSS','Oops... Some fields data  went wrong when trying to save your survey responses (html or php  or 
+js  etc tags not allowed.). Try again.');
 
 
 define('LNG_Addon_surveys_NoSurveys','No surveys have been created. Please click the "Create a Survey..." button to create one.');

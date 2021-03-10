@@ -136,7 +136,7 @@ class Image_Graph extends Image_Graph_Element
      * @param int $width The width of the graph in pixels	 
      * @param int $height The height of the graph in pixels	 
      */
-    function &Image_Graph($width, $height)
+    function  __construct($width, $height)
     {
         parent::__construct();
         

@@ -316,9 +316,23 @@ class surveySubmit extends Interspire_Addons {
 									$responseValue->value = $value;
 									$responseValue->is_othervalue = 0;
 								}
-
 								// save it
-								$responseValue->Save();
+								if($value != strip_tags($value)){
+									// is HTML 
+									$response->Delete($formId);	
+									// set LNG_Addon_surveys_Settings_ErrorMessage a global error message to alert the user to the specific errors
+									IEM::sessionSet('survey.addon.' . $formId . '.errorMessage', GetLang('Addon_surveys_Settings_ErrorMessage_XSS'));
+
+									// set the widget errors so we can retrieve them for the user
+									//IEM::sessionSet('survey.addon.' . $formId . '.widgetErrors', $widgetErrors);
+									$this->redirectToReferer();
+									} else {
+									// save it
+										$responseValue->value =  htmlspecialchars($value) ;
+										$responseValue->Save();
+									}
+
+
 							}
 						}
 					}

@@ -1,4 +1,4 @@
-﻿You can review our upgrade guide online at: https://www.interspire.com/support/kb/questions/1200/Upgrade+Guide
+﻿You can review our upgrade guide online at: https://www.interspire.com/upgrading
 ================================================================================
 
 It is always a good idea to backup your data before performing any sort of 
@@ -28,7 +28,7 @@ The renaming process outlined below serves to reduce the likelihood that someone
 
 If you haven't already, be sure to download the complete contents of your existing installation to a safe location on your PC.
 
-1. Download the new version from the Interspire client area, https://www.interspire.com/clientarea/index.php
+1. Download Email Marketer from the purchase link that was emailed to you.
 
 2. Unpack the Email Marketer archive. Windows comes with a built in tool to handle zip files, but you can also download a program like WinZip or unRar for free if needed
 

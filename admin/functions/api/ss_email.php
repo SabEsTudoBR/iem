@@ -418,6 +418,11 @@ class SS_Email_API extends Email_API
 			if (preg_match('%^href\s*?=\s*?["|\']mailto%i', $url)) {
 				continue;
 			}
+			
+			// Ignore tel Link
+			if (preg_match('%^href\s*?=\s*?["|\']tel%i', $url)) {
+			   continue;
+			}
 
 			// if there is a "#" as the first or second char, ignore it. Could be second if it is quoted: '#' or "#"
 			$check = str_replace('href=', '', $url);
@@ -806,6 +811,11 @@ class SS_Email_API extends Email_API
                 if (preg_match('%^href\s*?=\s*?["|\']mailto%i', $url)) {
                     continue;
                 }
+
+				// Ignore tel Link
+				if (preg_match('%^href\s*?=\s*?["|\']tel%i', $url)) {
+				   continue;
+				}
 
                 // if there is a "#" as the first or second char, ignore it. Could be second if it is quoted: '#' or "#"
                 $check = str_replace('href=', '', $url);

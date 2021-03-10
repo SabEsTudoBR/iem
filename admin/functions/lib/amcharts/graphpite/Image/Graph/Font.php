@@ -53,7 +53,7 @@ class Image_Graph_Font extends Image_Graph_Common
     /**
      * Image_Graph_Font [Constructor]
      */
-    function Image_Graph_Font()
+    function  __construct()
     {
         parent::__construct();
     }

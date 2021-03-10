@@ -81,7 +81,7 @@ class StatsChart extends SendStudio_Functions
 	* @return Void Doesn't return anything
 	*/
 	function __construct()
-	{
+	{ 
 		if (!IEM::getCurrentUser()) {
 			if (defined('SENDSTUDIO_APPLICATION_URL') && SENDSTUDIO_APPLICATION_URL !== false) {
 				header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/index.php');
@@ -375,7 +375,7 @@ class StatsChart extends SendStudio_Functions
 		if (isset($_GET['GetAsImg'])) {
 			// graphpite causes lots of notices and warning, so turn those off
 			error_reporting(E_PARSE | E_ERROR);
-
+ 
 			// Turn off error handling, it breaks the chart generation
 			set_error_handler('ord');
 
@@ -412,7 +412,7 @@ class StatsChart extends SendStudio_Functions
                     $data['chartData'] = [];
                     foreach ($labels as $key => $label) {
                         if (empty($label)) {
-                            continue;
+                            break;
                         }
                         $data['chartData'][$key]['category'] = $label;
                     }

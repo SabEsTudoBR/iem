@@ -1,5 +1,5 @@
 <?php
-define('LNG_interspire_email_trigger_help_link', '<a href="hhttps://www.interspire.com/autoresponders"   target="_blank">Read More</a>');
+define('LNG_interspire_email_trigger_help_link', '<a href="https://www.interspire.com/autoresponders"   target="_blank">Read More</a>');
 define('LNG_interspire_email_stats_trigger_link', '<a href="https://www.interspire.com/statistics"   target="_blank">Read More</a>');
   
 define('LNG_TriggerEmails_Intro', 'A trigger activates an action when a specific event occurs, such as sending a birthday email on a contacts birthday or adding a contact to a new list when they click a link.'.LNG_interspire_email_trigger_help_link);

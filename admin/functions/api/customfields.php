@@ -540,7 +540,7 @@ class CustomFields_API extends API
 		foreach ($userlists as $listid => $listname) {
 			// if it's in the list of new assocations, AND in the list of current assocations, keep going - nothing to do.
 			if (in_array($listid, $assocs) && in_array($listid, $this->Associations)) {
-				if ($this->Settings['ApplyDefault']=='on' && !empty($this->Settings['DefaultValue'])) {
+				if (isset($this->Settings['ApplyDefault']) && $this->Settings['ApplyDefault']=='on' && !empty($this->Settings['DefaultValue'])) {
 					$def_only[] = $listid;
 				}
 				continue;

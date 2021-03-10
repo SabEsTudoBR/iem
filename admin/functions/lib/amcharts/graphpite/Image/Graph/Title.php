@@ -61,7 +61,7 @@ class Image_Graph_Title extends Image_Graph_Layout
      * @param sting $text The text to represent the title
      * @param Font $font The font to use in the title
      */
-    function &Image_Graph_Title($text, & $font)
+    function &__construct($text, & $font)
     {
         parent::__construct();
         $this->_font = & $font;

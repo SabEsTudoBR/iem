@@ -2096,12 +2096,13 @@ class SendStudio_Functions
 	* @return String Returns the editor and it's content.
 	*/
 	function GetHTMLEditor($htmlContent = '', $id = 0, $elementId = 'myDevEditControl', $mode = 'exact', $height = '400', $width = '95%', $allowDCT = true, $allowSurveys = true)
-	{
+	{ 
 		$user        = IEM::userGetCurrent();
 		$elementId   = trim($elementId) . '_html';
+	
 		$htmlContent = htmlentities($htmlContent, ENT_QUOTES,SENDSTUDIO_CHARSET);
 
-		if ((int)$user->usewysiwyg == 0) {
+		if ((int)$user->usewysiwyg == 0) { 
 			$GLOBALS['HTMLContent'] = $htmlContent;
 			$GLOBALS['Name']        = $elementId;
 			return $this->ParseTemplate('editor_html_no_wysiwyg', true, false);
@@ -2366,25 +2367,25 @@ class SendStudio_Functions
 							case UPLOAD_ERR_FORM_SIZE:
 								$errors[] = $name . ' (' . sprintf(GetLang('FileTooBig_Server'), ini_get('upload_max_filesize')) . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_PARTIAL:
 								$errors[] = $name . ' (' . GetLang('FilePartiallyUploaded') . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_CANT_WRITE:
 								$errors[] = $name . ' (' . sprintf(GetLang('FileTooBig_NoSpace'), $this->EasySize($size)) . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_NO_TMP_DIR:
 								$errors[] = $name . ' (' . GetLang('FileUploadProblem_NoTmpDir') . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_EXTENSION:
@@ -2396,7 +2397,7 @@ class SendStudio_Functions
 
 								$errors[] = $name . ' (' . sprintf(GetLang('FileExtensionNotValid'), $extension) . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 						}
 					}

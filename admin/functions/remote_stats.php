@@ -80,7 +80,7 @@ class RemoteStats extends SendStudio_Functions
 	* @return Void Doesn't return anything.
 	*/
 	function __construct()
-	{
+	{ 
 		if (!IEM::getCurrentUser()) {
 			if (defined('SENDSTUDIO_APPLICATION_URL') && SENDSTUDIO_APPLICATION_URL !== false) {
 				header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/index.php');
@@ -106,7 +106,7 @@ class RemoteStats extends SendStudio_Functions
 		$action = $this->_getGETRequest('Action', '');
 		$statstype = $this->_getGETRequest('statstype', null);
 		$subaction = $this->_getGETRequest('subaction', '');
-
+ 
 
 		if (isset($_GET['PerPageDisplay'])) {
 			$perpage = $this->SetPerPage($_GET['PerPageDisplay']);
@@ -211,6 +211,7 @@ class RemoteStats extends SendStudio_Functions
 						}
 
 						if (!isset($_GET['Preview'])) {
+							
 							$GLOBALS['Body_Onload'] = 'window.focus();window.print();';
 						}  else {
 							$GLOBALS['Body_Onload'] = '';
@@ -327,6 +328,7 @@ class RemoteStats extends SendStudio_Functions
 											break; // case l
 
 											case 'n':
+											
 												$GLOBALS['NewsletterID'] = $summary['newsletterid'];
 
 												$sent_when = $GLOBALS['StartSending'] = $this->PrintTime($summary['starttime'], true);
@@ -398,9 +400,9 @@ class RemoteStats extends SendStudio_Functions
 												$GLOBALS['TotalBounces'] = $this->FormatNumber($total_bounces);
 												$unopened = $sent_size - $summary['emailopens_unique'] - $total_bounces;
 												$data_url = SENDSTUDIO_APPLICATION_URL . '/admin/stats_chart.php?Opens='.$summary['emailopens_unique'].'&Unopened='.$unopened.'&Bounced='.$total_bounces.'&' . IEM::SESSION_NAME . '=' . IEM::sessionID();
-
+ 
 												// Newsletter Summary Chart
-
+ 
 												$this->InsertChartImage('SummaryChart',$data_url,array('graph_title' => GetLang("NewsletterSummaryChart")));
 
 												// finally put it all together.
@@ -1706,7 +1708,27 @@ class RemoteStats extends SendStudio_Functions
 
 		$GLOBALS['PagingBottom'] = $paging_bottom;
 	}
-
+/**
+	 * hasNoData
+	 * Checks whether the data to be fed to a graph is all zero or not.
+	 *
+	 * @param String $data_url The data URL passed to print_stats.php.
+	 *
+	 * @return Boolean True if the URL has no data, otherwise false.
+	 */
+	private static function hasNoData($data_url)
+	{
+		$data = substr($data_url, strpos($data_url, '&data='));
+		// should look like &data=Click+my+links:0:0:0:0,Link+Click+Test:1:1:0:0
+		if (preg_match_all('/\:\d+/', $data_url, $matches)) {
+			foreach ($matches[0] as $match) {
+				if ($match != ':0') {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	/**
 	* DisplayChart
 	* Sets the URL for chart data and sets the variables to display the chart
@@ -1739,21 +1761,26 @@ class RemoteStats extends SendStudio_Functions
 	* @return Void Returns nothing, sets the variables for displaying the chart
 	*/
 	function InsertChartImage($chartname,$data_url,$settings = null)
-	{
+	{ 
 		$params = array();
 		if (is_array($settings)) {
 			foreach ($settings as $key => $val) {
 				$params[] = urlencode($key) . "=" . urlencode($val);
 			}
 		}
+		if (self::hasNoData($data_url)) {
+				return '';
+			}
 		$params = implode('&amp;',$params);
+	 
+	         $settingsApi = new Settings_API();
 
-        $settingsApi = new Settings_API();
 		if ($settingsApi->GDEnabled()) {
-			$GLOBALS[$chartname] = '<img src="' . $data_url . ( $params ? '&amp;' . $params : '') . '&amp;GetAsImg=1" style="display: block;">';
+			$GLOBALS[$chartname] = '<img src="' .$data_url . ( $params ? '&amp;' . $params : '') . '&amp;GetAsImg=1" style="display: block;">';
 		} else {
 			$GLOBALS[$chartname] = '<p>(' . GetLang('GD_Not_Enabled') . ')</p>';
 		}
+		
 	}
 
 	/**
