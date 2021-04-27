@@ -306,7 +306,7 @@ class Addons_splittest_Send extends Addons_splittest
 
 				foreach ($user_lists as $user_list_id => $user_list_details) {
 					if (!in_array($user_list_id, $sending_to)) {
-						break;
+						continue;
 					}
 					$send_size += $user_list_details['subscribecount'];
 				}

@@ -44,6 +44,7 @@
 					</tr>
 
 					<tr><td class="Gap"></td></tr>
+					<tr><td class="Gap" colspan="2">%%LNG_ValidPassword_Help%%</td></tr>
 				</table>
 			</td>
 			</tr>
@@ -65,7 +66,23 @@
 				f.ss_password.focus();
 				return false;
 			}
-
+			
+			var password = f.ss_password.value ;
+			 
+			if (password.length < 8) {
+					ShowTab(1);
+					alert("%%LNG_NoValidPassword%%");
+					password.focus().select();
+					return false;
+			}
+			
+			var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/; 
+			if(!re.test(f.ss_password.value)){      
+				alert("%%LNG_NoValidPassword%%");
+				f.ss_password.focus();
+				return false;
+			}   
+			
 			if (f.ss_password_confirm.value == "") {
 				alert("%%LNG_PasswordConfirmAlert%%");
 				f.ss_password_confirm.focus();

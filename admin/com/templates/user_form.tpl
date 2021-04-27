@@ -471,12 +471,18 @@
 			}
  
 			if (CurrentUserID == 0 || $('#ss_p').val() != "") {
-				if ($('#ss_p').val().trim().length < 3) {
+				if ($('#ss_p').val().trim().length < 8) {
 					ShowTab(1);
-					alert("%%LNG_EnterPassword%%");
+					alert("%%LNG_NoValidPassword%%");
 					$('#ss_p').focus().select();
 					return false;
-				}
+				}     
+				var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/; 
+				if(!re.test($('#ss_p').val())){   
+					alert("%%LNG_NoValidPassword%%");
+					$('#ss_p').focus().select();
+					return false;
+				}   
 
 				if ($('#ss_p').val() != $('#ss_p_confirm').val()) {
 					ShowTab(1);
@@ -512,7 +518,7 @@
 				alert("%%LNG_EnterNotifyAdminEmail%%");
 				$('#adminnotify_email').focus().select();
 				return false;
-			}
+			}  
 			
 			if ($('#adminnotify_send_flag').attr('checked')) {
 				var sendThresholdValue = $('#adminnotify_send_threshold').val();

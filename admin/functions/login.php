@@ -55,6 +55,15 @@ class Login extends SendStudio_Functions
 
 				$password = IEM::requestGetPOST('ss_password', false);
 				$confirm = IEM::requestGetPOST('ss_password_confirm', false);
+				
+				#Added password rules.
+				$auth_pass = new AuthenticationSystem();
+                $result_auth_pass= $auth_pass->AuthenticatePassword($password);
+				
+				if ($result_auth_pass === -1) {
+					 $this->ShowForgotForm_Step2($userapi->Get('username'), 'login_error', GetLang('NoValidPassword'));
+					break;
+				}
 
 				if ($password == false || ($password != $confirm)) {
 					$this->ShowForgotForm_Step2($userapi->Get('username'), 'login_error', GetLang('PasswordsDontMatch'));
@@ -119,9 +128,13 @@ class Login extends SendStudio_Functions
 
 				$email_api->AddRecipient($user->emailaddress, $user_fullname, 't');
 
-				$email_api->Send();
-
-				$this->ShowForgotForm_Step2($username,'login_success', sprintf(GetLang('ChangePassword_Emailed'), $user->emailaddress));
+				$send_return = $email_api->Send();
+				if($send_return['success'] === 0) {
+					$this->ShowForgotForm_Step2($username,'login_success', sprintf(GetLang('ChangePassword_SendingFailed'), $user->emailaddress));
+			
+				}else{
+					$this->ShowForgotForm_Step2($username,'login_success', sprintf(GetLang('ChangePassword_Emailed'), $user->emailaddress));
+				}
 			break;
 
 			case 'confirmcode':

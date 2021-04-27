@@ -36,6 +36,9 @@ define('LNG_ChangePassword', 'Change Password');
 
 define('LNG_LoginTitle', 'Login');
 
+define('LNG_ChangePassword_SendingFailed', '<b>Important:</b> Email did not send, please contact your system administrator.');
+define('LNG_NoValidPassword', 'Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.');
+define('LNG_ValidPassword_Help', 'Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.');
 
 /**
 ***************************

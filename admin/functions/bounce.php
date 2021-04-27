@@ -652,7 +652,7 @@ class Bounce extends SendStudio_Functions
 			'server' => $_GET['bounce_server'],
 			'username' => $_GET['bounce_username'],
 			'password' => $_GET['bounce_password'],
-			'extra_settings' => $_GET['bounce_extrasettings'],
+			'extra_settings' => IEM::ifsetor($_GET['bounce_extrasettings'], null),
 			'imap' => IEM::ifsetor($_GET['bounce_imap'], false),
 			'agreedeleteall' => IEM::ifsetor($_GET['bounce_agreedeleteall'], false),
 			'save_settings' => IEM::ifsetor($_GET['savebounceserverdetails'], false),

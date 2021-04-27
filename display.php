@@ -146,7 +146,7 @@ if ($subscriberid > 0 && $confirmcode && $listid) {
 
 		if ($format != 't' && $statid > 0) {
 			// track the open
-			$open_image = '<img src="' . SENDSTUDIO_APPLICATION_URL . '/open.php?M=' . $subscriberid . '&L=' . $listid . '&N=' . $statid . '&F=H">';
+			$open_image = '<img src="' . SENDSTUDIO_APPLICATION_URL . '/open.php?M=' . $subscriberid . '&L=' . $listid . '&N=' . $statid . '&F=H" alt="track the open">';
 			$description = $emailapi->InsertAtEnd($description, $open_image);
 		}
 	}
