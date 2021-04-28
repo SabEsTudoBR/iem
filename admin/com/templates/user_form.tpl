@@ -123,7 +123,7 @@
                                     {$lang.Password}:
                                 </td>
                                 <td>
-                                    <input type="password" name="ss_p" id="ss_p" value="" class="Field250" autocomplete="off" />
+                                    <input type="password" name="ss_p" id="ss_p" value="" class="Field250" autocomplete="off" />&nbsp;%%LNG_HLP_Password%%
                                 </td>
                             </tr>
                             <tr>
