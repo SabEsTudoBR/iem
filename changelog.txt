@@ -2,12 +2,10 @@
 
 Version: 6.2.3
 Released: 30th April, 2021
-- PHP 7.3 supported
-- Implemented user password rules
+- Removed deprecated PHP methods causing notices/errors
+- Implemented strong user password rules
 - Fixed xml api call issue
 - Fixed Split test contacts issue
-- Fixed XSS security hole in Survey Addon function
-- Fixed Autoresponder preview email campaign bug
 - Misc. minor fixes and code cleanup
 
 Files Changed:
@@ -17,12 +15,15 @@ Files Changed:
 	admin/com/lib/AuthenticationSystem.class.php
 	admin/com/templates/forgotpassword_step2.tpl
 	admin/com/templates/user_form.tpl
-	admin/com/xml.php
 	admin/functions/api/ss_email.php
 	admin/functions/bounce.php
 	admin/functions/login.php
 	admin/functions/users.php
+	admin/com/xml.php
 	display.php
+	changelog.php
+	version.php
+	readme.php
 
 
 Version: 6.2.2
