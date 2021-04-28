@@ -1,5 +1,29 @@
 # Interspire Email Marketer Changelog
 
+Version: 6.2.3
+Released: 30th April, 2021
+- PHP 7.3 supported
+- Implemented user password rules
+- Fixed xml api call issue
+- Fixed Split test contacts issue
+- Fixed XSS security hole in Survey Addon function
+- Fixed Autoresponder preview email campaign bug
+- Misc. minor fixes and code cleanup
+
+Files Changed:
+-------------
+	admin/addons/splittest/splittest_send.php
+	admin/com/language/default/login.php
+	admin/com/lib/AuthenticationSystem.class.php
+	admin/com/templates/forgotpassword_step2.tpl
+	admin/com/templates/user_form.tpl
+	admin/com/xml.php
+	admin/functions/api/ss_email.php
+	admin/functions/bounce.php
+	admin/functions/login.php
+	admin/functions/users.php
+	display.php
+
 
 Version: 6.2.2
 Released: 07 September, 2020
