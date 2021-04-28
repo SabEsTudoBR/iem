@@ -21,9 +21,9 @@ Files Changed:
 	admin/functions/users.php
 	admin/com/xml.php
 	display.php
-	changelog.php
-	version.php
-	readme.php
+	changelog.txt
+	version.txt
+	readme.txt
 
 
 Version: 6.2.2
