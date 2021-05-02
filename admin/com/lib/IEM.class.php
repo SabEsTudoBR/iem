@@ -24,14 +24,13 @@ class IEM
 	/**
 	 * Define current version
 	 */
-	const VERSION = '6.1.8';
-
+	const VERSION = '6.2.2';   
 	/**
 	 * Define current database version
 	 *
 	 * @todo deprecate this... find a way to organize the upgrades based on versions instead
 	 */
-	const DATABASE_VERSION = '20171011';
+	const DATABASE_VERSION = '20200907';
 
 	/**
 	 * Session name that is used by IEM framework
@@ -768,7 +767,8 @@ class IEM
                     SENDSTUDIO_DATABASE_PASS,
                     SENDSTUDIO_DATABASE_NAME,
                     [
-                        'charset' => 'utf8',
+                        'charset' => 'utf8mb4',
+						'collate' =>'utf8mb4_general_ci',
                         'tablePrefix' => SENDSTUDIO_TABLEPREFIX,
                     ]
                 );
@@ -873,7 +873,7 @@ class IEM
 		 * @return Mixed $var if $var is set, otherwise the value of $default.
 		 */
 		final static public function ifsetor(&$var, $default=null)
-		{
+		{   
 			if (isset($var)) {
 				$tmp = $var;
 			} else {

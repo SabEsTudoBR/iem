@@ -514,7 +514,7 @@ class TriggerEmails_API extends API
 
 				$this->Db->CommitTransaction();
 
-				// Populate the properties with new data
+				//Populate the properties with new data
 				$this->_properties['statid'] = $record['statid'];
 				$this->_properties['queueid'] = $record['queueid'];
 				$this->_properties['triggeremailsid'] = $record['triggeremailsid'];

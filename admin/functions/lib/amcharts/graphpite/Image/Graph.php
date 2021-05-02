@@ -136,7 +136,7 @@ class Image_Graph extends Image_Graph_Element
      * @param int $width The width of the graph in pixels	 
      * @param int $height The height of the graph in pixels	 
      */
-    function &Image_Graph($width, $height)
+    function  __construct($width, $height)
     {
         parent::__construct();
         
@@ -151,7 +151,7 @@ class Image_Graph extends Image_Graph_Element
 
         if (file_exists($filename = (dirname(__FILE__)."/Graph/named_colors.txt"))) {
             $colorLines = file($filename);
-            while (list ($id, $colorLine) = each($colorLines)) {
+            foreach ($colorLines as $id=>$colorLine) {				 
                 list ($colorName, $colorRed, $colorGreen, $colorBlue) = explode("\t", trim($colorLine));
                 define("IMAGE_GRAPH_" . $colorName, ($colorRed << 16) + ($colorGreen << 8) + $colorBlue);                
             }

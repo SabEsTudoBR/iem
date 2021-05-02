@@ -37,7 +37,7 @@ class Bounce_API extends Jobs_API
 	 *
 	 * @see LogFile
 	 */
-	var $Debug = false;
+	var $Debug = null;
 
 	/**
 	 * Where to save debug messages.
@@ -184,7 +184,15 @@ class Bounce_API extends Jobs_API
 	 * @var Int
 	 */
 	var $_peek = 10240;
-
+	/**
+	 * The number of bytes to scan in an email to locate the delivery message.
+	 * Increasing this too much will considerably slow bounce processing.
+	 *
+	 * @see ParseBody
+	 *
+	 * @var Int
+	 */
+	var  $db = null;
 	/**
 	 * Will mark a subscriber as bounced for a hard bounce.
 	 *
@@ -219,14 +227,14 @@ class Bounce_API extends Jobs_API
 	 *
 	 * @return Mixed Returns false if there is no imap support. Otherwise returns true once all the sub-objects are set up for easy access.
 	 */
-	function Bounce_API()
+	function __construct()
 	{
 		if (is_null($this->LogFile)) {
 			if (defined('TEMP_DIRECTORY')) {
 				$this->LogFile = TEMP_DIRECTORY . '/bounce.debug.log';
 			}
 		}
-
+        $this->db = IEM::getDatabase();	
 		require_once dirname(dirname(__FILE__)) . '/sendstudio_functions.php';
 		$temp = new SendStudio_Functions();
 		$temp->LoadLanguageFile('jobs_bounce');
@@ -265,10 +273,25 @@ class Bounce_API extends Jobs_API
 			$this->Stats_API = &$stats;
 		}
 
-		$this->GetDb();
+		   $this->GetDb();
+		   $this->Debug = $this->debugging();
+		    
 		return true;
 	}
-
+	/**
+	* debugging
+	* Check the value of EMAIL_DEBUG in config_settings table.
+	*
+	* @return Boolean Returns false if it can't be set (invalid data), or true if it enabled.
+	*/
+	
+	function debugging()
+	{
+		//set up debug value from db settings config table
+		$status_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='BOUNCE_DEBUG'";
+		$BounceDebug = $this->db->FetchOne($status_query);
+		return ($BounceDebug == 1)? true : false;
+	}
 	/**
 	 * Login
 	 * Logs in to the email account using the settings provided.

@@ -42,7 +42,7 @@ class ManageAccount extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function ManageAccount()
+	function __construct()
 	{
 		$this->LoadLanguageFile('Users');
 		$this->LoadLanguageFile('Timezones');

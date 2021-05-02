@@ -236,7 +236,7 @@ class Lists_API extends API
 	*
 	* @return Boolean If no listid is passed in, this will return true. If a listid is passed in, this will return the status from Load
 	*/
-	function Lists_API($listid=0, $connect_to_db=true)
+	function __construct($listid=0, $connect_to_db=true)
 	{
 		if ($connect_to_db) {
 			$this->GetDb();

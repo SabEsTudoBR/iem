@@ -1448,7 +1448,7 @@ class Interspire_Addons
 	 * @return Int Returns the page id the user is viewing. If the DisplayPage get variable isn't set, '1' is returned (the first page).
 	 */
 	protected function GetCurrentPage()
-	{
+	{  
 		$current_page = 0;
 		if (isset($_GET['DisplayPage'])) {
 			$current_page = (int)$_GET['DisplayPage'];
@@ -1557,8 +1557,8 @@ class Interspire_Addons
 	 * @return String Returns the paging options templatized, language packed and pre-filled. This allows an addon to just set the template variable and automatically include paging.
 	 */
 	protected function SetupPaging($url=null, $number_of_records=0, $number_of_links_to_show=5)
-	{
-
+	{    
+       
 		if ($url === null) {
 			return '';
 		}

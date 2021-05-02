@@ -14,12 +14,14 @@
 /**
 * Here are all of the variables for the newsletters area... Please backup before you start!
 */
+define('LNG_interspire_email_campaign_help_link', '<a href="https://www.interspire.com/sending-email-campaigns"   target="_blank">Read More</a>');
+
 define('LNG_SendPreviewDenied',  'A preview couldn\'t be sent: You do not have the required permissions.');
 
 define('LNG_CreateNewsletterCancelButton', 'Are you sure you want to cancel creating a new email campaign?');
 define('LNG_CreateNewsletterHeading', 'Email Campaign Details');
 
-define('LNG_CreateNewsletterIntro_Step2', 'Use the form below to create your email campaign. You can also check your email for spam keywords and see how it looks in different email clients.');
+define('LNG_CreateNewsletterIntro_Step2', 'Use the form below to create your email campaign. You can also check your email for spam keywords and see how it looks in different email clients.'.LNG_interspire_email_campaign_help_link);
 define('LNG_Newsletter_Details', 'Email Campaign Details');
 
 define('LNG_EditNewsletterIntro', 'Complete the form below to update the email campaign.');
@@ -182,9 +184,9 @@ SENDSTUDIO_RESEND_MAXIMUM));
 * Changed/added in 5.0.0
 **************************
 */
-define('LNG_CreateNewsletterIntro', 'Type a name for your campaign and optionally choose a format and template below to get started. Click <em>Next</em> when you are ready to continue.');
+define('LNG_CreateNewsletterIntro', 'Type a name for your campaign and optionally choose a format and template below to get started. Click <em>Next</em> when you are ready to continue.'.LNG_interspire_email_campaign_help_link);
 
-define('LNG_Help_NewslettersManage', 'Email campaigns are messages that are sent to your contacts. Use email campaigns to send newsletters, promotions or notification emails.');
+define('LNG_Help_NewslettersManage', 'Email campaigns are messages that are sent to your contacts. Use email campaigns to send newsletters, promotions or notification emails.'.LNG_interspire_email_campaign_help_link);
 
 define('LNG_Newsletter_Size_Approximate', 'This email campaign will be approximately %s per contact if images are embedded as part of the email.');
 

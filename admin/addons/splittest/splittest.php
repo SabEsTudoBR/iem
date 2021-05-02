@@ -999,7 +999,7 @@ class Addons_splittest extends Interspire_Addons
 	 *
 	 * @return Void Just prints out the form. It does not return anything.
 	 */
-	private function _ShowForm($splitid=null, $chosen_campaigns=array())
+	private function _ShowForm($splitid=null, $chosen_campaigns = array())
 	{
 		$user = IEM::getCurrentUser();
 
@@ -1117,8 +1117,13 @@ class Addons_splittest extends Interspire_Addons
 
 		$this->template_system->Assign('weight_openrate', $weight_openrate);
 		$this->template_system->Assign('weight_linkclick', $weight_linkclick);
-
-		$this->template_system->Assign('campaigncounter', sizeof($chosen_campaigns));
+		if(is_array($chosen_campaigns))
+		{ 
+			$sizeof_campaigns = sizeof($chosen_campaigns); 
+		} else {
+			$sizeof_campaigns =  $chosen_campaigns; 
+		}
+		$this->template_system->Assign('campaigncounter',$sizeof_campaigns  );
 
 		$this->template_system->Assign('campaigns', $campaigns);
 
@@ -1494,7 +1499,7 @@ class Addons_splittest extends Interspire_Addons
 		$data->displaymessage .= GetFlashMessages();
 
 		// Append 'Create Split Test' button
-		$user =& IEM::getCurrentUser();
+		$user = IEM::getCurrentUser();
 		if (!$user->HasAccess('splittest', 'create')) {
 			return;
 		}

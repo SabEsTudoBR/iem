@@ -31,7 +31,7 @@ class Schedule extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Schedule()
+	function __construct()
 	{
 		$this->LoadLanguageFile();
 		$this->LoadLanguageFile('Newsletters');

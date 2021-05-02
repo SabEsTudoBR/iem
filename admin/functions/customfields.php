@@ -105,7 +105,7 @@ class CustomFields extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function CustomFields()
+	function __construct()
 	{
 		$this->LoadLanguageFile();
 	}
@@ -300,18 +300,18 @@ class CustomFields extends SendStudio_Functions
 						}
 
 						$alloptions = $fieldapi->GetOptions();
-
+						
 						$newoptions = array();
-                        if(isset($_POST['ApplyDefault'])){$newoptions['ApplyDefault'] = 'on';}
-						foreach ($alloptions as $fieldname => $option) {
-						    if(isset($newoptions[$fieldname])){continue;}  
-							$value = (isset($customfield_settings[$fieldname])) ? $customfield_settings[$fieldname] : $_POST[$fieldname];
-
-							$newoptions[$fieldname] = $value;
-						}
-
+						$newoptions['ApplyDefault'] = isset($newoptions['ApplyDefault']) ? 'on' : '';						 
+						
+						
+						foreach ($alloptions as $fieldname => $option) { 							 
+						   if(isset($newoptions[$fieldname])){continue;}							 
+							$value = (isset($customfield_settings[$fieldname])) ? $customfield_settings[$fieldname] : $_POST[$fieldname]; 
+							$newoptions[$fieldname] = $value;							 
+						}		 
+	  
                         $AllOptions = array_merge($fieldapi->SharedOptions, $fieldapi->Options);
-
                         foreach ($AllOptions as $name => $val) {
                             $newval = $newoptions[$name];
                             if (is_array($newval)) {

@@ -8,7 +8,7 @@
 		<tr>
 			<td class="body pageinfo">
 			<p>
-				%%LNG_Subscribers_Import_Step2_Intro%%&nbsp;<a href="#" onClick="LaunchHelp('%%WHITELABEL_INFOTIPS%%','817'); return false;">%%LNG_ImportTutorialLink%%</a>
+				%%LNG_Subscribers_Import_Step2_Intro%%&nbsp; 
 			</p>
 			</td>
 		</tr>

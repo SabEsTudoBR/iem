@@ -76,7 +76,7 @@ class Image_Graph_Plot extends Image_Graph_Element
      * @param Dataset $dataset The data set (value containter) to plot
      * @param string $title The title of the plot (used for legends, {@see Image_Graph_Legend})
      */
-    function &Image_Graph_Plot(& $dataset, $title = "")
+    function &__construct(& $dataset, $title = "")
     {
         parent::__construct();
         if ($dataset) {

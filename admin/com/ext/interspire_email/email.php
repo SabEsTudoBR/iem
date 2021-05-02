@@ -336,7 +336,7 @@ class Email_API
 	*
 	* @var Boolean
 	*/
-	var $Debug = false;
+	var $Debug = null;
 
 	/**
 	* LogFile
@@ -407,7 +407,15 @@ class Email_API
 	* @see Email_API
 	*/
 	var $use_curl = false;
-
+	/**
+	 * The number of bytes to scan in an email to locate the delivery message.
+	 * Increasing this too much will considerably slow bounce processing.
+	 *
+	 * @see ParseBody
+	 *
+	 * @var Int
+	 */
+	var  $db = null;
 	/**
 	* allow_fopen
 	* Whether allow_url_fopen is on or not.
@@ -497,8 +505,10 @@ class Email_API
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Email_API()
+	function __construct()
 	{
+		
+		$this->db = IEM::getDatabase();	
 		$this->safe_mode = (bool)ini_get('safe_mode');
 
 		$this->use_curl = (bool)function_exists('curl_init');
@@ -534,8 +544,23 @@ class Email_API
 		if (isset($_SERVER['DOCUMENT_ROOT'])) {
 			$this->ServerRootDirectory = $_SERVER['DOCUMENT_ROOT'];
 		}
+		$this->Debug = $this->debugging();
 	}
-
+  	/**
+	* debugging
+	* Check the value of EMAIL_DEBUG in config_settings table.
+	*
+	* @return Boolean Returns false if it can't be set (invalid data), or true if it enabled.
+	*/
+	
+	function debugging()
+	{
+		//set up debug value from db settings config table
+		$status_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='EMAIL_DEBUG'";
+		$EmailDebug = $this->db->FetchOne($status_query);
+		
+		return ($EmailDebug == 1)? true : false;
+	}
 	/**
 	* Set
 	* This sets the class var to the value passed in.

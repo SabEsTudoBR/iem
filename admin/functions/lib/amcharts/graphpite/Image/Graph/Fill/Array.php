@@ -111,9 +111,22 @@ class Image_Graph_Fill_Array extends Image_Graph_Fill
      */
     function _getFillStyle($ID = false)
     {
-        if (($ID === false) and (!(list ($ID, $fillStyle) = each($this->_fillStyles)))) {
-            reset($this->_fillStyles);
-            list ($ID, $fillStyle) = each($this->_fillStyles);
+        
+		$list_arry = [];
+		$list_two_arry = [];
+		foreach ($this->_fillStyles as $ID=>$fillStyle) {
+			$list_arry[$ID] = $fillStyle;			
+		}
+		 list ($ID, $fillStyle) = $list_arry();
+		//if (($ID === false) and (!(list ($ID, $fillStyle) = each($this->_fillStyles)))) {
+        if (($ID === false) and (!(list ($ID, $fillStyle)))) {
+		reset($this->_fillStyles);		
+		foreach ($this->_fillStyles as $ID=>$fillStyle) {
+			$list_two_arry[$ID] = $fillStyle;			
+		}
+		   list ($ID, $fillStyle) = $list_two_arry();
+			 
+			//list ($ID, $fillStyle) = each($this->_fillStyles);
         }
         $fillStyle = & $this->_fillStyles[$ID];
 
@@ -142,9 +155,22 @@ class Image_Graph_Fill_Array extends Image_Graph_Fill
     */
     function _getFillStyleAt($x, $y, $w, $h, $ID = false)
     {
-        if (($ID === false) and (!(list ($ID, $fillStyle) = each($this->_fillStyles)))) {
-            reset($this->_fillStyles);
-            list ($ID, $fillStyle) = each($this->_fillStyles);
+       
+		$list_arry = [];
+		$list_two_arry = [];		
+		foreach ($this->_fillStyles as $ID=>$fillStyle) {
+			$list_arry[$ID] = $fillStyle;			
+		}
+		 list ($ID, $fillStyle) = $list_arry();
+		//if (($ID === false) and (!(list ($ID, $fillStyle) = each($this->_fillStyles)))) {
+        if (($ID === false) and (!(list ($ID, $fillStyle)))) {
+         reset($this->_fillStyles);		 		
+		foreach ($this->_fillStyles as $ID=>$fillStyle) {
+			$list_two_arry[$ID] = $fillStyle;			
+		}
+		 list ($ID, $fillStyle) = $list_two_arry();
+			 
+           // list ($ID, $fillStyle) = each($this->_fillStyles);
         }
         $fillStyle = & $this->_fillStyles[$ID];
 

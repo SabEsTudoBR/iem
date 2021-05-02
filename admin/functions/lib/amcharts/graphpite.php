@@ -65,8 +65,9 @@ class Chart_Image {
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Chart_Image($width,$height,$title) {
-		$this->graph =& new Image_Graph($width,$height);
+	function  __construct($width,$height,$title) {
+		 
+		$this->graph = New Image_Graph($width,$height);
 		$this->width = $width;
 		$this->height = $height;
 		$this->font = dirname(__FILE__) . "/graphpite/Image/Graph/Fonts/arial.ttf";
@@ -84,7 +85,7 @@ class Chart_Image {
 	function Generate($chart) {
 
 		$this->graph->add(
-				$PlotArea =& new Image_Graph_Plotarea()
+				$PlotArea =  new Image_Graph_Plotarea()
 		);
 
 		$this->graph->_outputImage = false;
@@ -100,91 +101,91 @@ class Chart_Image {
 				$DataSets = array();
 
 				foreach ($chart['chart_data'] as $data) {
-					$Dataset =& new Image_Graph_Dataset_Trivial();
+					$Dataset =  new Image_Graph_Dataset_Trivial();
 					foreach ($data as $key => $value) {
 						if (!is_numeric($value)) {
 							if ($key == 0) {
 								$legend_labels[] = $value;
 							}
-							continue;
+							break;
 						}
 
 						$Dataset->addPoint($key, $value);
 					}
-					$DataSets[] =& $Dataset;
+					$DataSets[] =  $Dataset;
 				}
 
-				$PlotMultiple =& new Image_Graph_Plot_Bar_Multiple($DataSets);
+				$PlotMultiple =  new Image_Graph_Plot_Bar_Multiple($DataSets);
 				$PlotMultiple->spacing(3);
 				$PlotMultiple->setXValueWidth(1);
-				$Plot1 =& $PlotArea->addPlot($PlotMultiple);
+				$Plot1 =  $PlotArea->addPlot($PlotMultiple);
 
-				$noBorder =& new Image_Graph_Line_Solid();
+				$noBorder =  new Image_Graph_Line_Solid();
 				$noBorder->setThickness(0);
 
 				// create a Y data value marker
-				$Marker =& $Plot1->add(new Image_Graph_Marker_Value(IMAGE_GRAPH_VALUE_Y));
+				$Marker =  $Plot1->add(new Image_Graph_Marker_Value(IMAGE_GRAPH_VALUE_Y));
 				//$Marker->setFillColor(0xFFFFFF);
 				$Marker->setBorderColor(0xFFFFFF);
 
-				$PointingMarker =& $Plot1->add(new Image_Graph_Marker_Pointing(0,-10, $Marker));
+				$PointingMarker =  $Plot1->add(new Image_Graph_Marker_Pointing(0,-10, $Marker));
 				$PointingMarker->setLineStyle($noBorder);
 				$Plot1->setMarker($PointingMarker);
 
-				$FillArray =& new Image_Graph_Fill_Array();
+				$FillArray =  new Image_Graph_Fill_Array();
 				foreach ($this->colors as $color) {
 					$FillArray->add(new Image_Graph_Fill_Gradient(IMAGE_GRAPH_GRAD_RADIAL, eval("return 0x{$color};"), eval("return 0x{$color};"), 200));
 
 				}
 				$Plot1->setFillStyle($FillArray);
 
-				$AxisX =& $PlotArea->getAxis(IMAGE_GRAPH_AXIS_X);
+				$AxisX =  $PlotArea->getAxis(IMAGE_GRAPH_AXIS_X);
 				$AxisX->setDataPreprocessor(
 					new Image_Graph_DataPreprocessor_Array(
 						$labels
 					)
 				);
 
-				$thickAxis =& new Image_Graph_Line_Solid();
+				$thickAxis =  new Image_Graph_Line_Solid();
 				$thickAxis->setThickness(2);
 
 				$AxisX->setLineStyle($thickAxis);
 				$AxisX->setLabelInterval(1);
 
-				$AxisY =& $PlotArea->getAxis(IMAGE_GRAPH_AXIS_Y);
+				$AxisY =  $PlotArea->getAxis(IMAGE_GRAPH_AXIS_Y);
 				$AxisY->setLineStyle($thickAxis);
 				$AxisY->setDataPreprocessor(new Image_Graph_DataPreprocessor_Function("FormatNumber"));
 
 				$this->graph->done();
 
-				$canvas =& $this->graph->_canvas();
+				$canvas =  $this->graph->_canvas();
 
-				$canvas =& $this->DrawTitle($canvas,$this->title,true);
+				$canvas =  $this->DrawTitle($canvas,$this->title,true);
 
 				$this->DrawLegend($canvas,$legend_labels,'column');
 			break; // case column
 
 			case 'pie':
-				$DataSet =& new Image_Graph_Dataset_Trivial();
-				$Plot1 =& $PlotArea->addPlot(new Image_Graph_Plot_Pie($DataSet));
+				$DataSet =  new Image_Graph_Dataset_Trivial();
+				$Plot1 =  $PlotArea->addPlot(new Image_Graph_Plot_Pie($DataSet));
 				$points = $chart['chart_data'][1];
 				$labels = $chart['chart_data'][0];
 
 				foreach ($points as $key => $value) {
-					if (!is_numeric($value)) { continue; }
+					if (!is_numeric($value)) { break; }
 
 					$DataSet->addPoint($labels[$key], $value);
 				}
 				$PlotArea->hideAxis();
 
 				// create a Y data value marker
-				$Marker =& $Plot1->add(new Image_Graph_Marker_Value(IMAGE_GRAPH_VALUE_X));
+				$Marker =  $Plot1->add(new Image_Graph_Marker_Value(IMAGE_GRAPH_VALUE_X));
 				$Marker->setFillColor(0xFFFFFF);
 				$Marker->setBorderColor(0xFFFFFF);
-				$PointingMarker =& $Plot1->add(new Image_Graph_Marker_Pointing_Angular(40, $Marker));
+				$PointingMarker =  $Plot1->add(new Image_Graph_Marker_Pointing_Angular(40, $Marker));
 				$Plot1->setMarker($PointingMarker);
 
-				$FillArray =& new Image_Graph_Fill_Array();
+				$FillArray =  new Image_Graph_Fill_Array();
 
 				foreach ($this->colors as $color) {
 					$FillArray->add(new Image_Graph_Fill_Gradient(IMAGE_GRAPH_GRAD_RADIAL, eval("return 0x{$color};"), eval("return 0x{$color};"), 200));
@@ -195,14 +196,13 @@ class Chart_Image {
 
 				$this->graph->done();
 
-				$canvas =& $this->graph->_canvas();
-
+				$canvas =  $this->graph->_canvas();
 				$this->DrawLegend($canvas,$labels,'pie');
-				$canvas =& $this->DrawTitle($canvas,$this->title);
+				$canvas =  $this->DrawTitle($canvas,$this->title);
 			break; // case pie
 		}
 
-		$this->canvas =& $canvas;
+		$this->canvas =  $canvas;
 	}
 
 	/**
@@ -216,7 +216,7 @@ class Chart_Image {
 	*
 	* @return Resource
 	*/
-	function &DrawTitle(&$canvas,$title,$legendspace = false) {
+	function  DrawTitle( $canvas,$title,$legendspace = false) {
 		// Height of the space to add
 		$height = 20;
 		$new_canvas = imagecreate($this->width,$this->height + $height * ($legendspace ? 2 : 1));
@@ -242,7 +242,7 @@ class Chart_Image {
 	*
 	* @return Void
 	*/
-	function DrawLegend(&$canvas,$labels,$type) {
+	function DrawLegend( $canvas,$labels,$type) {
 		// Starting position
 		$y = 10;
 		$x = 10;
@@ -261,11 +261,13 @@ class Chart_Image {
 
 		$blackindex = imagecolorexact($canvas,0,0,0);
 		reset($this->colors);
-
+        	$list_arry = [];
 		foreach ($labels as $label) {
 			if ($label != '') {
-				list($key,$color) = each($this->colors);
-
+				foreach ($this->colors as $key=>$color) {
+					$list_arry[$key] = $color;			
+				}
+				list ($key, $color) = $list_arry;	
 				$colorindex = imagecolorexact($canvas,
 					(eval("return 0x{$color};") & 0xFF0000) >> 16,
 					(eval("return 0x{$color};") & 0x00FF00) >> 8,

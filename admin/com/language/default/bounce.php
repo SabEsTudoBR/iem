@@ -17,6 +17,8 @@
 */
 
 // we need some variables from the lists language file.
+define('LNG_interspire_bounce_help_link', '<a href="https://www.interspire.com/bounces"   target="_blank">Read More</a>');
+
 require_once(dirname(__FILE__) . '/lists.php');
 
 define('LNG_BadLogin_Details', 'Unable to log in using the details provided, the server returned this error message: %s<br/>Please check the details and try again.');
@@ -141,7 +143,7 @@ define('LNG_SelectContactList_Explain', 'I Want to Process Bounced Emails for');
 *************************
 */
 // This warning is deprecated for 5.6.
-define('LNG_ExplainBounceDeleteAll', 'Warning: This option is dangerous to use if multiple lists use the same bounce account. <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'845\'); return false;">Why?</a>');
+define('LNG_ExplainBounceDeleteAll', 'Warning: This option is dangerous to use if multiple lists use the same bounce account.');
 
 /**
 *************************
@@ -150,12 +152,12 @@ define('LNG_ExplainBounceDeleteAll', 'Warning: This option is dangerous to use i
 */
 
 define('LNG_SaveBounceServerDetails','Save Bounce Server Details?');
-define('LNG_SaveBounceServerDetailsExplain','Yes, save these details so I don\'t have to re-enter them');
+define('LNG_SaveBounceServerDetailsExplain','Yes, save these details so I don\'t have to re-enter them'); 
 
 define('LNG_Bounce_NoLists', 'No Contact Lists have been created. Please create a contact list before processing bounces.');
 define('LNG_Bounce_CreateList', 'Create a Contact List...');
 
-define('LNG_Bounce_Step1_Intro', 'Processing bounced emails will clear your list of bad email addressess and reduce the chance of your mail server being blacklisted.');
+define('LNG_Bounce_Step1_Intro', 'Processing bounced emails will clear your list of bad email addressess and reduce the chance of your mail server being blacklisted.'.LNG_interspire_bounce_help_link);
 
 define('LNG_SelectBounceEmail', 'Process Bounces for');
 define('LNG_WhyListsGrouped', 'Why are multiple lists grouped together?');

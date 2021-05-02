@@ -107,8 +107,10 @@ class CustomFields_Dropdown_API extends CustomFields_API
 
 		foreach ($this->Settings['Key'] as $pos => $key) {
 			$selected = '';
+			if(is_array($chosen)){
 			if (in_array($key, $chosen)) {
 				$selected = ' SELECTED';
+			}  
 			}
 			$return_string .= '<option value="' . htmlspecialchars($key, ENT_QUOTES, SENDSTUDIO_CHARSET) . '"' . $selected . '>' . htmlspecialchars($this->Settings['Value'][$pos], ENT_QUOTES, SENDSTUDIO_CHARSET) . '</option>';
 		}

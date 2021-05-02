@@ -63,7 +63,7 @@ class Autoresponders extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Autoresponders()
+	function __construct()
 	{
 		$this->PopupWindows[] = 'sendpreviewdisplay';
 		$this->PopupWindows[] = 'checkspamdisplay';
@@ -534,6 +534,7 @@ class Autoresponders extends SendStudio_Functions
 					break;
 
 					case 'step4':
+					
 						$sessionauto = IEM::sessionGet('Autoresponders');
 
 						$sessionauto['sendfromname'] = $_POST['sendfromname'];
@@ -640,7 +641,7 @@ class Autoresponders extends SendStudio_Functions
 
 						$user = IEM::getCurrentUser();
 						$session_autoresponder = IEM::sessionGet('Autoresponders');
-
+						$listid = $session_autoresponder['list'];	
 						if (!$session_autoresponder || !isset($session_autoresponder['name'])) {
 							$this->ManageAutoresponders($listid);
 							break;
@@ -648,9 +649,6 @@ class Autoresponders extends SendStudio_Functions
 
 						$text_unsubscribelink_found = true;
 						$html_unsubscribelink_found = true;
-
-						$listid = $session_autoresponder['list'];
-
 						$autoresponder->Set('listid', $listid);
 
 						if (isset($_POST['TextContent'])) {
@@ -1736,7 +1734,7 @@ class Autoresponders extends SendStudio_Functions
 								$over_max_size_no_embed++;
 							}
 							$save_autoresponder = false;
-							continue;
+							break;
 						}
 					}
 

@@ -45,7 +45,7 @@ class Subscribers extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything
 	*/
-	function Subscribers()
+	function __construct()
 	{
 		$this->LoadLanguageFile('Subscribers');
 	}
@@ -176,7 +176,7 @@ class Subscribers extends SendStudio_Functions
 	*
 	* @return Void Prints out the appropriate template, doesn't return anything.
 	*/
-	function ChooseList($action='Manage', $subaction=null)
+	function ChooseList($action='Manage', $subaction=null, $autoredirect=true)
 	{
 		$action = strtolower($action);
 		$user = IEM::getCurrentUser();

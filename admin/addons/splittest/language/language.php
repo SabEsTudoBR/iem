@@ -1,6 +1,7 @@
 <?php
 define('LNG_Addon_splittest_Menu_ViewSplitTests', 'View Split Tests');
 define('LNG_Addon_splittest_Menu_ViewSplitTests_Description', 'Send different versions of your email to see which performs better.');
+define('LNG_interspire_split_stats_help_link', '<a href="https://www.interspire.com/statistics"   target="_blank">Read More</a>');
 
 define('LNG_Addon_splittest_Menu_ViewStats', 'Split Test Statistics');
 define('LNG_Addon_splittest_Menu_ViewStats_Description', 'See how your split tests performed, including open and click rates.');
@@ -306,7 +307,7 @@ define('LNG_Addon_splittest_Schedule_JobStatus_Timeout_TipDetails', 'The first p
  * Stats stuff here.
  */
 define('LNG_Addon_splittest_Stats_Heading', 'Split Test Statistics');
-define('LNG_Addon_splittest_Stats_Intro', 'Split test campaign statistics allow you to view detailed open, unsubscribe and bounce rates, see how many subscribers clicked on a link etc.');
+define('LNG_Addon_splittest_Stats_Intro', 'Split test campaign statistics allow you to view detailed open, unsubscribe and bounce rates, see how many subscribers clicked on a link etc. '.LNG_interspire_split_stats_help_link);
 define('LNG_Addon_splittest_Stats_NoneSent', 'To view statistics you first need to create and send a split test. Click the button below to do that now.');
 define('LNG_Addon_splittest_Stats_SendButton', 'Send a Split Test Campaign');
 define('LNG_Addon_splittest_Stats_SendMessage', 'Click the <i>Send a Split Test Campaign</i> button below to send one.');

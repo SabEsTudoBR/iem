@@ -67,6 +67,9 @@ class Upgrade_API extends API
 		'20150825' => '6.1.6',
 		'20161005' => '6.1.7',
 		'20171011' => '6.1.8',
+		'20180817' => '6.2.0',
+		'20190626' => '6.2.1',
+		'20200907' => '6.2.2',
 	);
 
 	/**
@@ -686,6 +689,15 @@ class Upgrade_API extends API
         '20171011' => array (
             'update_db_version',
         ),
+		'20180817' => array (
+            'update_db_version',
+        ),
+		'20190626' => array (
+            'update_db_version',
+        ),
+		'20200907' => array (
+            'update_db_version',
+        ), 
 	);
 
 	/**
@@ -832,7 +844,9 @@ class Upgrade_API extends API
 			$upgrades = $this->upgrades_to_run[$dirname];
 
 			$upgrades_to_run[$dirname] = $upgrades;
-			$number_to_run += sizeof($upgrades);
+			if(is_array($upgrades)) {
+				$number_to_run += sizeof($upgrades);
+			}
 		}
 
 		return array('upgrades' => $upgrades_to_run, 'number_to_run' => $number_to_run);

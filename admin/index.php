@@ -26,7 +26,7 @@
 /**
  * Perform rudimentary PHP check.
  */
-$min_php = '5.5.0';
+$min_php = '5.6.0';
 if (version_compare(PHP_VERSION, $min_php, '<')) {
 	$sapi = php_sapi_name();
 	$error_message = '';
@@ -34,7 +34,7 @@ if (version_compare(PHP_VERSION, $min_php, '<')) {
 	switch ($sapi) {
 		// Display CLI version of the error message (this most likely be triggered by CRON)
 		case 'cli':
-			$error_message = "This application requires at least PHP version {$min_php} but your server is running PHP version " . PHP_VERSION . ".\n\nYour server might be running two version of PHP. You will need to modify your CRON details to use PHP 5 (usually modifying /usr/bin/php to /usr/bin/php5). If you are not sure how to do this, please ask your hosting provider.";
+			$error_message = "This application requires at least PHP version {$min_php} but your server is running PHP version " . PHP_VERSION . ".\n\nYour server might be running two version of PHP. You will need to modify your CRON details to use PHP 7 (usually modifying /usr/bin/php to /usr/bin/php7.0 or /usr/bin/php7.1). If you are not sure how to do this, please ask your hosting provider.";
 		break;
 
 

@@ -209,7 +209,8 @@ class Subscribers_Add extends Subscribers
 
 				// If only one list available, go directly to step 2
 				if (count($lists) == 1) {
-					$listid = array_pop(array_keys($lists));
+					$array_keys = array_keys($lists);
+					$listid = array_pop($array_keys);
 					$this->AddSubscriber_Step2($listid);
 				} else {
 					$this->ChooseList('add', 'step2');

@@ -1,17 +1,17 @@
 ===== Interspire Email Marketer Readme.txt =====
 
 If you are installing Email Marketer, please follow this link:
-https://www.interspire.com/support/kb/questions/1199/Installation+Guide
+https://www.interspire.com/installations-and-migrations
 
 
 If you are upgrading, please follow this link:
-https://www.interspire.com/support/kb/questions/1200/Upgrade+Guide
+https://www.interspire.com/upgrading
 
 
 ===== Email Marketer Documentation =====
 
 For all Email Marketer Documentation:
-http://www.interspire.com/emailmarketer/documentation.php
+https://www.interspire.com/documentation
 
-For a list of common questions and answers:
-https://www.interspire.com/support/kb/categories/Email+Marketer/Support+and+Technical+Questions/
+Knowledge Base:
+https://www.interspire.com/support/kb

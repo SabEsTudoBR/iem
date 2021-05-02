@@ -29,7 +29,7 @@ function tb_init(domChunk){
 }
 
 function tb_show(caption, url, imageGroup) {//function called when the user clicks on a thickbox link
-
+ 
 	try {
 		if (typeof document.body.style.maxHeight === "undefined") {//if IE 6
 			$("body","html").css({height: "100%", width: "100%"});
@@ -76,6 +76,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 			TB_imageCount = "";
 			TB_FoundURL = false;
 			if(imageGroup){
+				
 				TB_TempArray = $("a[@rel="+imageGroup+"]").get();
 				for (TB_Counter = 0; ((TB_Counter < TB_TempArray.length) && (TB_NextHTML === "")); TB_Counter++) {
 					var urlTypeTemp = TB_TempArray[TB_Counter].href.toLowerCase().match(urlString);
@@ -99,7 +100,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 			imgPreloader = new Image();
 			imgPreloader.onload = function(){
 			imgPreloader.onload = null;
-
+	
 			// Resizing large images - orginal by Christian Montoya edited by me.
 			var pagesize = tb_getPageSize();
 			var x = pagesize[0] - 150;
@@ -180,10 +181,9 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 
 			imgPreloader.src = url;
 		}else{//code to show html
-
+         
 			var queryString = url.replace(/^[^\?]+\??/,'');
 			var params = tb_parseQuery( queryString );
-
 			TB_WIDTH = (params['width']*1) + 30 || 630; //defaults to 630 if no paramaters were added to URL
 			TB_HEIGHT = (params['height']*1) + 40 || 440; //defaults to 440 if no paramaters were added to URL
 			ajaxContentW = TB_WIDTH - 3;
@@ -191,7 +191,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 
 			if(url.indexOf('TB_iframe') != -1){// either iframe or ajax window
 					ajaxContentW = TB_WIDTH - 30;
-					urlNoQuery = url.split('TB_');
+					urlNoQuery = url.split('TB_');				 
 					$("#TB_iframeContent").remove();
 					if(params['modal'] != "true"){//iframe no modal
 						$("#TB_window").append("<div id='TB_title'><div id='TB_ajaxWindowTitle'>"+caption+"</div><div id='TB_closeAjaxWindow'><a href='#' id='TB_closeWindowButton' title='Close'><img src=\"images/close_button.gif\" border=\"0\"/></a></div></div><iframe frameborder='0' hspace='0' src='"+urlNoQuery[0]+"' id='TB_iframeContent' name='TB_iframeContent"+Math.round(Math.random()*1000)+"' onload='tb_showIframe()' style='width:"+(ajaxContentW + 29)+"px;height:"+(ajaxContentH + 17)+"px;' > </iframe>");

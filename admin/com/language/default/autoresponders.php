@@ -16,6 +16,7 @@
 */
 
 define('LNG_AutorespondersManage', 'View Autoresponders');
+define('LNG_interspire_help_link', "<a href=https://www.interspire.com/autoresponders  target=_blank>Read More</a>");
 
 define('LNG_AutoresponderCreate', '&nbsp;Click the "Create Autoresponder" button below to create one.');
 
@@ -29,15 +30,15 @@ define('LNG_CreateAutoresponder', 'Create Autoresponder');
 define('LNG_CreateAutoresponderCancelButton', 'Are you sure you want to cancel creating a new autoresponder?');
 define('LNG_CreateAutoresponderHeading', 'New Autoresponder Details');
 
-define('LNG_CreateAutoresponderIntro_Step4', 'Enter the content of your autoresponder in the form below. Click the "Save & Exit" button when you are finished.');
+define('LNG_CreateAutoresponderIntro_Step4', 'Enter the content of your autoresponder in the form below. Click the "Save & Exit" button when you are finished.'.LNG_interspire_help_link);
 
-define('LNG_EditAutoresponderIntro_Step4', 'Please update your content below. Click the "Save & Exit" button when you are finished.');
+define('LNG_EditAutoresponderIntro_Step4', 'Please update your content below. Click the "Save & Exit" button when you are finished.'.LNG_interspire_help_link);
 
 define('LNG_AutoresponderDetails', 'Autoresponder Details');
 
 define('LNG_EditAutoresponder', 'Edit an Autoresponder');
-define('LNG_EditAutoresponderIntro', 'Complete the form below to update the selected autoresponder. You can also <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'797\'); return false;">learn more about autoresponders</a>.');
-define('LNG_EditAutoresponderCancelButton', 'Are you sure you want to cancel updating this autoresponder?');
+define('LNG_EditAutoresponderIntro', 'Complete the form below to update the selected autoresponder.'.LNG_interspire_help_link);
+define('LNG_EditAutoresponderCancelButton', 'Are you sure you want to cancel updating this autoresponder?'.LNG_interspire_help_link);
 define('LNG_EditAutoresponderHeading', 'Autoresponder Details');
 
 define('LNG_EnterAutoresponderName', 'Please enter a name for this autoresponder.');
@@ -178,7 +179,7 @@ define('LNG_TemplateDetails','Autoresponder Content');
 * Changed/added in NX1.1.1
 **************************
 */
-define('LNG_AutoresponderFilesCopyFail', 'The images and/or attachments for this autoresponder were not copied successfully.');
+define('LNG_AutoresponderFilesCopyFail', 'The images and/or attachments for this autoresponder were not copied successfully.'.LNG_interspire_help_link);
 
 /**
 **************************
@@ -186,10 +187,10 @@ define('LNG_AutoresponderFilesCopyFail', 'The images and/or attachments for this
 **************************
 */
 define('LNG_AutoresponderActivateFailed_HasAttachments', 'The autoresponder could not be activated because the administrator has disabled attachments. To enable this autoresponder, please edit it and remove the attachments.');
-define('LNG_AutoresponderActivateFailed_HasAttachments_Multiple', '%s autoresponders could not be activated because the administrator has disabled attachments. To enable these autoresponders, please edit them and remove the attachments.');
+define('LNG_AutoresponderActivateFailed_HasAttachments_Multiple', '%s autoresponders could not be activated because the administrator has disabled attachments. To enable these autoresponders, please edit them and remove the attachments.'.LNG_interspire_help_link);
 
-define('LNG_UnableToLoadImage_Autoresponder_List_Embed', 'Unable to load the following images to embed in the autoresponder. This is most likely because the image does not exist.<br/>%s');
-define('LNG_UnableToLoadImage_Autoresponder_List', 'Unable to load the following images in the autoresponder. This is most likely because the image does not exist.<br/>%s');
+define('LNG_UnableToLoadImage_Autoresponder_List_Embed', 'Unable to load the following images to embed in the autoresponder. This is most likely because the image does not exist.<br/>%s'.LNG_interspire_help_link);
+define('LNG_UnableToLoadImage_Autoresponder_List', 'Unable to load the following images in the autoresponder. This is most likely because the image does not exist.<br/>%s'.LNG_interspire_help_link);
 
 define('LNG_AutoresponderUpdated', 'Autoresponder updated successfully. %s');
 
@@ -202,14 +203,14 @@ define('LNG_FormatDetails', 'Advanced Options');
 define('LNG_CreateAutoresponderButton', 'Create an Autoresponder...');
 
 
-define('LNG_Autoresponder_Size_Over_EmailSize_Maximum_Embed', 'This autoresponder is larger than %s. You will not be able to activate this autoresponder until you reduce the size of the images or attachments, or you can send it without embedded images.');
+define('LNG_Autoresponder_Size_Over_EmailSize_Maximum_Embed', 'This autoresponder is larger than %s. You will not be able to activate this autoresponder until you reduce the size of the images or attachments, or you can send it without embedded images.'.LNG_interspire_help_link);
 define('LNG_Autoresponder_Size_Over_EmailSize_Maximum_No_Embed', 'This autoresponder is larger than %s. You will not be able to activate this autoresponder until you reduce the size of the attachments.');
 
-define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum_Embed', 'The autoresponder could not be activated because it is larger than %s. You will need to reduce the size of the images or attachments, or you can edit it and disable embedded images.');
-define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum_Embed_Multiple', '%s autoresponders could not be activated because each one is larger than %s. You will need to reduce the size of the images or attachments, or you can edit each one and disable embedded images.');
+define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum_Embed', 'The autoresponder could not be activated because it is larger than %s. You will need to reduce the size of the images or attachments, or you can edit it and disable embedded images.'.LNG_interspire_help_link);
+define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum_Embed_Multiple', '%s autoresponders could not be activated because each one is larger than %s. You will need to reduce the size of the images or attachments, or you can edit each one and disable embedded images.'.LNG_interspire_help_link);
 
-define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum', 'The autoresponder could not be activated because it is larger than %s. You will need to reduce the size of the attachments.');
-define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum_Multiple', '%s autoresponders could not be activated because each one is larger than %s. You will need to reduce the size of the attachments.');
+define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum', 'The autoresponder could not be activated because it is larger than %s. You will need to reduce the size of the attachments.'.LNG_interspire_help_link);
+define('LNG_AutoresponderActivateFailed_Over_EmailSize_Maximum_Multiple', '%s autoresponders could not be activated because each one is larger than %s. You will need to reduce the size of the attachments.'.LNG_interspire_help_link);
 
 define('LNG_Autoresponder_Title_Disable_Too_Big', 'You cannot activate this autoresponder because it is too big.');
 
@@ -236,11 +237,11 @@ define('LNG_AutoresponderIncludeExisting', 'Send to Existing Contacts?');
 
 define('LNG_AutoresponderIncludeExistingExplain', 'Yes, send this autoresponder to existing contacts');
 
-define('LNG_HLP_MatchEmail', 'Autoresponders will only be sent to contacts that match this email address. You can specify all or part of an email address. For example, to send to all hotmail email addresses, you can use \\\'@hotmail.com\\\'. To send to all email addresses, simply leave this blank.');
+define('LNG_HLP_MatchEmail', 'Autoresponders will only be sent to contacts that match this email address. You can specify all or part of an email address. For example, to send to all hotmail email addresses, you can use \\\'@hotmail.com\\\'. To send to all email addresses, simply leave this blank.'.LNG_interspire_help_link);
 
-define('LNG_HLP_MatchFormat', 'Autoresponders will only be sent to contacts that have selected this subscription format. If you select \\\'HTML\\\' then this autoresponder will only be sent out to users that have selected \\\'HTML\\\' as their preferred format when subscribing to your contact list.');
+define('LNG_HLP_MatchFormat', 'Autoresponders will only be sent to contacts that have selected this subscription format. If you select \\\'HTML\\\' then this autoresponder will only be sent out to users that have selected \\\'HTML\\\' as their preferred format when subscribing to your contact list.'.LNG_interspire_help_link);
 
-define('LNG_HLP_MatchConfirmedStatus', 'Autoresponders will only be sent to contacts that have confirmed their email subscription. When using double-optin subscription, your contacts will be sent an email to confirm their subscription. If they have confirmed their subscription, then their status will be \\\'confirmed\\\'. It\\\'s usually best to only email confirmed contacts.');
+define('LNG_HLP_MatchConfirmedStatus', 'Autoresponders will only be sent to contacts that have confirmed their email subscription. When using double-optin subscription, your contacts will be sent an email to confirm their subscription. If they have confirmed their subscription, then their status will be \\\'confirmed\\\'. It\\\'s usually best to only email confirmed contacts.'.LNG_interspire_help_link);
 
 define('LNG_HLP_SendMultipart', 'Sending a multipart email will let the contacts email program decide which format (HTML or Text) to display the email in.<br/><br/>It is best to use this if you don\\\'t give your contacts a choice to which format they receive (e.g. they all subscribe as HTML), when they receive the email their email software (eg. Outlook) will automatically show the correct format.<br/><br/>If unsure, leave this option ticked.');
 
@@ -252,9 +253,9 @@ define('LNG_AutoresponderHasBeenDisabled', 'To prevent an incomplete autorespond
 
 define('LNG_AutoresponderHasBeenDisabled_Save', 'To prevent an incomplete autoresponder from being sent to contacts, it has been marked as inactive.<br>You will need to activate this autoresponder when you go to the "Manage Autoresponders" page.');
 
-define('LNG_HLP_Autoresponder_OpenedNewsletter', 'This option will allow you to filter contacts who have opened a particular email campaign sent to this contact list. If selected, only contacts who have opened the chosen email will be sent this autoresponder. To send to all contacts, leave this option unticked.');
+define('LNG_HLP_Autoresponder_OpenedNewsletter', 'This option will allow you to filter contacts who have opened a particular email campaign sent to this contact list. If selected, only contacts who have opened the chosen email will be sent this autoresponder. To send to all contacts, leave this option unticked.'.LNG_interspire_help_link);
 
-define('LNG_HLP_Autoresponder_ClickedOnLink', 'This option will allow you to filter contacts who have clicked a particular link in an email campaign sent to this contact list. If selected, only contacts who have clicked the chosen link will be sent this autoresponder. To send to all contacts, leave this option unticked.');
+define('LNG_HLP_Autoresponder_ClickedOnLink', 'This option will allow you to filter contacts who have clicked a particular link in an email campaign sent to this contact list. If selected, only contacts who have clicked the chosen link will be sent this autoresponder. To send to all contacts, leave this option unticked.'.LNG_interspire_help_link);
 
 define('LNG_HLP_HoursDelayed', 'How long after joining your list should a contact receive this autoresponder? Choose \\\'As soon as the contact joins my list\\\' to send the autoresponder to contacts as soon as they join your list.<br /><br />Choose \\\'After the contact has been on my list for\\\' to send the autoresponder to new contacts after the specified time period has elapsed.');
 
@@ -262,14 +263,14 @@ define('LNG_Autoresponder_Size_Approximate', 'This autoresponder will be approxi
 
 
 
-define('LNG_Autoresponder_Size_Over_EmailSize_Warning_Embed', 'This autoresponder is larger than %s which means it may take a while for your contacts to download. If you do not embed images, this will reduce the size of the email your contacts receive.');
-define('LNG_Autoresponder_Size_Over_EmailSize_Warning_No_Embed', 'This autoresponder is larger than %s which means it may take a while for your contacts to download.');
+define('LNG_Autoresponder_Size_Over_EmailSize_Warning_Embed', 'This autoresponder is larger than %s which means it may take a while for your contacts to download. If you do not embed images, this will reduce the size of the email your contacts receive.'.LNG_interspire_help_link);
+define('LNG_Autoresponder_Size_Over_EmailSize_Warning_No_Embed', 'This autoresponder is larger than %s which means it may take a while for your contacts to download.'.LNG_interspire_help_link);
 
 define('LNG_AutorespondersShowFilteringOptionsOneListExplain', 'Only contacts who match my search criteria (below)');
 define('LNG_AutorespondersDoNotShowFilteringOptionsOneListExplain', 'All contacts in my list with a status of "confirmed"');
 
 
-define('LNG_AutoresponderAlreadySentTo', "*** IMPORTANT **** \n\nThis autoresponder has already sent to %s contacts. If you leave this option enabled, all of those contacts will receive this autoresponder again. If you do not want them to receive this autoresponder again, simply untick this option.\n\nNew contacts who join your contact list through a form on your website or who are added through the 'Add Contacts' option will automatically get this autoresponder.");
+define('LNG_AutoresponderAlreadySentTo', "*** IMPORTANT **** \n\nThis autoresponder has already sent to %s contacts. If you leave this option enabled, all of those contacts will receive this autoresponder again. If you do not want them to receive this autoresponder again, simply untick this option.\n\nNew contacts who join your contact list through a form on your website or who are added through the 'Add Contacts' option will automatically get this autoresponder.".LNG_interspire_help_link);
 
 define('LNG_NoAutoresponders', 'No autoresponders have been created for this contact list. Click the <em>Create an Autoresponder...</em> button below to create one.');
 
@@ -279,20 +280,20 @@ define('LNG_AutoresponderAssign', '&nbsp;Please talk to the system administrator
 define('LNG_HLP_AutoresponderIncludeExisting', 'Choose this option to send the autoresponder to both new and existing contacts for the selected contact list.<br /><br/>This option will not be remembered next time you edit this autoresponder. It will only add the existing contacts to the list of recipients for the next time autoresponders are sent.');
 
 
-define('LNG_Autoresponder_Step1_Intro', 'Autoresponders are emails that you can set up to be sent automatically to contacts at different intervals after they subscribe. <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'797\'); return false;">Learn more about autoresponders</a>.');
+define('LNG_Autoresponder_Step1_Intro', 'Autoresponders are emails that you can set up to be sent automatically to contacts at different intervals after they subscribe.'.LNG_interspire_help_link);
 
 define('LNG_Help_AutorespondersManage', LNG_Autoresponder_Step1_Intro);
 
-define('LNG_CreateAutoresponder_Step1_Intro', 'Creating an autoresponder is a multi-step process. Start by entering a name and choosing who should receive it and then click the <em>Next &gt;&gt;</em> button.  <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'797\'); return false;">Get help on autoresponders here</a>.');
+define('LNG_CreateAutoresponder_Step1_Intro', 'Creating an autoresponder is a multi-step process. Start by entering a name and choosing who should receive it and then click the <em>Next &gt;&gt;</em> button. '.LNG_interspire_help_link);
 
 define('LNG_CreateAutoresponderIntro', LNG_CreateAutoresponder_Step1_Intro);
 
 define('LNG_CreateAutoresponderIntro_Step3', LNG_Autoresponder_Step1_Intro);
 
-define('LNG_AutoresponderCronNotEnabled', 'Before your contacts can receive autoresponders, you need to setup scheduled sending. Please see <a href="#" onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'841\'); return false;">this article</a> to learn how, or contact your administrator.');
+define('LNG_AutoresponderCronNotEnabled', 'Before your contacts can receive autoresponders, you need to setup scheduled sending.Contact your administrator.'.LNG_interspire_help_link);
 
-define('LNG_Autoresponder_Name_Reference', 'This name is for your reference only and isn\'t shown to anyone');
-define('LNG_Autoresponder_Filter_Help', 'Fill in the fields below to filter contacts. You don\'t have to fill in all fields, only the ones you want to filter on. <a onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'832\'); return false;" href="#">Learn more about filtering contacts.</a>');
+define('LNG_Autoresponder_Name_Reference', 'This name is for your reference only and isn\'t shown to anyone'); 
+define('LNG_Autoresponder_Filter_Help', 'Fill in the fields below to filter contacts. You don\'t have to fill in all fields, only the ones you want to filter on.'.LNG_interspire_help_link);
 
 define('LNG_SchedulingDetails', 'Sending Options');
 define('LNG_Autoresponder_Valid_Time', 'Please enter a valid number for the time delay.');

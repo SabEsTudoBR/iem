@@ -43,7 +43,7 @@ class Segment extends SendStudio_Functions
 	 *
 	 * @return Object Returns this class
 	 */
-	function Segment()
+	function __construct()
 	{
 		$this->LoadLanguageFile();
 		$this->_DefaultSort = 'SegmentName';

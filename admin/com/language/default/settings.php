@@ -1,4 +1,6 @@
 <?php
+define('LNG_interspire_email_settings_help_link', '<a href="https://www.interspire.com/settings"   target="_blank">Read More</a>');
+define('LNG_interspire_email_crown_help_link', '<a href="https://www.interspire.com/setting-up-cron-and-windows-scheduled-tasks"   target="_blank">Read More</a>');
 
 define('LNG_SettingsSaved', 'The modified settings have been saved successfully.');
 define('LNG_SettingsNotSaved', 'The modified settings have not been saved.');
@@ -31,7 +33,7 @@ define('LNG_HLP_ForceUnsubLink', 'This option will force all email campaigns and
 define('LNG_ForceUnsubLinkExplain', 'Yes, force an unsubscribe link');
 define('LNG_MaxOverSize', 'Monthly Leeway Allowance');
 define('LNG_CronEnabled', 'Do You Want to Enable Cron Support?');
-define('LNG_CronEnabledExplain', 'Yes, I want to enable cron support (<a onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'819\'); return false;" href="#">How can I enable cron?</a>)');
+define('LNG_CronEnabledExplain', 'Yes, I want to enable cron support');
 define('LNG_HLP_CronEnabled', 'This option will let you schedule emails in advance, send autoresponders and process bounced emails quickly. You must have cron installed and setup correctly on your server for this to work.');
 define('LNG_IpTracking', 'IP Address Tracking');
 define('LNG_IpTrackingExplain', 'Yes, ip address tracking is enabled');
@@ -185,7 +187,7 @@ define('LNG_HLP_EmailSize_Maximum', 'This won\\\'t allow an email campaign or au
 
 define('LNG_TestSendTo', 'Send a test email to');
 
-define('LNG_Help_Settings', 'These are the settings that control the top level of the application. From here you can set global application settings, view your system set up and set up global email controls.');
+define('LNG_Help_Settings', 'These are the settings that control the top level of the application. From here you can set global application settings, view your system set up and set up global email controls.'.LNG_interspire_email_settings_help_link);
 
 define('LNG_CronTutorialLink', 'Learn how to setup cron on your server');
 
@@ -211,7 +213,7 @@ define('LNG_ConfigFileNotWritable', 'The configuration file (%s) is not writable
  *  1.4.1
  **************************
  */
-define('LNG_CronRunTime_Explain', 'When you add the cron command (above) to your crontab, it needs to run at least as frequently as the <em>Run Every</em> times you choose below. <a onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'842\'); return false;" href="#">Learn why</a>.');
+define('LNG_CronRunTime_Explain', 'When you add the cron command (above) to your crontab, it needs to run at least as frequently as the <em>Run Every</em> times you choose below. '.LNG_interspire_email_crown_help_link);
 
 /**
  **************************
@@ -387,7 +389,6 @@ define('LNG_HLP_PrivateLabelSettings_DefaultHtmlEmailFooter', 'This is the HTML 
 define('LNG_PrivateLabelSettings_DefaultTextEmailFooter', 'Default Text Email Footer');
 define('LNG_HLP_PrivateLabelSettings_DefaultTextEmailFooter', 'This is the text which will be set as the value of "Text Footer" field by default when you are creating a new user account. It will be appended to the bottom of all emails which are sent as text.');
 define('LNG_PrivateLabelSettings_UpgradeMessage', 'Upgrade Message');
-define('LNG_HLP_PrivateLabelSettings_UpgradeMessage', 'This message will appear at the top of the control panel for users whose account type is "Trial Account". Available placeholders are as follows:<br /><br /> - <b>%%trial_days_current%%</b> - How many days the user is into their free trial account.<br /> - <b>%%trial_days_left%%</b> - How many days the user has left in their free trial.');
 define('LNG_PrivateLabelSettings_ApplicationLogoImage', 'Application Logo Image');
 define('LNG_HLP_PrivateLabelSettings_ApplicationLogoImage', 'This is the logo image which will appear both on the login screen and at the top of every page in the control panel.');
 define('LNG_PrivateLabelSettings_ApplicationFavicon', 'Favicon Image');
@@ -406,8 +407,7 @@ define('LNG_PrivateLabelSettings_YesGettingStartedVideo', 'Yes, link to getting 
 define('LNG_HLP_PrivateLabelSettings_GettingStartedVideo', 'Tick this box to show links to the branded getting started video and documentation on the home page of the control panel for this user.');
 
 define('LNG_PrivateLabelSettings_ExpiredTrial_LoginMessage', 'Upgrade Expiry Message');
-define('LNG_HLP_PrivateLabelSettings_ExpiredTrial_LoginMessage', 'This message will be shown to users who try to login to the application after their free trial has expired and is no longer accessible.');
-
+ 
 define('LNG_ErrorAlertMessage_BlankApplicationName', 'Please enter an application name.');
 define('LNG_ErrorAlertMessage_BlankAccountUpgradeMessage', 'Please enter an upgrade message.');
 define('LNG_ErrorAlertMessage_BlankExpiredLogin', 'Please enter an upgrade expiry message.');

@@ -214,7 +214,7 @@ class Forms_API extends API
 	 *
 	 * @return bool Returns true if there is no formid passed in. If there is a formid passed in, it will return the value from Load.
 	 */
-	function Forms_API($formid=0, $connect_to_db=true)
+	function __construct($formid=0, $connect_to_db=true)
 	{
 		if ($connect_to_db) {
 			$this->GetDb();

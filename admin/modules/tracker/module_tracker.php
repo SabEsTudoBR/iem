@@ -59,12 +59,7 @@ class module_Tracker
 		 * @access protected
 		 */
 		var $_trackerName = null;
-	// -----
-
-
-
-
-	// ----- Private variables
+	 // ----- Private variables
 		/**
 		 * Cached newsletter API
 		 * @var Newsletters_API
@@ -92,11 +87,8 @@ class module_Tracker
 		 * @access private
 		 */
 		var $_db = null;
-	// -----
-
-
-
-	// ----- Static function
+		
+	 // ----- Static function
 		/**
 		 * ProcessURLForAllTracker
 		 *
@@ -395,7 +387,7 @@ class module_Tracker
 		 *
 		 * @return Boolean Returns TRUE if successful, FALSE otherwise
 		 */
-		function DeleteRecordForAllTrackerByNewsletterID($newsletterID)
+		static function DeleteRecordForAllTrackerByNewsletterID($newsletterID)
 		{
 			/**
 			 * Sanitize/Declare variables used by function
@@ -464,7 +456,7 @@ class module_Tracker
 	 *
 	 * @abstract
 	 */
-	function module_Tracker()
+	function __construct()
 	{
 		trigger_error('This class cannot be instantiated', E_USER_ERROR);
 	}
@@ -967,12 +959,7 @@ class module_Tracker
 			// Load common language
 			$this->_loadLanguage('common');
 		}
-	// -----
-
-
-
-
-	// ----- Private functions
+	//----- Private functions
 		/**
 		 * _getValidStatisticTypes
 		 * Get valid statistic types
@@ -982,7 +969,7 @@ class module_Tracker
 		 *
 		 * @return string[] Retuns an array of valid statistic types
 		 */
-		function _getValidStatisticTypes()
+		static function _getValidStatisticTypes()
 		{
 			return array('auto', 'newsletter');
 		}

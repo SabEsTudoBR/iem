@@ -311,7 +311,7 @@ class Splittest_Stats_API extends API
 		// - overloads the first parameter's meaning (either split_id or list_ids), and
 		// - invalidates all the other parameters in between.
 		// It should really be refactored.
-
+         $this->db = IEM::getDatabase(); 
 		$listids = $this->CheckIntVars($listids);
 		if (empty($listids)) {
 			return false;
@@ -535,8 +535,9 @@ class Splittest_Stats_API extends API
 
 			            ORDER BY l.name ASC LIMIT 1
 					";
-
-					$result = $this->Db->Query($query);
+ 
+					$result =  $this->Db->Query($query);
+				   
 					if (!$result) {
 						trigger_error(__FILE__ . '::' . __METHOD__ . ' -- Unable to query statistics', E_USER_WARNING);
 						return $results;
@@ -760,13 +761,19 @@ class Splittest_Stats_API extends API
 	 */
 	private function finalPercentageStats()
 	{
-		while (list($id, $statistics) = each($this->campaignStats)) {
+		foreach ($this->campaignStats as $id=>$statistics) {
+			
+				  
 			for ($i=0; $i<count($this->statsNewsletterFields); $i++) {
-				$statistics['stats_newsletters']['final_percent_' . $this->statsNewsletterFields[$i]] = $this->_doPercentage($statistics['stats_newsletters'][$this->statsNewsletterFields[$i]], $this->sendSize);
+				if (isset($statistics['stats_newsletters'][$this->statsNewsletterFields[$i]])) {
+					$statistics['stats_newsletters']['final_percent_' . $this->statsNewsletterFields[$i]] = $this->_doPercentage($statistics['stats_newsletters'][$this->statsNewsletterFields[$i]], $this->sendSize);
+				}
 			}
 
 			$statistics['stats_newsletters']['final_percent_bouncecount_total'] = $this->_doPercentage($statistics['stats_newsletters']['bouncecount_total'], $this->sendSize);
-			$statistics['stats_newsletters']['final_percent_linkclicks_unique'] = $this->_doPercentage($statistics['stats_newsletters']['linkclicks_unique'], $this->sendSize);
+			if(isset($statistics['stats_newsletters']['linkclicks_unique'])) {
+				$statistics['stats_newsletters']['final_percent_linkclicks_unique'] = $this->_doPercentage($statistics['stats_newsletters']['linkclicks_unique'], $this->sendSize);
+			}
 			$statistics['stats_newsletters']['final_total_recipient_count'] = $this->sendSize;
 			$this->campaignStats[$id] = $statistics;
 		}
@@ -865,7 +872,8 @@ class Splittest_Stats_API extends API
 		$members = array();
 
 		// loop through an array of campaigns and their associated 'stat_newsletters' data
-		while (list($id, $details) = each($stats)) {
+		foreach ($stats as $id=>$details) {
+					     
 			$valueStr = urlencode($details['campaign_name']) . ':';
 			$values = array();
 
@@ -878,14 +886,18 @@ class Splittest_Stats_API extends API
 				if (!in_array($this->statsColumnNameLabels[$statType], $xLabels)) {
 					$xLabels[] = $this->statsColumnNameLabels[$statType];
 				}
-				$values[] = $details['stats_newsletters'][$statType];
+				if(isset($details['stats_newsletters'][$statType])) {
+				  $values[] = $details['stats_newsletters'][$statType];
+				}
 			}
 			if ($pcValue === true) {
 				$pcLabel = $statType . '_percent';
 				if (!in_array($this->statsColumnNameLabels[$pcLabel], $xLabels)) {
 					$xLabels[] = $this->statsColumnNameLabels[$pcLabel];
 				}
-				$values[] = $details['stats_newsletters']['percent_' . $statType];
+				if(isset($details['stats_newsletters']['percent_' . $statType])) {
+					$values[] = $details['stats_newsletters']['percent_' . $statType];
+				}
 			}
 			$valueStr .= implode(':', $values);
 			$members[] = $valueStr;
@@ -912,12 +924,23 @@ class Splittest_Stats_API extends API
 	public function barChartSummaryDataURL($stats, $xLabels)
 	{
 		$urlStr = 'xLabels=' . $xLabels . '&data=';
-		while (list($id, $details) = each($stats) ) {
+		foreach ($stats as $id=>$details) {
+				 
 			$urlStr .= urlencode($details['campaign_name']) . ':';
-			$urlStr .= $details['stats_newsletters']['emailopens_unique'] . ':';
-			$urlStr .= $details['stats_newsletters']['linkclicks_unique'] . ':';
-			$urlStr .= $details['stats_newsletters']['bouncecount_total'] . ':';
-			$urlStr .= $details['stats_newsletters']['unsubscribecount'] . ',' ;
+			if(isset($details['stats_newsletters']['emailopens_unique'])) {
+				$urlStr .= $details['stats_newsletters']['emailopens_unique'] . ':';
+			}
+			
+			if(isset($details['stats_newsletters']['linkclicks_unique'])) {
+				$urlStr .= $details['stats_newsletters']['linkclicks_unique'] . ':';
+			}
+			if(isset($details['stats_newsletters']['bouncecount_total'])) {
+				$urlStr .= $details['stats_newsletters']['bouncecount_total'] . ':';
+			}
+			
+			if(isset($details['stats_newsletters']['unsubscribecount'])) {
+				$urlStr .= $details['stats_newsletters']['unsubscribecount'] . ',' ;
+			}
 		}
 		return substr($urlStr, 0, -1);
 	}
@@ -972,7 +995,8 @@ class Splittest_Stats_API extends API
 		$weightedHash = array();
 		$weightedAbsolutePercentageHash = array();
 
-		while (list($id, $data) = each($stats)) {
+		foreach ($stats as $id=>$data) {
+			
 			$stats_newsletters = $data['stats_newsletters'];
 
 			// these will be the sort fields used when listing the newsletters on each stats pane
@@ -1214,7 +1238,7 @@ class Splittest_Stats_API extends API
 	{
 		$ranked = array();
 		arsort($hash);
-		while (list($key, $val) = each($hash)) {
+		foreach ($hash as $key=>$val) {			 
 			$ranked[] = array($key => $val);
 		}
 		return $ranked;

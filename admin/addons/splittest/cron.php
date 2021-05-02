@@ -540,7 +540,7 @@ class Jobs_Cron_API_Splittest extends Splittest_Send_API
 			return false;
 		}
 
-		$this->NotifyOwner();
+		$this->NotifyOwner(false,false);
 
 		$this->SetupAllNewsletters();
 
@@ -708,7 +708,7 @@ class Jobs_Cron_API_Splittest extends Splittest_Send_API
 
 		$this->Email_API->SMTP_Logout();
 
-		$this->NotifyOwner($jobstatus);
+		$this->NotifyOwner($jobstatus,false);
 
 		return $finished;
 	}
@@ -762,7 +762,7 @@ class Jobs_Cron_API_Splittest extends Splittest_Send_API
 	 *
 	 * @return Mixed Returns the status from the parent NotifyOwner call.
 	 */
-	function NotifyOwner($jobstatus='s')
+	function NotifyOwner($jobstatus='s',$message=false)
 	{
 		$notify_subject = $this->splitcampaign_details['splitname'];
 
@@ -809,9 +809,8 @@ class Jobs_Cron_API_Splittest extends Splittest_Send_API
 			'message' => $message
 		);
 
-		$this->jobstatus = $jobstatus;
-
-		return parent::NotifyOwner();
+		$this->jobstatus = $jobstatus;       		 
+		return parent::NotifyOwner(false,false);
 	}
 
 	/**

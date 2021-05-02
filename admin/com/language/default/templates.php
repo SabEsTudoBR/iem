@@ -1,4 +1,5 @@
 <?php
+define('LNG_interspire_templates_help_link', '<a href="https://www.interspire.com/email-templates"   target="_blank">Read More</a>');
 
 define('LNG_CreateTemplateCancelButton', 'Are you sure you want to cancel creating a new template?');
 define('LNG_CreateTemplateHeading', 'New Template Details');
@@ -119,7 +120,7 @@ define('LNG_CreateTemplateButton', 'Create a Custom Template...');
 /**
  * 5.0.0
  */
-define('LNG_Help_TemplatesManage', 'Custom email templates can be used as the basis of any new email campaigns you create. Learn more about them by reading <a href="" onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'838\'); return false;">this article</a>.');
+define('LNG_Help_TemplatesManage', 'Custom email templates can be used as the basis of any new email campaigns you create.'.LNG_interspire_templates_help_link);
 define('LNG_CreateTemplateIntro', LNG_Help_TemplatesManage);
 define('LNG_CreateTemplateIntro_Step2', LNG_Help_TemplatesManage);
 define('LNG_TemplatesManageBuiltIn', 'Built-In Email Templates');

@@ -29,7 +29,7 @@ class Design_Rules_Check_API extends API
 	 * @param Mixed $designtype Design type
 	 * @return Void Does not return anything
 	 */
-	function Design_Rules_Check_API($designtype=false)
+	function __construct($designtype=false)
 	{
 		if ($designtype) {
 			$this->Load($designtype);

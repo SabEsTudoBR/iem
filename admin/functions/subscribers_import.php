@@ -445,7 +445,7 @@ class Subscribers_Import extends Subscribers
 	{
 		$importresults = IEM::sessionGet('ImportResults');
 		$importinfo = IEM::sessionGet('ImportInfo');
-
+		$listid ='';		 
 		// TODO: CHECK For admin Notify email messages.
 		if (isset($importinfo['List'])) {
 			$listid = $importinfo['List'];
@@ -931,7 +931,7 @@ class Subscribers_Import extends Subscribers
 		$confirmed = $subscriberconfirmed;
 
 		$sd_m = $sd_d = $sd_y = 0;
-
+		$c_y =  $c_m  = $c_d =0;
 		$customfields = array();
 
 		$found_subscribedate = false;
@@ -1020,7 +1020,7 @@ class Subscribers_Import extends Subscribers
 		$valid_subscribedate = false;
 		$subscribedate = 0;
 
-		if ($found_subscribedate && $sd_y >= 0 && $sd_m >= 0 && $sd_d >= 0) {
+		if ($found_subscribedate &&  is_numeric($sd_y) && $sd_y >= 0 && $sd_m >= 0 &&  is_numeric($sd_m) && $sd_d >= 0 &&  is_numeric($sd_d)) {
 			$valid_subscribedate = checkdate($sd_m, $sd_d, $sd_y);
 
 			if ($valid_subscribedate) {

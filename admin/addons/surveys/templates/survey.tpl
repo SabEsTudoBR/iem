@@ -66,7 +66,7 @@ jQuery(function($) {
 	});
 
 	// language pack the error messages
-	$('#survey-{$survey.id}').form().setErrorMessage('required', "{$lang.Addon_Surveys_ErrorRequired}");
+	$('#survey-{$survey.id}').form().setErrorMessage('required', "{LNG_Addon_Surveys_ErrorRequired}");
 
 	// "Other" fields must not be empty if their corresponding
 	// radio button is checked
@@ -76,7 +76,7 @@ jQuery(function($) {
 			return false;
 		}
 		return true;
-	}, "{$lang.Addon_Surveys_ErrorRequiredOther}");
+	}, "{LNG_Addon_Surveys_ErrorRequiredOther}");
 
 	// disabling button on submit
 	//alert( $('.required:first').form().getErrorMessage() );

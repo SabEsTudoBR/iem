@@ -58,8 +58,8 @@ class Stats extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Stats()
-	{
+	function __construct()
+	{ 
 		$this->LoadLanguageFile();
 	}
 
@@ -132,6 +132,7 @@ class Stats extends SendStudio_Functions
 				switch ($subaction) {
 					case 'step2':
 					case 'viewsummary':
+					
 						$listid = 0;
 						if (isset($_GET['list'])) {
 							$listid = (int)$_GET['list'];
@@ -219,7 +220,7 @@ class Stats extends SendStudio_Functions
 
 									if (!$statid) {
 										$cant_delete++;
-										continue;
+										break;
 									}
 
 									$delete = $stats_api->HideStats($statid, 'autoresponder', $user->Get('userid'));
@@ -483,6 +484,7 @@ class Stats extends SendStudio_Functions
 					break; // doselect
 
 					case 'viewsummary':
+					
 						$statid = IEM::requestGetGET('id', 0, 'intval');
 
 						if (!$this->CanAccessStats($statid, 'n')) {
@@ -756,7 +758,7 @@ class Stats extends SendStudio_Functions
 		// Newsletter Summary Chart
 
 		$GLOBALS['SummaryChart'] = AmCharts::InsertPieChart($data_url, GetLang("NewsletterSummaryChart"));
-
+ 
 		// finally put it all together.
 		$page = $this->ParseTemplate('Stats_Newsletters_Step3', true, false);
 

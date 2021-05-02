@@ -55,7 +55,7 @@ class Image_Graph_Layout extends Image_Graph_Element
      * Image_Graph_Layout [Constructor]
      * @access private
      */
-    function &_image_GraPHPite_Layout()
+    function &__construct()
     {
         parent::__construct();
         $this->_padding = 2;

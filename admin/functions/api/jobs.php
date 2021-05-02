@@ -134,7 +134,7 @@ class Jobs_API extends API
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function Jobs_API($mark_cron_as_run=false)
+	function __construct($mark_cron_as_run=false)
 	{
 		$this->GetDb();
 		if ($mark_cron_as_run) {
@@ -160,7 +160,7 @@ class Jobs_API extends API
 	*
 	* @return Mixed Returns false if there is no owner or it's an invalid job type. It also returns false if the query can't be run. Otherwise, it returns the new job id.
 	*/
-	function Create($jobtype=null, $when=0, $ownerid=0, $details=array(), $fktype='newsletter', $fkid=0, $lists=array(), $approved=0)
+	function Create($jobtype=null, $when=0, $ownerid=0, $jobdetails=array(), $fktype='newsletter', $fkid=0, $lists=array(), $approved=0)
 	{
 		$ownerid = (int)$ownerid;
 		if ($ownerid <= 0) {
@@ -173,10 +173,10 @@ class Jobs_API extends API
 			$lists = array($lists);
 		}
 
-		if (!is_array($details)) {
-			$details = array($details);
+		if (!is_array($jobdetails)) {
+			$details = array($jobdetails);
 		}
-		$details = serialize($details);
+		$details = serialize($jobdetails);
 
 		$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "jobs (jobtype, jobstatus, jobtime, jobdetails, fktype, fkid, ownerid, approved) VALUES ('" . $this->Db->Quote($jobtype) . "', 'w', " . (int)$when . ", '" . $this->Db->Quote($details) . "', '" . $this->Db->Quote($fktype) . "', " . $fkid . ", " . $ownerid . ", '" . $this->Db->Quote((int)$approved) . "')";
 
@@ -184,7 +184,6 @@ class Jobs_API extends API
 		if (!$result) {
 			return false;
 		}
-
 		$jobid = $this->Db->LastId(SENDSTUDIO_TABLEPREFIX . 'jobs_sequence');
 
 		/**
@@ -199,13 +198,14 @@ class Jobs_API extends API
 		 *
 		 * which causes the problem.
 		*/
-		$lists = array_unique($lists);
 
-		foreach ($lists as $p => $listid) {
-			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "jobs_lists(jobid, listid) VALUES('" . $jobid . "', '" . (int)$listid . "')";
-			$this->Db->Query($query);
-		}
-		return $jobid;
+			$lists = array_unique($lists);
+			foreach ($lists as $p => $listid) {
+				$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "jobs_lists(jobid, listid) VALUES('" . $jobid . "', '" . (int)$listid . "')";
+				$this->Db->Query($query);
+			}
+			return $jobid;
+		 
 	}
 
 	/**
@@ -657,7 +657,7 @@ class Jobs_API extends API
 	*
 	* @return Mixed Returns false if there is no next jobtype (if not specified). Returns false if the jobtype is invalid, or if the subjob type can't be set up. Otherwise, returns whatever the subclass object sets up and returns (most likely boolean).
 	*/
-	function FetchJob($jobtype=null)
+	function FetchJob($jobtype='')
 	{
 		if (is_null($jobtype)) {
 			$jobtype = $this->GetNextJobType();

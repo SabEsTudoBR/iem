@@ -38,7 +38,7 @@ class RemoteUpload extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function RemoteUpload()
+	function __construct()
 	{
 		$this->LoadLanguageFile('Newsletters');
 		$this->LoadLanguageFile('ImageManager');

@@ -76,9 +76,22 @@ class Image_Graph_Marker_Array extends Image_Graph_Marker
      */
     function _drawMarker($x, $y, $values = false)
     {
-        if (!(list ($ID, $marker) = each($this->_markers))) {
-            reset($this->_markers);
-            list ($ID, $marker) = each($this->_markers);
+        
+	    $list_arry = [];
+		$list_two_arry = [];
+		foreach ($this->_markers as $id=>$marker) {
+			$list_arry[$id] = $marker;			
+		}
+		list ($ID, $marker) = $list_arry();
+		//if (!(list ($ID, $marker) = each($this->_markers))) {
+		if (!(list ($ID, $marker))) {	
+            reset($this->_markers);		 
+			foreach ($this->_markers as $id=>$marker) {
+				$list_two_arry[$id] = $marker;			
+			}
+            //list ($ID, $marker) = each($this->_markers);
+			list ($ID, $marker)= $list_two_arry ;
+			 
         }
         $marker = & $this->_markers[$ID];
 

@@ -1169,26 +1169,32 @@ function getCookie(name) {
 }
 
 function ChangePaging(page, formAction, displayName, confMessage) {
+  
 	paging = document.getElementById('PerPageDisplay' + displayName);
 	pagingId = paging.selectedIndex;
+	
 	pagingAmount = paging[pagingId].value;
 	if (pagingAmount == 'all') {
 		if (!confirm(confMessage)) {
 			return false;
 		}
 	}
+	 
 	document.location = 'index.php?Page=' + page + '&' + formAction + '&PerPageDisplay' + displayName + '=' + pagingAmount;
 }
 
 function toggleAllCheckboxes(check)
-{
+{   
 	formObj = check.form;
 	for (var i=0;i < formObj.length; i++) {
 		fldObj = formObj.elements[i];
-		if (fldObj.type == 'checkbox') {
-			fldObj.checked = check.checked;
-		}
-	}
+         if (fldObj.type == 'checkbox') {
+			 if(fldObj.id !='autoresponderdebug'){
+			  fldObj.checked = check.checked;
+			 }
+		 }
+		 
+	} 
 }
 
 function ImportWebsite(button, description, importtype, newButtonDesc, errorMsg)
@@ -2209,17 +2215,8 @@ function LaunchHelp(show, articleid, category) {
 		alert('This link has been disabled by the Administrator.');
 		return;
 	}
-	var id = 'NaN';
-	category = category || 15; // 15 is the ViewKB category for EM.
-	if (!Application.Util.isDefined(Application_Title)) {
-		var toks = Application.Modules.Language.Get(['whitelabel.php'], ['ApplicationTitle'], false);
-		var Application_Title = toks['ApplicationTitle'];
-	}
-	if (Application.Util.isDefined(articleid)) {
-		id = parseInt(articleid);
-	}
-	var help_win = window.open(("http://www.viewkb.com/inlinehelp.php?searchOverride=" + category + "&tplHeader=" + escape(Application_Title) + "&helpid="+ id), "help", "width=650, height=550, left="+(screen.availWidth-700)+", top=100");
-}
+	 return false;
+	 }
 
 /* Tab menus */
 $(document).ready(function() {

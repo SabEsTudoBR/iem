@@ -34,10 +34,10 @@ class Jobs_Send_API extends Send_API {
      * @see Newsletter_API
      * @see Jobs_API::Jobs_API
      */
-    function Jobs_Send_API() {
+    function __construct() {
         $ssf = new Sendstudio_Functions();
         $ssf->LoadLanguageFile('jobs_send');
-        $this->Send_API();
+		parent::__construct();
     }
 
     /**
@@ -47,7 +47,7 @@ class Jobs_Send_API extends Send_API {
      *
      * @return Int|False Returns false if there is no next job. Otherwise returns the jobid to run.
      */
-    function FetchJob() {
+    function FetchJob($jobtype='') {
         $timenow = $this->GetServerTime();
         $half_hour_ago = $timenow - 1800;
 

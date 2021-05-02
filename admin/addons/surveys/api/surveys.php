@@ -626,24 +626,27 @@ class Addons_survey_api extends API
 	{
 		// get a list of responses
 		$prefix = $this->Db->TablePrefix;
-
+		if ($index == -1){
+			$index = 0;
+		}
 		$query = "
 				SELECT *
-				FROM  {$prefix}surveys_response
+				FROM    {$prefix}surveys_response
 				WHERE
 					surveys_id = {$surveyId}
 				ORDER BY
 					datetime
 				LIMIT {$index}, 1
-			;";
-
+			";
+ 
 		$result = $this->Db->Query($query);
-
 		$return = array();
-		while ($row = $this->Db->Fetch($result)) {
-			$return[] = $row;
+        if (!empty($result)){			
+			while ($row = $this->Db->Fetch($result)) {
+				$return[] = $row;
+				 
+			}
 		}
-
 		// get a list of responses
 		return $return;
 	}
@@ -658,6 +661,6 @@ class Addons_survey_api extends API
 	 */
 	public function getResponseByNumber($number = 1, $surveyId)
 	{
-		return $this->getResponseByIndex($number - 1, $surveyId);
+		 return $this->getResponseByIndex($number - 1, $surveyId);
 	}
 }

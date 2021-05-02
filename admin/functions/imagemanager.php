@@ -29,7 +29,7 @@ class ImageManager extends SendStudio_Functions
 	*
 	* @return Void
 	*/
-	function ImageManager() {
+	function __construct() {
 		$this->LoadLanguageFile('ImageManager');
 	}
 
@@ -92,12 +92,14 @@ class ImageManager extends SendStudio_Functions
 		$settingApi = $this->GetApi('settings');
 		$GLOBALS['adminUrl'] = SENDSTUDIO_APPLICATION_URL.'/admin';
 		$GLOBALS['imgLocation'] = $api->GetImageDir();
-		$params = '';
+		$parameters = [];
 		foreach ($_GET as $k=>$v) {
-			$params[] = $k.'='.$v;
+			$parameters[] = $k.'='.$v;
 		}
-		if ($params) {
-			$params = '?'.implode('&', $params);
+
+		$params = ''; 
+		if (!empty($parameters)) {
+			$params= '?'.implode('&', $parameters);
 		}
 
 		$tpl = GetTemplateSystem();

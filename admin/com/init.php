@@ -23,6 +23,7 @@
  * @authors Yudi Tukiaty
  * @authors Micheline Nakhle
  * @authors John Tuck
+ * @authors Imran Khan
  */
 
 /**
@@ -79,7 +80,7 @@ function __iem_shutdown_function()
  *
  * @param Exception $e Exception that needs to be handled
  */
-function __iem_exception_handler(Exception $e)
+function __iem_exception_handler(Throwable $e)
 {
 	// Make sure IEM_PATH is defined
 	if (!defined('IEM_PATH')) {

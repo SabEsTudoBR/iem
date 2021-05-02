@@ -68,7 +68,7 @@ class Image_Graph_Logo extends Image_Graph_Element
      * Logo [Constructor]
      * @param string $filename The filename and path of the image to use for logo 
      */
-    function &Image_Graph_Logo($fileName, $alignment = IMAGE_GRAPH_ALIGN_TOP_RIGHT)
+    function &__construct($fileName, $alignment = IMAGE_GRAPH_ALIGN_TOP_RIGHT)
     {
         parent::__construct();
         if (file_exists($fileName)) {

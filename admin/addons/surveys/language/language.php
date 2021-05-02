@@ -53,6 +53,8 @@ define('LNG_Addon_surveys_Settings_ShowUri','http://');
 define('LNG_Addon_surveys_Settings_Email','admin@yourdomain.com');
 define('LNG_Addon_surveys_Settings_ErrorMessage','Oops... something went wrong when trying to save your survey responses. Take a look at the errors below and try again.');
 define('LNG_Addon_surveys_Settings_Submit','Submit Form');
+define('LNG_Addon_surveys_Settings_ErrorMessage_XSS','Oops... Some fields data  went wrong when trying to save your survey responses (html or php  or 
+js  etc tags not allowed.). Try again.');
 
 
 define('LNG_Addon_surveys_NoSurveys','No surveys have been created. Please click the "Create a Survey..." button to create one.');
@@ -220,7 +222,7 @@ define('LNG_Addon_Surveys_WidgetFileDefaultDescription', "Click here to enter so
 define('LNG_Addon_Surveys_WidgetFileOptionRequiresAnAnswer', "Requires an answer?");
 define('LNG_Addon_Surveys_WidgetFileOptionVisibleToEveryone', "Visible to everyone");
 define('LNG_Addon_Surveys_WidgetFileOptionVisibleToAdministrators', "Visible only to administrators");
-define('LNG_Addon_Surveys_WidgetFileOptionAllowAllFileTypes', "Allow all file types?");
+define('LNG_Addon_Surveys_WidgetFileOptionAllowAllFileTypes', "Allow all file types (except .php, .pl)?");
 define('LNG_Addon_Surveys_WidgetFileValueFile', "File will be uploaded here");
 define('LNG_Addon_Surveys_WidgetFileValueAllowedFileTypes', "doc, xls, pdf, gif, jpg");
 define('LNG_Addon_Surveys_WidgetFileTextBrowse', "Browse...");
@@ -228,7 +230,7 @@ define('LNG_Addon_Surveys_WidgetFileTextBrowse', "Browse...");
 define('LNG_Addon_Surveys_WidgetFileTooltipTitleVisibility', "Visibility");
 define('LNG_Addon_Surveys_WidgetFileTooltipDescriptionVisibility',"<p>Choose <em>Visible to Everyone</em> to display this field as part of the form on your website.</p><p>Choose <em>Visible to Admins Only</em> to allow only administrators to enter information in this field.</p>");
 define('LNG_Addon_Surveys_WidgetFileTooltipTitleAllowedFileTypes', "Allowed File Types");
-define('LNG_Addon_Surveys_WidgetFileTooltipDescriptionAllowedFileTypes', "<p>Only the file types entered here are allowed to be uploaded/sent.</p><p>File types are file extensions separated by a comma (i.e. pdf, txt, doc, docx).</p>");
+define('LNG_Addon_Surveys_WidgetFileTooltipDescriptionAllowedFileTypes', "<p>Allow all file types, except php and perl.</p><p>Only the file types entered here are allowed to be uploaded/sent.</p><p>File types are file extensions separated by a comma (i.e. pdf, txt, doc, docx).</p>");
 
 define('LNG_Addon_Surveys_WidgetRadioDefaultName', "Untitled List of Radio Buttons");
 define('LNG_Addon_Surveys_WidgetRadioDefaultDescription', "Click here to enter some optional help text");
@@ -377,7 +379,7 @@ define('LNG_Addon_Surveys_ErrorForm',  "An error has occured.");
 define('LNG_Addon_Surveys_ErrorRequired',  "This field is required.");
 define('LNG_Addon_Surveys_ErrorRequiredOther',  "Please type an answer in the text box next to the checked field.");
 define('LNG_Addon_Surveys_ErrorInvalidFileType',  "The file you uploaded needs to end in %s or %s.");
-
+define('LNG_Addon_Surveys_ErrorNotAllowedFileType',  "This file type is not allowed.");
 define('LNG_Addon_Surveys_saveSurveysMessageSuccess',  "The survey you created has been saved successfully. You can now link to it when creating an email campaign or autoresponder.");
 define('LNG_Addon_Surveys_saveFormMessageError',  "Your survey couldn't be saved because of the following problems:");
 

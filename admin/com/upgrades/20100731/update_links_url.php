@@ -38,7 +38,7 @@ class update_links_url extends Upgrade_API
                         }
 		}
 
-                $status = $this->Db->Query('ALTER TABLE  ' . SENDSTUDIO_TABLEPREFIX . 'links CHANGE  url url TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
+        $status = $this->Db->Query('ALTER TABLE  ' . SENDSTUDIO_TABLEPREFIX . 'links CHANGE  url url TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
 		if ($status === false) {
 			return false;
 		}

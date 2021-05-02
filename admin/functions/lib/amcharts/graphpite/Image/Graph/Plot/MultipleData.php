@@ -116,7 +116,7 @@ class Image_Graph_Plot_MultipleData extends Image_Graph_Plot
             $totals['TOTAL_Y'] = array();
             $keys = array_keys($this->_datasets);
             if (!$this->_xValueWidth) {
-                while (list ($ID, $key) = each($keys)) {
+                foreach ($keys as $ID=>$key) {							 
                     $dataset = & $this->_datasets[$key];
                     $dataset->_reset();
                     while ($point = $dataset->_next()) {
@@ -133,7 +133,7 @@ class Image_Graph_Plot_MultipleData extends Image_Graph_Plot
 
             reset($keys);
             $number = 0;
-            while (list ($ID, $key) = each($keys)) {
+           	foreach ($keys as $ID=>$key) {						 	
                 $dataset = & $this->_datasets[$key];
                 $totals['MINIMUM_X'] = $dataset->minimumX();
                 $totals['MAXIMUM_X'] = $dataset->maximumX();
@@ -185,7 +185,7 @@ class Image_Graph_Plot_MultipleData extends Image_Graph_Plot
             //reset($this->_datasets);
 
             $keys = array_keys($this->_datasets);
-            while (list ($ID, $key) = each($keys)) {
+            foreach ($keys as $ID=>$key) {						 
                 $max = max($max, $this->_datasets[$key]->maximumX() + 1);
             }
         }
@@ -214,7 +214,7 @@ class Image_Graph_Plot_MultipleData extends Image_Graph_Plot
             //reset($this->_datasets);
 
             $keys = array_keys($this->_datasets);
-            while (list ($ID, $key) = each($keys)) {
+            foreach ($keys as $ID=>$key) {						 
                 $dataset = & $this->_datasets[$key];
 
                 $dataset->_reset();
@@ -243,7 +243,7 @@ class Image_Graph_Plot_MultipleData extends Image_Graph_Plot
 
             $count = 0;
             $keys = array_keys($this->_datasets);
-            while (list ($ID, $key) = each($keys)) {
+            foreach ($keys as $ID=>$key) {						 
                 $count++;
                 if (is_a($this->_fillStyle, "Image_Graph_Fill")) {
                     $fillStyle = $this->_fillStyle->_getFillStyleAt($x -5, $y -5, 10, 10, $key);

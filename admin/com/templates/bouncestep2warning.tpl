@@ -42,7 +42,7 @@
 					<td>
 						<ul>
 							{foreach from=$problem_advice key=title item=article}
-								<li><a href="#" onclick="LaunchHelp({$article})">{$title}</a></li>
+								<li> {$title} </li>
 							{/foreach}
 						</ul>
 					</td>

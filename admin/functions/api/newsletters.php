@@ -137,8 +137,8 @@ class Newsletters_API extends API
 	*
 	* @return Boolean If no newsletterid is passed in, this will return true. Otherwise, it will call Load and return that status.
 	*/
-	function Newsletters_API($newsletterid=0)
-	{
+	function __construct($newsletterid=0)
+	{  
 		$this->GetDb();
 		if ($newsletterid > 0) {
 			return $this->Load($newsletterid);
@@ -203,25 +203,35 @@ class Newsletters_API extends API
 		/**
 		 * Make sure that spaces in links get url encoded, otherwise some email client will NOT be able to link to it
 		 */
-			if (!empty($this->htmlbody) && preg_match_all('/<a([^>]+)href\s*=\s*(\'|")(.*?)\2/is', $this->htmlbody, $matches)) {
+			 
+		if (!empty($this->htmlbody)) {
+			$htmlbody = base64_decode($this->htmlbody);
+			
+			if ($htmlbody && preg_match_all('/<a([^>]+)href\s*=\s*(\'|")(.*?)\2/is', $htmlbody, $matches)) {
 				foreach ($matches[0] as $index => $match) {
 					$link = str_replace(' ', '%20', $matches[3][$index]);
-					$this->htmlbody = str_replace($match, ('<a' . $matches[1][$index] . 'href=' . $matches[2][$index] . $link . $matches[2][$index]), $this->htmlbody);
+					$htmlbody = str_replace($match, ('<a' . $matches[1][$index] . 'href=' . $matches[2][$index] . $link . $matches[2][$index]), $htmlbody);
 				}
-			}
+			}	
+			
+		}
+
+
 		/**
 		 * -----
 		 */
-
+		 
 		$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "newsletters(name, format, active, archive, subject, textbody, htmlbody, createdate, ownerid) VALUES('" . $this->Db->Quote(str_replace(",", " ", $this->name)) . "', '" . $this->Db->Quote($this->format) . "', '" . (int)$this->active . "', '" . (int)$this->archive . "', '" . $this->Db->Quote($this->subject) . "', '" . $this->Db->Quote($this->textbody) . "', '" . $this->Db->Quote($this->htmlbody) . "', '" . $createdate . "', '" . $this->Db->Quote($this->ownerid) . "')";
-
-		$result = $this->Db->Query($query);
-		if ($result) {
+       
+	   $result = $this->Db->Query($query);
+		if ($result) {	
+ 	
 			$newsletterid = $this->Db->LastId(SENDSTUDIO_TABLEPREFIX . 'newsletters_sequence');
 			$this->newsletterid = $newsletterid;
 			return $newsletterid;
-		}
-		return false;
+		}		 
+		return false; 
+
 	}
 
 	/**
@@ -295,7 +305,7 @@ class Newsletters_API extends API
 			}
 
 			if ($tempContinue) {
-				module_Tracker::DeleteRecordForAllTrackerByNewsletterID($newsletterid);
+				 module_Tracker::DeleteRecordForAllTrackerByNewsletterID($newsletterid);
 			}
 		/**
 		 * -----

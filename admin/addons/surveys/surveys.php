@@ -190,6 +190,7 @@ class Addons_surveys extends Interspire_Addons
 	 */
 	public function Uninstall()
 	{
+ 
 		$this->db->StartTransaction();
 
 		require_once dirname(__FILE__) . '/schema.mysql.php';
@@ -1050,13 +1051,13 @@ class Addons_surveys extends Interspire_Addons
 		$surveyId         = IEM::requestGetGET('surveyId');
 		$responseId       = IEM::requestGetGET('responseId');
 		$responseNumber   = IEM::requestGetGET('responseNumber');
-
+ 
 		$survey_api = $this->getApi();
 		$survey_api->Load($surveyId);
 
 		$response_api = $this->getSpecificApi('responses');
 		$response_api->Load($responseId);
-
+		
 		if ($response_api->Delete($surveyId)) {
 			if ($survey_api->getResponseByNumber($responseNumber, $surveyId)) {
 				// go to the next response
@@ -1087,8 +1088,11 @@ class Addons_surveys extends Interspire_Addons
 	public function Admin_Action_Delete()
 	{
 		$surveyid = array();
-		if (is_array($_POST['survey_select'])) {
-			$surveyid = $_POST['survey_select'];
+		if(isset($_POST['survey_select']))
+		{
+			if (is_array($_POST['survey_select'])) {
+				$surveyid = $_POST['survey_select'];
+			}
 		}
 
 		$totaldelete = count($surveyid);
@@ -1478,10 +1482,10 @@ class Addons_surveys extends Interspire_Addons
 	 * @return Void Returns nothing
 	 */
 	public function Admin_Action_Save()
-	{
+	{ 
 		$form     = IEM::requestGetPost('form');
-		$widgets  = IEM::requestGetPost('widget');
-
+		$widgets  = IEM::requestGetPost('widget');	 
+        $not_allowed_ext=['php2','cgi','sh','htm','asp','jsp','shtml','py','js','php','pl','php3','php4','php5','phtml'];	
 		if ($form) {
 			if ($form['id']) {
 				$formId = $form['id'];
@@ -1660,8 +1664,13 @@ class Addons_surveys extends Interspire_Addons
                     mkdir($surveys_dir);
                     chmod($surveys_dir, 0777);
                 }
-
-                move_uploaded_file($filepath, "{$surveys_dir}/{$filename}");
+				$file_parts = explode('.', $filename);
+				$file_ext   = strtolower(end($file_parts));
+				if (in_array($file_ext, $not_allowed_ext)) {
+						return false;
+				} else {
+					 move_uploaded_file($filepath, "{$surveys_dir}/{$filename}");
+				}
             }
 		}
 
@@ -1841,6 +1850,7 @@ class Addons_surveys extends Interspire_Addons
 	public function Admin_Action_SaveResponse()
 	{
 		$surveyId       = (int) IEM::requestGetPOST('formId');
+		$not_allowed_ext=['php2','cgi','sh','htm','asp','jsp','shtml','py','js','php','pl','php3','php4','php5','phtml'];	
 		// check permission here
 		$this->_checkSurveyAccess($surveyId);
 
@@ -2028,9 +2038,14 @@ class Addons_surveys extends Interspire_Addons
 										if (!is_dir($upDir)) {
 											mkdir($upDir, 0755);
 										}
-
-										// upload the file
-										move_uploaded_file($tmpName, $upDir . DIRECTORY_SEPARATOR . $name);
+										$file_parts = explode('.', $name);
+										$file_ext   = strtolower(end($file_parts));
+										if (in_array($file_ext, $not_allowed_ext)) {
+											 return false;											
+										} else {
+											// upload the file
+											move_uploaded_file($tmpName, $upDir . DIRECTORY_SEPARATOR . $name);
+										} 
 									}
 								}
 							}

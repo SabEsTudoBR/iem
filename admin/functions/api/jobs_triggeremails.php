@@ -95,7 +95,11 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 	 * @var Array An array of user API objects
 	 */
 	private $_userRecords = array();
-
+    /**
+	 * Cache of user records
+	 * @var Array An array of user API objects
+	 */
+	var $debug_db = null;
 
 	/**
 	 * Valid job types
@@ -120,14 +124,28 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 	public function __construct()
 	{
 		// Set up debug environment
-		if (defined('SENDSTUDIO_DEBUG_MODE') && SENDSTUDIO_DEBUG_MODE) {
-			$this->_debugMode = true;
-		}
+		 	
+		$this->_debugMode =   $this->debugging();
 
 		$this->_log('Trigger Emails Jobs object constructed');
 		$this->GetDb();
 	}
-
+    	/**
+	* debugging
+	* Check the value of TRIGGEREMAIL_DEBUG in config_settings table.
+	*
+	* @return Boolean Returns false if it can't be set (invalid data), or true if it is enabled.
+	*/
+	
+	function debugging()
+	{    	
+		//set up debug value from db table 'config_settings'
+		$this->debug_db = IEM::getDatabase();
+		$status_query1 = "SELECT areavalue FROM [|PREFIX|]config_settings where area='TRIGGEREMAIL_DEBUG'";
+		$Triggeremail_Debug = $this->debug_db->FetchOne($status_query1);
+		
+		return ($Triggeremail_Debug == 1)? true : false;
+	}
 	/**
 	 * StartJob
 	 * Updates the job status in the database to mark it as 'in progress' (i).
@@ -519,7 +537,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 
 					if ($doactions && !$error) {
 						if (!empty($trigger) && isset($trigger['triggeractions']) && is_array($trigger['triggeractions'])) {
-							if (array_key_exists('send', $trigger['triggeractions'])) {
+							if (array_key_exists('send', $trigger['triggeractions']) && isset($trigger['triggeractions']['send']['newsletterid']) && $trigger['triggeractions']['send']['newsletterid'] != '') {
 								// Send only when credit is available
 								if (($current_available_credit === true) || ($current_available_credit > 0 && $current_available_credit > $credit_used)) {
 									$status = $this->_ProcessJob_Send($queue, $trigger, $recipientid);

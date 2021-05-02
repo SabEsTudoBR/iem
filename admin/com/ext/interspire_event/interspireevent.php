@@ -611,8 +611,10 @@ class InterspireEvent
 
 		$comparable = array('function' => $function, 'file' => $file);
 		reset($eventListener[$eventName][$priority]);
-		while (list($index, $each) = each($eventListener[$eventName][$priority])) {
-			if ($each == $comparable) {
+		
+		foreach ($eventListener[$eventName][$priority] as $index=>$each) {
+		 
+      	if ($each == $comparable) {
 				unset($eventListener[$eventName][$priority][$index]);
 
 				if (count($eventListener[$eventName][$priority]) == 0) {
@@ -689,9 +691,11 @@ class InterspireEvent
 		}
 
 		$comparable = array('function' => $function, 'file' => $file);
-		reset(self::$_listeners[$eventName][$priority]);
-		while (list($index, $each) = each(self::$_listeners[$eventName][$priority])) {
-			if ($each == $comparable) {
+		reset(self::$_listeners[$eventName][$priority]);	 
+		
+		foreach (self::$_listeners[$eventName][$priority] as $index=>$each) {
+		
+		if ($each == $comparable) {
 				return true;
 			}
 		}

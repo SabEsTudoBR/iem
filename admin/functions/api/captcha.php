@@ -107,7 +107,7 @@ class Captcha_API extends API
 	*
 	* Sets variables needed by the class
 	*/
-	function Captcha_API($inside_sendstudio=false)
+	function __construct($inside_sendstudio=false)
 	{
 		// Detect if the server has GD installed or not
 		// Set variables for later use

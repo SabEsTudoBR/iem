@@ -39,7 +39,7 @@ class Folders extends SendStudio_Functions
 	 *
 	 * @return Void Doesn't return anything.
 	 */
-	public function PrintHeader()
+	public function PrintHeader($PopupWindow=false,$LoadLanguageFile=false,$PrintHeader=false)
 	{
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 		header("Cache-Control: no-store, no-cache, must-revalidate");

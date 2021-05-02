@@ -70,7 +70,7 @@ class Image_Graph_Text extends Image_Graph_Element
      * @param string $text The text to display
      * @param Font $font The font to use in printing
      */
-    function &Image_Graph_Text($x, $y, $text, & $font)
+    function &__construct($x, $y, $text, & $font)
     {
         parent::__construct();
         $this->_alignment = IMAGE_GRAPH_ALIGN_LEFT + IMAGE_GRAPH_ALIGN_TOP;

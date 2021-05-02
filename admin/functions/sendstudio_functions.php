@@ -27,7 +27,7 @@ if (!defined('SENDSTUDIO_BASE_DIRECTORY')) {
 * @package SendStudio
 * @subpackage SendStudio_Functions
 */
-class SendStudio_Functions
+class SendStudio_Functions  
 {
 
 	/**
@@ -223,7 +223,7 @@ class SendStudio_Functions
     * @see TruncateName
     */
 	public $_MaxNameLength = 45;
-
+     
 	/**
 	* Process
 	* Base process function prints the header, prints the page and the footer.
@@ -235,7 +235,7 @@ class SendStudio_Functions
 	* @return Void Doesn't return anything. The base class prints out the header menu, prints out 'this' template and the footer. This should be overridden by the children objects.
 	*/
 	function Process()
-	{
+	{ 
 		$this->PrintHeader();
 		$template = strtolower(get_class($this));
 		$this->ParseTemplate($template);
@@ -257,8 +257,8 @@ class SendStudio_Functions
 	*
 	* @return True|False|Object Returns an object if it can find the API, TRUE if instanciate is specified as false, otherwise returns false.
 	*/
-	function GetApi($api=false, $instantiate = true)
-	{
+	 public function GetApi($api=false, $instantiate = true)
+	{   
 		if (!$api) {
 			$api = get_class($this);
 		}
@@ -273,8 +273,7 @@ class SendStudio_Functions
 			return false;
 		}
 
-		$api .= '_API';
-
+		$api .= '_API';   
 		if (!class_exists($api, false)) {
 			require_once($api_file);
 		}
@@ -570,7 +569,7 @@ class SendStudio_Functions
 				$textlinks .= '<a href="index.php?Page=Settings" class="MenuText" title="' . GetLang('Menu_Settings_Description') . '">' . GetLang('Settings') . '</a>|';
 			}
 			$textlinks .= '<a href="index.php?Page=Logout" class="MenuText" title="' . GetLang('Menu_Logout_Description') . '">' . GetLang('Logout') . '</a>|';
-			$textlinks .= '<a href="JavaScript:LaunchHelp(\''.IEM::enableInfoTipsGet().'\');" class="MenuText" title="' . GetLang('Menu_Help_Description') . '">' . GetLang('ShowHelp') . '</a>';
+			$textlinks .= GetLang('ShowHelp') ;
 			return $textlinks;
 		}
 
@@ -762,13 +761,6 @@ class SendStudio_Functions
 			)
 		);
 
-		$links['help'] = array (
-			array (
-				'text' => GetLang('ShowHelp'),
-				'link' => 'JavaScript:LaunchHelp(\''.IEM::enableInfoTipsGet().'\');',
-				'description' => GetLang('Menu_Help_Description')
-			)
-		);
 
 		/**
 		 * Trigger event
@@ -1480,7 +1472,7 @@ class SendStudio_Functions
 	* @return Void Doesn't return anything. Places the paging in global variables GLOBALS['Paging'] and GLOBALS['PagingBottom']
 	*/
 	function SetupPaging($numrecords=0, $currentpage=1, $perpage=20)
-	{
+	{  
 		/**
 		 * Work out which page we are now on
 		 */
@@ -2104,12 +2096,13 @@ class SendStudio_Functions
 	* @return String Returns the editor and it's content.
 	*/
 	function GetHTMLEditor($htmlContent = '', $id = 0, $elementId = 'myDevEditControl', $mode = 'exact', $height = '400', $width = '95%', $allowDCT = true, $allowSurveys = true)
-	{
+	{ 
 		$user        = IEM::userGetCurrent();
 		$elementId   = trim($elementId) . '_html';
+	
 		$htmlContent = htmlentities($htmlContent, ENT_QUOTES,SENDSTUDIO_CHARSET);
 
-		if ((int)$user->usewysiwyg == 0) {
+		if ((int)$user->usewysiwyg == 0) { 
 			$GLOBALS['HTMLContent'] = $htmlContent;
 			$GLOBALS['Name']        = $elementId;
 			return $this->ParseTemplate('editor_html_no_wysiwyg', true, false);
@@ -2374,25 +2367,25 @@ class SendStudio_Functions
 							case UPLOAD_ERR_FORM_SIZE:
 								$errors[] = $name . ' (' . sprintf(GetLang('FileTooBig_Server'), ini_get('upload_max_filesize')) . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_PARTIAL:
 								$errors[] = $name . ' (' . GetLang('FilePartiallyUploaded') . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_CANT_WRITE:
 								$errors[] = $name . ' (' . sprintf(GetLang('FileTooBig_NoSpace'), $this->EasySize($size)) . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_NO_TMP_DIR:
 								$errors[] = $name . ' (' . GetLang('FileUploadProblem_NoTmpDir') . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 
 							case UPLOAD_ERR_EXTENSION:
@@ -2404,7 +2397,7 @@ class SendStudio_Functions
 
 								$errors[] = $name . ' (' . sprintf(GetLang('FileExtensionNotValid'), $extension) . ')';
 								$result = false;
-								continue;
+								break;
 							break;
 						}
 					}

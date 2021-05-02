@@ -59,7 +59,7 @@ class Jobs_Bounce_API extends Bounce_API
 	*
 	* @return Mixed Returns false if there is no next job. Otherwise sets up jobstatus, jobdetails and jobowner for easy user and returns the job id.
 	*/
-	function FetchJob()
+	function FetchJob($bounce='')
 	{
 		$query = "SELECT * FROM " . SENDSTUDIO_TABLEPREFIX . "jobs WHERE jobtype='bounce' AND jobstatus ='w' AND jobtime < " . $this->GetServerTime() . " ORDER BY jobtime ASC LIMIT 1";
 		$result = $this->Db->Query($query);

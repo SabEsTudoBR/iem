@@ -109,18 +109,7 @@ class AuthenticationSystem
 			return false;
 		}
 
-		// ----- Make sure that "trial user" cannot login once their trial days is up
-			if ($record['trialuser']) {
-				$userobject = GetUser($record['userid']);
-				if (!$userobject) {
-					return false;
-				}
-
-				$trialinfo = $userobject->GetTrialInformation();
-				if ($trialinfo['days_left'] <= 0) {
-					return -2;
-				}
-			}
+		 
 		// -----
 
 		return $record;

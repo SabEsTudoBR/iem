@@ -278,7 +278,7 @@ class Addons_splittest_Send extends Addons_splittest
 		 * Re-set these variables.
 		 * They may be coming from the session if we are being redirected back to step 2 from another step.
 		 */
-		$send_type = $send_details['sendingto']['sendtype'];
+	    $send_type = $send_details['sendingto']['sendtype'];
 		$sending_to = $send_details['sendingto']['sendids'];
 
 		/**
@@ -306,7 +306,7 @@ class Addons_splittest_Send extends Addons_splittest
 
 				foreach ($user_lists as $user_list_id => $user_list_details) {
 					if (!in_array($user_list_id, $sending_to)) {
-						continue;
+						break;
 					}
 					$send_size += $user_list_details['subscribecount'];
 				}

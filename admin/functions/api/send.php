@@ -248,7 +248,7 @@ class Send_API extends Jobs_API
 	*
 	* @return Void Just sets up the required classes, doesn't return anything.
 	*/
-	function Send_API()
+	function __construct()
 	{
 		if (is_null($this->Email_API)) {
 			if (!class_exists('ss_email_api', false)) {
@@ -1033,7 +1033,7 @@ class Send_API extends Jobs_API
 	*
 	* @return Void Doesn't return anything.
 	*/
-	function NotifyOwner()
+	function NotifyOwner($subject='', $message='')
 	{
 		if (empty($this->jobdetails)) {
 			return;

@@ -107,7 +107,7 @@ class Segment_API extends API
 	 * COSNTRUCTOR
 	 * @return Object Return this class
 	 */
-	function Segment_API()
+	function __construct()
 	{
 		$this->GetDb();
 	}
@@ -593,7 +593,7 @@ class Segment_API extends API
 		if ($activeOnly) {
 			$query .= ' AND (subscribers.unsubscribed=0 AND subscribers.bounced=0)';
 		}
-
+   
 		return $query;
 	}
 
@@ -973,6 +973,7 @@ class Segment_API extends API
 
 		$subscriberAPI = new Subscribers_API();
 		$status = $subscriberAPI->GenerateQueryFromSegmentRules($this->searchinfo['Lists'], $this->searchinfo['Rules']);
+		 
 		if ($status === false) {
 			trigger_error('"Rules" cannot be processed', E_USER_WARNING);
 			return false;

@@ -57,8 +57,11 @@ function serverStats_Send($installtype=0, $prev_version='', $current_version='',
 	# check php info
 	$info['php'] = phpversion();
 
-	#check the mysql version
-	$info['mysql'] = $phpinfo['mysql']['Client API version'];
+	#check the mysqli version
+	$info['mysql'] = 0;
+	if (isset($phpinfo['mysqli'])) {
+		$info['mysql'] = $phpinfo['mysqli']['Client API library version'];
+	}
 
 	# check the postgresql version
 	$info['pgsql'] = 0;

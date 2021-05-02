@@ -343,7 +343,8 @@ class Image_Graph_Common
             reset($this->_elements);
 
             $keys = array_keys($this->_elements);
-            while (list ($ID, $key) = each($keys)) {
+            foreach ($keys as $ID=>$key) {
+							 
                 $this->_elements[$key]->_updateCoords();
             }
         }
@@ -375,7 +376,8 @@ class Image_Graph_Common
             reset($this->_elements);
 
             $keys = array_keys($this->_elements);
-            while (list ($ID, $key) = each($keys)) {
+            foreach ($keys as $ID=>$key) {
+							 
                 if ($this->_identify)
                     $this->_elements[$key]->_identify($this->_identifyText);
                 $this->_elements[$key]->_done();

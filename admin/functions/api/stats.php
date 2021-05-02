@@ -89,7 +89,7 @@ class Stats_API extends API
 	*
 	* @return True Always returns true.
 	*/
-	function Stats_API()
+	function __construct()
 	{
 		$this->GetDb();
 		return true;
@@ -146,7 +146,9 @@ class Stats_API extends API
 
 				if ($tempContinue) {
 					foreach ($statids as $statid) {
-						module_Tracker::DeleteRecordsForAllTrackerByID($statid, $convertedStatType);
+						$module_Tracker = new module_Tracker;
+						$module_Tracker->DeleteRecordsForAllTrackerByID($statid, $convertedStatType);					
+						 
 					}
 				}
 			}
@@ -2805,6 +2807,32 @@ class Stats_API extends API
 		*/
 		$number_of_mins = 2;
 
+		$query = "SELECT  MAX(eventid) as id FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscriber_events WHERE  eventtype = 'Sent an Email Campaign' 
+		and  listid='" .(int)$open_details['listid']."'  And subscriberid='" .(int)$open_details['subscriberid']."'";
+ 
+		$result = $this->Db->Query($query);
+		$last_lastupdate = $this->Db->Fetch($result);
+		//get last record
+		$query = "SELECT  lastupdate FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscriber_events WHERE   eventid='" .$last_lastupdate['id']."'";
+ 
+		$result = $this->Db->Query($query);
+		$last_row =$this->Db->Fetch($result);	 
+		 //fetch and check last row zero or greater
+		 if(count($last_row) ==  0){
+			 	 error_log('Last row is zero'.PHP_EOL .$this->Db->Error(), 3, $this->LogFile);				  
+			   return false;
+			     exit;
+		 }else { 
+			 //calculate difference and then check it
+			 $time_difference = $this->GetServerTime() - $last_row['lastupdate'] ;  
+			  
+			//if time difference less than 20 seconds then write error log.
+			  if($time_difference < 20){
+					 error_log('Time difference  is less than 20 seconds'.PHP_EOL .$this->Db->Error(), 3, $this->LogFile);				  
+				     return false;
+					exit;
+				}     		
+		 }	
 		/**
 		* check how many times this subscriber has 'opened' the newsletter.
 		* if this returns anything, they have either displayed the open image
@@ -3168,7 +3196,7 @@ class Stats_API extends API
 	*
 	* @return Boolean Returns false on
 	*/
-	function DeleteUserStats($userid=0, $jobid=0)
+	function DeleteUserStats($userid = 0, $jobid = 0, $remove_amount = 0, $delete_all = false)
 	{
 		$userid = (int)$userid;
 		$jobid = (int)$jobid;

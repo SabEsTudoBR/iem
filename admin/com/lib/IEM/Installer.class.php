@@ -50,7 +50,7 @@ class IEM_Installer
 	 * Initialises the required settings.
 	 */
 	public function __construct()
-	{
+	{  
 		$this->_settings = [
             'DATABASE_TYPE'		=> null,
             'LICENSEKEY'		=> null,
@@ -98,6 +98,7 @@ class IEM_Installer
                 $this->_settings['DATABASE_NAME'],
                 [
                     'charset' => 'utf8',
+		    'collate' =>'utf8_general_ci',
                     'tablePrefix' => $this->_settings['TABLEPREFIX'],
                 ]
             );
@@ -187,7 +188,8 @@ class IEM_Installer
 		$settings['CREDIT_INCLUDE_AUTORESPONDERS'] = '1';
 		$settings['CREDIT_INCLUDE_TRIGGERS']       = '1';
 		$settings['CREDIT_WARNINGS']               = '0';
-
+		$settings['SECURITY_BAN_DURATION']         = '0';
+		$settings['SECURITY_WRONG_LOGIN_THRESHOLD_DURATION'] = '0';		
 		$settings_api->Set('Settings', $settings);
 
 		// set the table prefix constant for the API to work
@@ -597,9 +599,9 @@ class IEM_Installer
 
 			reset($lines);
 			$list = array();
-			while (list(, $line) = each($lines)) {
+			foreach ($lines as $id=>$line) {
+							 
 				$line = trim($line);
-
 				if (empty($line)) {
 					continue;
 				}

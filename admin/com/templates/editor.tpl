@@ -15,6 +15,12 @@ tinyMCE.init({
 	mode : "exact",
 	inline_styles : false,
 	editor_selector : "InterspireEditor",
+    formats: {
+            alignleft: {editor_selector: 'span,em,i,b,strong', block: 'span', styles: {display: 'block', 'text-align':'left'}},
+            aligncenter: {editor_selector: 'span,em,i,b,strong', block: 'span', styles: {display: 'block', 'text-align':'center'}},
+            alignright: {editor_selector: 'span,em,i,b,strong', block: 'span', styles: {display: 'block', 'text-align':'right'}},
+            alignfull: {editor_selector: 'span,em,i,b,strong', block: 'span', styles: {display: 'block', 'text-align':'full'}}
+       },
 	elements : "{$editor.ElementId}",
 	convert_fonts_to_spans : false,
 	force_hex_style_colors : false,

@@ -586,7 +586,7 @@ define('LNG_HLP_ErrorPageHTML_SendFriend', 'This is what your contacts will see 
 
 define('LNG_HLP_ErrorPageHTML_Subscribe', 'This is what your contacts will see if there was an error during the sign-up process. For example, they are already subscribed to your contact list.');
 
-define('LNG_Help_FormsManage', 'Website forms can be placed on your website to collect new contacts, let existing contacts modify their details, or even unsubscribe from your list. <a href="javascript:LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'809\');">Learn more here.</a>');
+define('LNG_Help_FormsManage', 'Website forms can be placed on your website to collect new contacts, let existing contacts modify their details, or even unsubscribe from your list.');
 
 define('LNG_CreateFormIntro', 'Fill out the form below to create a subscribe, unsubscribe, modify details or send to friend form which you can place on your website.');
 
@@ -880,7 +880,7 @@ define('LNG_HLP_FormType', 'Choose the type of form you will be creating. <br><b
 
 define('LNG_HLP_ConfirmPageHTML_Unsubscribe', 'This is the page your contacts will see once they fill in the website form and ask to be removed from your contact list(s).');
 
-define('LNG_WhatAreTheForms', '<a href="javascript:LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'809\');">What are the different types of Website Forms and how do I use them.</a>');
+define('LNG_WhatAreTheForms', '');
 
 // these few are needed for the 'heading' of the helptip(s).
 // they need to be UNDER the 'LNG_ConfirmPageHTML' and so on language variables.
@@ -909,7 +909,7 @@ define('LNG_HLP_UseCaptcha', 'Captcha (an acronym for \\\'Completely Automated P
 
 define('LNG_FormDoesntExist', 'The website form you are trying to edit does not exist. Please try again.');
 
-define('LNG_FormCustomFieldSelection', 'Choose the list(s) you want to add/remove contact from and which custom fields to include on your form. <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'840\'); return false;">Learn more here</a>.');
+define('LNG_FormCustomFieldSelection', 'Choose the list(s) you want to add/remove contact from and which custom fields to include on your form.');
 
 define('LNG_FormCustomFieldSortExplain', 'Drag and drop to rearrange the order in which the fields will appear on the form');
 

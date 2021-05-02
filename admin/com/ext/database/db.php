@@ -198,6 +198,10 @@ abstract class Db
 	 * The character set to use when connecting and querying the database server.
 	 */
 	public $charset = '';
+    	/**
+	 * The collate set to use when connecting and querying the database server.
+	 */
+	public $collate = '';
 
 	/**
 	 * @var string The timezone to set/use for the database server.

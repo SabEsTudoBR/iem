@@ -104,7 +104,7 @@ class module_Factory_API extends API
 	 * @throws E_USER_ERROR This class cannot be instantiated
 	 * @abstract
 	 */
-	function module_Factory_API()
+	function __construct()
 	{
 		trigger_error('This class cannot be instantiated', E_USER_ERROR);
 	}

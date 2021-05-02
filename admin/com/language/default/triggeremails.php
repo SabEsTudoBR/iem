@@ -1,12 +1,14 @@
 <?php
-
-define('LNG_TriggerEmails_Intro', 'A trigger activates an action when a specific event occurs, such as sending a birthday email on a contacts birthday or adding a contact to a new list when they click a link.');
+define('LNG_interspire_email_trigger_help_link', '<a href="https://www.interspire.com/autoresponders"   target="_blank">Read More</a>');
+define('LNG_interspire_email_stats_trigger_link', '<a href="https://www.interspire.com/statistics"   target="_blank">Read More</a>');
+  
+define('LNG_TriggerEmails_Intro', 'A trigger activates an action when a specific event occurs, such as sending a birthday email on a contacts birthday or adding a contact to a new list when they click a link.'.LNG_interspire_email_trigger_help_link);
 define('LNG_TriggerEmails_Create', 'Create a Trigger');
 define('LNG_TriggerEmails_Edit', 'Edit a Trigger');
 define('LNG_TriggerEmails_Cannot_Load_Record', 'Cannot get record');
 define('LNG_TriggerEmails_Cannot_Invalid_ID', 'Invalid trigger ID specified');
 define('LNG_TriggerEmails_Manage', 'Triggers');
-define('LNG_TriggerEmails_Manage_CRON_Alert', 'You need to setup scheduled sending to enable triggers. Please see <a href="#" onclick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'841\'); return false;">this article</a> to learn how, or contact your administrator.');
+define('LNG_TriggerEmails_Manage_CRON_Alert', 'You need to setup scheduled sending to enable triggers. Please contact your administrator.');
 define('LNG_TriggerEmails_Manage_NoLists_AskAdmin', '&nbsp;Please contact your system administrator to create one for you.');
 define('LNG_TriggerEmails_Manage_NoCampaigns_AskAdmin', '&nbsp;Please contact your system administrator to create one for you.');
 define('LNG_TriggerEmails_Manage_AddButton', 'Create a Trigger...');
@@ -151,7 +153,7 @@ define('LNG_TriggerEmails_Form_Save_Success', 'Trigger record saved successfully
 define('LNG_TriggerEmails_Form_Save_Failed', 'Unable to save trigger');
 define('LNG_TriggerEmails_Form_Save_Failed_Permission', 'Trigger is not saved... Permission denied to one or more of the resources that you have choosen.');
 define('LNG_TriggerEmails_Stats_Title', 'Trigger Statistics');
-define('LNG_TriggerEmails_Stats_Intro', 'See statistics for date and link based triggers that you have setup.');
+define('LNG_TriggerEmails_Stats_Intro', 'See statistics for date and link based triggers that you have setup.'.LNG_interspire_email_stats_trigger_link);
 define('LNG_TriggerEamils_Stats_Page_Intro', "The statistics for the '%s' trigger are shown below. Click on the tabs to see other reports.");
 define('LNG_TriggerEmails_Stats_NoTriggerEmailsDefined', 'To view statistics for triggers you first need to create one. Click the button below to do that now.');
 define('LNG_TriggerEmails_Stats_TriggerName', 'Trigger Name');

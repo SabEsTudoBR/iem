@@ -38,7 +38,7 @@ class Bounce extends SendStudio_Functions
 	 * @var Int
 	 */
 	var $EmailsPerRefresh = 20;
-
+ 
 	/**
 	 * Constructor
 	 * Loads the language file.
@@ -50,13 +50,14 @@ class Bounce extends SendStudio_Functions
 	 * @return Void Loads up the language file and adds 'send' as a valid popup window type.
 	 */
 	public function __construct()
-	{
+	{   
 		$this->PopupWindows[] = 'processdisplay';
 		$this->PopupWindows[] = 'process';
 		$this->PopupWindows[] = 'popupbouncetest';
 		$this->PopupWindows[] = 'testbouncesettings';
 		$this->PopupWindows[] = 'help';
 		$this->LoadLanguageFile();
+		
 	}
 
 	/**
@@ -182,14 +183,15 @@ class Bounce extends SendStudio_Functions
 	private function bounceStep2()
 	{
 		$user = IEM::getCurrentUser();
-		$list_api = $this->GetApi('Lists');
+		$obj = new SendStudio_Functions; 
+		$list_api = $obj->GetApi('Lists');
 		$bd = self::hold('TestBounceDetails');
-
-		$list = IEM::ifsetor(intval($_POST['list']), null);
-		if (!$list) {
+		if(isset($_POST['list'])){
+			$list = IEM::ifsetor(intval($_POST['list']), null);
+		}
+		if (!isset($list)) {
 			$list = self::hold('list');
 		}
-
 		// User should have edit permissions for the list since they can change its bounce settings.
 		// TODO: it should be for all lists that share this bounce server and username.
 		$access = $user->HasAccess('lists', 'edit', $list);
@@ -246,9 +248,12 @@ class Bounce extends SendStudio_Functions
 
 		// Generate this for debugging purposes so more error handling can be added later.
 		$error_report = '';
-		foreach ($errors as $error) {
-			$error_report .= $error . "\n\n";
+		if (!empty($errors)) {
+			foreach ($errors as $error) {
+				$error_report .= $error . "\n\n";
+			}
 		}
+		 
 		$real_error = self::getRealError($errors);
 
 		$tpl = GetTemplateSystem();
@@ -273,7 +278,8 @@ class Bounce extends SendStudio_Functions
 	private function bounceStep3()
 	{
 		$tpl = GetTemplateSystem();
-		$list_api = $this->GetApi('Lists');
+		$obj = new SendStudio_Functions;
+		$list_api = $obj->GetApi('Lists');
 		$bd = self::hold('TestBounceDetails');
 		$email_count = self::hold('EmailCount');
 		$list = self::hold('list');
@@ -326,7 +332,8 @@ class Bounce extends SendStudio_Functions
 	 */
 	private function bounceStep4()
 	{
-		$list_api = $this->GetApi('Lists');
+		$obj = new SendStudio_Functions;
+		$list_api = $obj->GetApi('Lists');
 		$list = self::hold('list');
 		$report = self::hold('BounceReport');
 		$bd = self::hold('BounceDetails');
@@ -377,8 +384,9 @@ class Bounce extends SendStudio_Functions
 	 */
 	private function bounceStep5()
 	{
-		$bounce_api = $this->GetApi('Bounce');
-		$list_api = $this->GetApi('Lists');
+		$obj = new SendStudio_Functions;
+		$bounce_api = $obj->GetApi('Bounce');
+		$list_api = $obj->GetApi('Lists');
 		$list = self::hold('list');
 		$bd = self::hold('BounceDetails');
 		$report = self::hold('BounceReport');
@@ -463,7 +471,8 @@ class Bounce extends SendStudio_Functions
 	 */
 	private function processBounceEmails()
 	{
-		$bounce_api = $this->GetApi('Bounce');
+		$obj = new SendStudio_Functions;
+		$bounce_api = $obj->GetApi('Bounce');
 		$bd = self::hold('BounceDetails');
 		$list = self::hold('list');
 		$email_count = self::hold('EmailCount');
@@ -638,7 +647,7 @@ class Bounce extends SendStudio_Functions
 	 * @return void Does not return anything.
 	 */
 	private function popupBounceTest($in_place = false)
-	{
+	{   
 		$bounce_details = array (
 			'server' => $_GET['bounce_server'],
 			'username' => $_GET['bounce_username'],
@@ -677,8 +686,9 @@ class Bounce extends SendStudio_Functions
 	 * @return array A Boolean value indiciating success or failure, and a second element containing either the number of emails in the inbox (on success) or the error message (on failure).
 	 */
 	private static function testCombination($bd, $extra_settings)
-	{
-		$bounce_api = self::GetApi('Bounce');
+	{  
+		$obj = new SendStudio_Functions; 
+		$bounce_api = $obj->GetApi('Bounce');		 
 		$bounce_api->Set('bounceserver', $bd['server']);
 		$bounce_api->Set('bounceuser', $bd['username']);
 		$bounce_api->Set('bouncepassword', base64_encode($bd['password']));
@@ -729,13 +739,14 @@ class Bounce extends SendStudio_Functions
 			$GLOBALS['Error'] = "<strong>" . $error['name'] . "</strong>";
 			$GLOBALS['Error'] .= "<ul style=\"padding-left:2em;\">";
 			foreach ($error['advice'] as $title => $article) {
-				$GLOBALS['Error'] .= "<li><a href=\"javascript:LaunchHelp('".IEM::enableInfoTipsGet()."',{$article});\">{$title}</a></li>\n";
+				$GLOBALS['Error'] .= "<li>{$title}</li>\n";
 			}
 			$GLOBALS['Error'] .= "</ul>";
 			$msg = $tpl->ParseTemplate('ErrorMsg', true);
 		} elseif ($type == 'success') {
 			// Set the combo in the UI and disappear.
-			$msg = self::PrintSuccess('BounceLogin_Successful');
+			$ss_f = new SendStudio_Functions;
+			$msg = $ss_f->PrintSuccess('BounceLogin_Successful');
 		}
 		$msg = str_replace("\n", '\n', addslashes($msg));
 		echo "<script>
@@ -764,12 +775,11 @@ class Bounce extends SendStudio_Functions
 	 * @return void Does not return anything.
 	 */
 	private function testBounceSettings($in_place = false)
-	{
+	{    
 		$tpl = GetTemplateSystem();
-		$bd = self::hold('TestBounceDetails');
-
+		$bd = self::hold('TestBounceDetails');	
 		$upto_combo = IEM::ifsetor($bd['upto_combo'], 0);
-		$combinations = array($bd['extra_settings']);
+		$combinations = array($bd['extra_settings']);		 
 		// If extra settings aren't specified, we need to auto-detect.
 		if (!$bd['extra_settings']) {
 			$combinations = $this->generateConnectionCombinations();
@@ -799,8 +809,12 @@ class Bounce extends SendStudio_Functions
 		self::updateProgressBar($percent_processed);
 
 		// Attempt a login with one of the settings combinations.
-		list($success, $count_or_error) = self::testCombination($bd, $combinations[$upto_combo]);
-
+		if(isset($combinations[$upto_combo])) {
+		    list($success, $count_or_error) = self::testCombination($bd, $combinations[$upto_combo]);
+		}else {
+			list($success, $count_or_error) = self::testCombination($bd, null);
+		}	
+		
 		if ($success) {
 			// Store the email count for the next step.
 			self::hold('EmailCount', $count_or_error);
@@ -815,7 +829,11 @@ class Bounce extends SendStudio_Functions
 		}
 
 		// Combination failed - record error and try the next combination.
-		$error_message = $combinations[$upto_combo] . ': ' . $count_or_error;
+		if(isset($combinations[$upto_combo])) {
+			$error_message = $combinations[$upto_combo] . ': ' . $count_or_error;
+		}else {
+			$error_message = null;
+		}
 		$error_log[] = $error_message;
 		self::hold('ConnectionErrors', $error_log);
 
@@ -925,9 +943,9 @@ class Bounce extends SendStudio_Functions
 	 * @return boolean True for success, otherwise false.
 	 */
 	private function saveBounceDetails($lid, $details)
-	{
-		$list_api = $this->GetApi('Lists');
-
+	{  
+		$obj = new SendStudio_Functions; 
+		$list_api = $obj->GetApi('Lists');
 		$map = $this->getBounceServerMap();
 		$group = null;
 

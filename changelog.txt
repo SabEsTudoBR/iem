@@ -1,29 +1,176 @@
 # Interspire Email Marketer Changelog
 
-Version: 6.1.8
-Released: 11th October, 2017
 
-- Fixed STARTTLS bug
+Version: 6.2.2
+Released: 07 September, 2020
+- PHP 7.3 supported
+- Added 'Outlook 2016' Email Client Compatibility
+- Removed deprecated PHP methods causing notices/errors
+- Fixed Auto Open Statistics bug
+- Fixed XSS security hole in Survey Addon function
+- Fixed Autoresponder preview email campaign bug
+- Misc. minor fixes and code cleanup
+
+Files Changed:
+-------------
+	surveys_submit.php
+	admin/stats_chart.php
+	admin/com/lib/IEM.class.php
+	admin/functions/api/customfields.php
+	admin/functions/api/customfields_dropdown.php
+	admin/functions/api/ss_email.php
+	admin/functions/api/stats.php
+	admin/functions/api/upgrade.php
+	admin/functions/autoresponders.php
+	admin/functions/process.php
+	admin/functions/remote_stats.php
+	admin/functions/sendstudio_functions.php
+	admin/functions/stats.php
+	admin/functions/stats_chart.php
+	admin/functions/subscribers_export.php
+	admin/functions/subscribers_manage.php
+	admin/resources/email_templates/Business/Furniture (1 Column)/index.html
+	changelog.txt
+	upgrade.txt
+	version.txt
+
+
+Version: 6.2.1
+Released: 26th June, 2019
+- PHP 7.2 supported
+- Added 'Debugging' Addon (Email, Bounce, Autoresponder and Trigger)
+- Removed deprecated PHP methods causing notices/errors
+- Fixed Survey Addon remote code execution vulnerability
+- Fixed Trigger bug
+- Fixed bug in Email Campaign HTML Content - Editor tools alignments(Center, Right, Full) do not work.
+- Add and schedule email campaign to contact list via pure XML API
+- Misc. minor fixes and code cleanup
+
+Files Changed:
+-------------
+	surveys_submit.php
+	admin/addons/surveys/surveys.php
+	admin/addons/splittest/print_stats.php
+	admin/addons/splittest/splittest.php
+	admin/addons/splittest/splittest_stats.php
+	admin/addons/splittest/api/splittest_stats.php
+	admin/addons/surveys/language/language.php
+	admin/addons/surveys/templates/survey.tpl
+	admin/com/ext/database/db.php
+	admin/com/ext/database/mysql.php
+	admin/com/ext/interspire_email/email.php
+	admin/com/ext/interspire_event/interspireevent.php
+	admin/com/language/default/autoresponders.php
+	admin/com/language/default/bounce.php
+	admin/com/language/default/customfields.php
+	admin/com/language/default/forms.php
+	admin/com/language/default/infotips.php
+	admin/com/language/default/language.php
+	admin/com/language/default/lists.php
+	admin/com/language/default/newsletters.php
+	admin/com/language/default/segment.php
+	admin/com/language/default/send.php
+	admin/com/language/default/settings.php
+	admin/com/language/default/stats.php
+	admin/com/language/default/subscribers.php
+	admin/com/language/default/templates.php
+	admin/com/language/default/triggeremails.php
+	admin/com/language/default/users.php
+	admin/com/language/default/whitelabel.php
+	admin/com/lib/AuthenticationSystem.class.php
+	admin/com/lib/IEM.class.php
+	admin/com/lib/IEM/DBFACTORY.class.php
+	admin/com/lib/IEM/Installer.class.php
+	admin/com/templates/bounce_details.tpl
+	admin/com/templates/bounce_help.tpl
+	admin/com/templates/bouncestep2warning.tpl
+	admin/com/templates/customfields_manage.tpl
+	admin/com/templates/customfields_manage_empty.tpl
+	admin/com/templates/editor.tpl
+	admin/com/templates/infotips_readmore.tpl
+	admin/com/templates/settings.tpl
+	admin/com/templates/subscribers_import_step2.tpl
+	admin/com/templates/user_form.tpl
+	admin/functions/autoresponders.php
+	admin/functions/bounce.php
+	admin/functions/installer.php
+	admin/functions/sendstudio_functions.php
+	admin/functions/subscribers_import.php
+	admin/functions/upgradenx.php
+	admin/functions/api/bounce.php
+	admin/functions/api/customfields_date.php
+	admin/functions/api/jobs.php
+	admin/functions/api/jobs_autoresponders.php
+	admin/functions/api/jobs_triggeremails.php
+	admin/functions/api/newsletters.php
+	admin/functions/api/upgrade.php
+	admin/functions/api/user.php
+	admin/functions/lib/amcharts/graphpite.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph/Common.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph/Element.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph/Fill/Array.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph/Grid/Lines.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph/Marker/Array.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph/Plot/MultipleData.php
+	admin/functions/lib/amcharts/graphpite/Image/Graph/Plot/Bar/Multiple.php
+	admin/functions/lib/general/general.php
+	admin/includes/js/javascript.js
+	changelog.txt
+	version.txt
+
+Files Added:
+-----------
+	admin/addons/debug/debug.php
+	admin/addons/debug/description.xml
+	admin/addons/debug/language/language.php
+	admin/addons/debug/templates/check.tpl
+	admin/addons/debug/templates/default.tpl
+	admin/addons/debug/templates/final_report.tpl
+	admin/addons/debug/templates/logs_display.tpl
+	admin/addons/debug/templates/logs_empty.tpl
+	admin/addons/debug/templates/progress_report.tpl
+	admin/addons/debug/templates/TriggerLog_ViewLink.tpl
+	admin/addons/debug/api/debug.php
+	
+	
+
+Version: 6.2.0
+Released: 17th August, 2018
+- PHP 7.0 and 7.1 supported
+- Removed deprecated PHP methods causing notices/errors
+- Fixed XML API 'Error is String could not be parsed as XML'
+- Added 'Office 365' design rules for email compatibility check
+- Misc. minor fixes and code cleanup
+
+
+Version: 6.1.8
+Released: 30th October, 2017
+
+- Fixed STARTTLS newline bug
 - Fixed bug with invalid emails halting trigger sending
 - Updated MySqlDb to use mysqli
-- Removed outdated and unused database drivers
+- - Changed all deprecated mysql_ methods to mysqli_ throughout app
+- Removed outdated and unused database drivers (pgsql, mssql, oci8)
 - - Removed deprecated/unused code/files where it made sense instead of refactoring to mysqli
 - Attempted fix of XSS vulnerability with 'page' variables
-- Remove deprecated PHP methods causing fatal errors
-- Fix bug causing fatal PHP error on upgrade
-- Update design rules for email compatibility check
-- Fixed issue with time interval labels on trigger create screen not hiding properly
+- Removed deprecated PHP methods causing fatal errors
+- Fixed bug causing fatal PHP error on upgrade step
+- Updated design rules for email compatibility check
+- Fixed JS bug time interval labels on trigger create screen not hiding properly
 - Refactored query for removing duplicates in send queues due to invalid group by clause
-- Add check for writable includes dir on install
-- Add check for php XML extension on install
-- Cleaned up init controller
-- Added xml api request controller
+- Added check for writable includes dir on install
+- Added check for PHP XML extension on install
+- Cleaned up init controller (admin/com/init.php)
+- - Removed insecure/unused cookie logic
+- Added xml api request controller (admin/com/xml.php) and moved xml.php methods there
+- - Misc. security fixes
 - - Fixed bug with date fields in xml api method addsubscribertolist
 - Enabled cookie_httponly and use_strict_mode session settings for security purposes
 - Added csrf token to user modify form for security purposes
-- Removed session id from URLs for security purposes
-- Removed static database details from settings page for security purposes
-- Fixed bug in survey export template
+- Removed session id from graph data URLs for security purposes
+- Removed static database details from system settings page for security purposes
+- Fixed bug in survey export tpl file preventing survey from exporting
 - Fixed notices generated by survey api
 - Fixed notice generated by user stats chart
 - Fixed bug in dynamic content tags using date type fields
@@ -31,125 +178,122 @@ Released: 11th October, 2017
 - Fixed bug with create website form
 - Misc. PHPDoc cleanup
 
-Changed Files:
-    changelog.txt
-    form.php
-    surveys_submit.php
-    version.txt
-    xml.php
-    admin/addons/checkpermissions/checkpermissions.php
-    admin/addons/dbcheck/dbcheck.php
-    admin/addons/dynamiccontenttags/api/dynamiccontentblock.php
-    admin/addons/dynamiccontenttags/api/dynamiccontenttag.php
-    admin/addons/dynamiccontenttags/dynamiccontenttags.php
-    admin/addons/interspire_addons.php
-    admin/addons/splittest/api/splittest.php
-    admin/addons/splittest/api/splittest_stats.php
-    admin/addons/splittest/print_stats.php
-    admin/addons/splittest/splittest.php
-    admin/addons/splittest/splittest_send.php
-    admin/addons/splittest/splittest_stats.php
-    admin/addons/surveys/api/responses.php
-    admin/addons/surveys/api/surveys.php
-    admin/addons/surveys/language/language.php
-    admin/addons/surveys/survey_templates.php
-    admin/addons/surveys/surveys.php
-    admin/addons/surveys/templates/results_survey.tpl
-    admin/addons/systemlog/systemlog.php
-    admin/addons/updatecheck/updatecheck.php
-    admin/com/ext/database/db.php
-    admin/com/ext/database/mssql.php
-    admin/com/ext/database/mysql.php
-    admin/com/ext/database/oci8.php
-    admin/com/ext/database/pgsql.php
-    admin/com/ext/interspire_email/email.php
-    admin/com/init-legacy.php
-    admin/com/init.php
-    admin/com/install/schema.pgsql.php
-    admin/com/language/default/login.php
-    admin/com/lib/IEM.class.php
-    admin/com/lib/IEM/DBFACTORY.class.php
-    admin/com/lib/IEM/Installer.class.php
-    admin/com/lib/IEM/InterspireTemplate.class.php
-    admin/com/lib/IEM/Request.php
-    admin/com/lib/Interspire/Csv/Exporter.php
-    admin/com/lib/record/Users.class.php
-    admin/com/resources/design_rules/aol.php
-    admin/com/resources/design_rules/gmail.php
-    admin/com/resources/design_rules/hotmail.php
-    admin/com/resources/design_rules/yahoo.php
-    admin/com/templates/forgotpassword_sendpass.tpl
-    admin/com/templates/forgotpassword_step2.tpl
-    admin/com/templates/header_login.tpl
-    admin/com/templates/login.tpl
-    admin/com/templates/settings.tpl
-    admin/com/templates/triggeremails_form.tpl
-    admin/com/templates/user_form.tpl
-    admin/com/upgrades/20171011/update_db_version.php
-    admin/com/xml.php
-    admin/cron/send.php
-    admin/functions/api/api.php
-    admin/functions/api/customfields.php
-    admin/functions/api/customfields_checkbox.php
-    admin/functions/api/customfields_date.php
-    admin/functions/api/customfields_dropdown.php
-    admin/functions/api/customfields_number.php
-    admin/functions/api/customfields_radiobutton.php
-    admin/functions/api/customfields_text.php
-    admin/functions/api/customfields_textarea.php
-    admin/functions/api/jobs_autoresponders.php
-    admin/functions/api/jobs_send.php
-    admin/functions/api/jobs_triggeremails.php
-    admin/functions/api/lists.php
-    admin/functions/api/segment.php
-    admin/functions/api/send.php
-    admin/functions/api/settings.php
-    admin/functions/api/ss_email.php
-    admin/functions/api/stats.php
-    admin/functions/api/subscribers.php
-    admin/functions/api/templates.php
-    admin/functions/api/triggeremails.php
-    admin/functions/api/upgrade.php
-    admin/functions/api/user.php
-    admin/functions/autoresponders.php
-    admin/functions/bounce.php
-    admin/functions/customfields.php
-    admin/functions/folders.php
-    admin/functions/forms.php
-    admin/functions/index.php
-    admin/functions/installer.php
-    admin/functions/lists.php
-    admin/functions/login.php
-    admin/functions/logout.php
-    admin/functions/newsletters.php
-    admin/functions/process.php
-    admin/functions/remote.php
-    admin/functions/remote_installer.php
-    admin/functions/remote_stats.php
-    admin/functions/schedule.php
-    admin/functions/segment.php
-    admin/functions/send.php
-    admin/functions/sendstudio_functions.php
-    admin/functions/settings.php
-    admin/functions/showcustomfields.php
-    admin/functions/stats.php
-    admin/functions/stats_chart.php
-    admin/functions/subscribers.php
-    admin/functions/subscribers_add.php
-    admin/functions/subscribers_banned.php
-    admin/functions/subscribers_edit.php
-    admin/functions/subscribers_event.php
-    admin/functions/subscribers_export.php
-    admin/functions/subscribers_import.php
-    admin/functions/subscribers_manage.php
-    admin/functions/subscribers_remove.php
-    admin/functions/subscribers_view.php
-    admin/functions/templates.php
-    admin/functions/triggeremails.php
-    admin/functions/upgrade.php
-    admin/functions/upgradenx.php
-    admin/functions/users.php
-    admin/tokens.php
+	A	admin/com/templates/header_login.tpl
+	A	admin/com/xml.php
+
+	D	admin/com/ext/database/mssql.php
+	D	admin/com/ext/database/oci8.php
+	D	admin/com/ext/database/pgsql.php
+	D	admin/com/install/schema.pgsql.php
+	D	admin/functions/remote_installer.php
+	D	admin/functions/upgrade.php
+
+	M	admin/addons/checkpermissions/checkpermissions.php
+	M	admin/addons/dbcheck/dbcheck.php
+	M	admin/addons/dynamiccontenttags/api/dynamiccontentblock.php
+	M	admin/addons/dynamiccontenttags/api/dynamiccontenttag.php
+	M	admin/addons/dynamiccontenttags/dynamiccontenttags.php
+	M	admin/addons/interspire_addons.php
+	M	admin/addons/splittest/api/splittest.php
+	M	admin/addons/splittest/api/splittest_stats.php
+	M	admin/addons/splittest/print_stats.php
+	M	admin/addons/splittest/splittest.php
+	M	admin/addons/splittest/splittest_send.php
+	M	admin/addons/splittest/splittest_stats.php
+	M	admin/addons/surveys/api/responses.php
+	M	admin/addons/surveys/api/surveys.php
+	M	admin/addons/surveys/language/language.php
+	M	admin/addons/surveys/survey_templates.php
+	M	admin/addons/surveys/surveys.php
+	M	admin/addons/surveys/templates/results_survey.tpl
+	M	admin/addons/systemlog/systemlog.php
+	M	admin/addons/updatecheck/updatecheck.php
+	M	admin/com/ext/database/db.php
+	M	admin/com/ext/database/mysql.php
+	M	admin/com/ext/interspire_email/email.php
+	M	admin/com/init-legacy.php
+	M	admin/com/init.php
+	M	admin/com/language/default/login.php
+	M	admin/com/lib/IEM.class.php
+	M	admin/com/lib/IEM/DBFACTORY.class.php
+	M	admin/com/lib/IEM/Installer.class.php
+	M	admin/com/lib/IEM/InterspireTemplate.class.php
+	M	admin/com/lib/IEM/Request.php
+	M	admin/com/lib/Interspire/Csv/Exporter.php
+	M	admin/com/lib/record/Users.class.php
+	M	admin/com/resources/design_rules/aol.php
+	M	admin/com/resources/design_rules/gmail.php
+	M	admin/com/resources/design_rules/hotmail.php
+	M	admin/com/resources/design_rules/yahoo.php
+	M	admin/com/templates/forgotpassword_sendpass.tpl
+	M	admin/com/templates/forgotpassword_step2.tpl
+	M	admin/com/templates/login.tpl
+	M	admin/com/templates/settings.tpl
+	M	admin/com/templates/triggeremails_form.tpl
+	M	admin/com/templates/user_form.tpl
+	M	admin/cron/send.php
+	M	admin/functions/api/api.php
+	M	admin/functions/api/customfields.php
+	M	admin/functions/api/customfields_checkbox.php
+	M	admin/functions/api/customfields_date.php
+	M	admin/functions/api/customfields_dropdown.php
+	M	admin/functions/api/customfields_number.php
+	M	admin/functions/api/customfields_radiobutton.php
+	M	admin/functions/api/customfields_text.php
+	M	admin/functions/api/customfields_textarea.php
+	M	admin/functions/api/jobs_autoresponders.php
+	M	admin/functions/api/jobs_send.php
+	M	admin/functions/api/jobs_triggeremails.php
+	M	admin/functions/api/lists.php
+	M	admin/functions/api/segment.php
+	M	admin/functions/api/send.php
+	M	admin/functions/api/settings.php
+	M	admin/functions/api/ss_email.php
+	M	admin/functions/api/stats.php
+	M	admin/functions/api/subscribers.php
+	M	admin/functions/api/templates.php
+	M	admin/functions/api/triggeremails.php
+	M	admin/functions/api/upgrade.php
+	M	admin/functions/api/user.php
+	M	admin/functions/autoresponders.php
+	M	admin/functions/bounce.php
+	M	admin/functions/customfields.php
+	M	admin/functions/folders.php
+	M	admin/functions/forms.php
+	M	admin/functions/index.php
+	M	admin/functions/installer.php
+	M	admin/functions/lists.php
+	M	admin/functions/login.php
+	M	admin/functions/logout.php
+	M	admin/functions/newsletters.php
+	M	admin/functions/remote.php
+	M	admin/functions/remote_stats.php
+	M	admin/functions/schedule.php
+	M	admin/functions/segment.php
+	M	admin/functions/send.php
+	M	admin/functions/sendstudio_functions.php
+	M	admin/functions/settings.php
+	M	admin/functions/showcustomfields.php
+	M	admin/functions/stats.php
+	M	admin/functions/stats_chart.php
+	M	admin/functions/subscribers.php
+	M	admin/functions/subscribers_add.php
+	M	admin/functions/subscribers_banned.php
+	M	admin/functions/subscribers_edit.php
+	M	admin/functions/subscribers_event.php
+	M	admin/functions/subscribers_export.php
+	M	admin/functions/subscribers_import.php
+	M	admin/functions/subscribers_manage.php
+	M	admin/functions/subscribers_remove.php
+	M	admin/functions/subscribers_view.php
+	M	admin/functions/templates.php
+	M	admin/functions/triggeremails.php
+	M	admin/functions/upgradenx.php
+	M	admin/functions/users.php
+	M	admin/tokens.php
+	M	form.php
+	M	surveys_submit.php
+	M	xml.php
 
 ---
 Version: 6.1.7

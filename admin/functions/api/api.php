@@ -110,7 +110,7 @@ class API
 
 		if (is_null($this->Db) || !$this->Db->connection) {
 			$Db = IEM::getDatabase();
-			$this->Db = &$Db;
+			$this->Db =  &$Db;
 		}
 
         if (!is_object($this->Db) || !$this->Db->connection instanceof mysqli) {
@@ -1120,7 +1120,7 @@ class API
 	*/
 	function GetGmtTime()
 	{
-            return gmmktime();
+            return time();
 	}
 
 	/**

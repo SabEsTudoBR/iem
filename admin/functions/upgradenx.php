@@ -19,7 +19,7 @@ class UpgradeNX extends SendStudio_Functions
 	        header('Location: index.php');
 	        exit;
 	    }
-
+        	$this->db = null;
 		$this->LoadLanguageFile();
 	}
 
@@ -94,7 +94,7 @@ class UpgradeNX extends SendStudio_Functions
 		$this->PrintFooter();
 		exit();
 	}
-
+	 
 	/**
 	* PrintHeader
 	* This is a modified print-header function which does not include menus etc we need to remove.

@@ -39,7 +39,7 @@ class module_Google_Tracker extends module_Tracker
 	 *
 	 * @return Void Doesn't return anything.
 	 */
-	function module_Google_Tracker()
+	function __construct()
 	{
 		$this->_init();
 	}

@@ -319,7 +319,7 @@ class Settings_API extends API
 	*
 	* @return Void Doesn't return anything, just sets up the variables.
 	*/
-	function Settings_API($load_settings=true)
+	function __construct($load_settings=true)
 	{
 		$this->ConfigFile = SENDSTUDIO_INCLUDES_DIRECTORY . '/config.php';
 		$this->WhiteLabelCache = IEM_InterspireStash::getInstance();
@@ -776,7 +776,7 @@ class Settings_API extends API
 			return false;
 		}
 
-		$tmpfname = tempnam(TEMP_DIRECTORY, 'SS_');
+		$tmpfname = @tempnam(TEMP_DIRECTORY, 'SS_');
 		if (!$handle = fopen($tmpfname, 'w')) {
 			return false;
 		}

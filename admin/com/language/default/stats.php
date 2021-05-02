@@ -1,5 +1,5 @@
 <?php
-
+ 
 define('LNG_Stats_PrintReport', 'Print Report');
 define('LNG_Stats_ExportReport', 'Export Report');
 define('LNG_Stats_TotalDelivered', 'Total Delivered');
@@ -397,7 +397,7 @@ define('LNG_ListStatsHasNotBeenBounced_BounceType', 'No %ss have been received f
 define('LNG_ListStatsHasNotBeenBounced_CalendarProblem', 'No bounce reports have been received for contacts on this contact list in the selected date range.');
 define('LNG_Stats_NoSubscribersOnList', 'There are no contacts on this contact list.');
 define('LNG_Stats_NoSubscribersOnList_DateRange', 'There are no contacts on this contact list in the selected date range.');
-define('LNG_Stats_Autoresponders_Step1_Intro', 'Use autoresponder statistics to see which autoresponders are being sent, how many people are opening them and trends of those receiving them.');
+define('LNG_Stats_Autoresponders_Step1_Intro', 'Use autoresponder statistics to see which autoresponders are being sent, how many people are opening them and trends of those receiving them. '.LNG_interspire_email_stats_help_link);
 define('LNG_Unconfirms', 'Unconfirmed Contacts');
 define('LNG_Confirms', 'Confirmed Contacts');
 define('LNG_ListStatsTotalUnconfirms', 'Total Unconfirmed Contacts: ');
@@ -423,13 +423,13 @@ define('LNG_ListLinkStatsHasNotBeenClicked_NoLinksFound', 'No links have been fo
 define('LNG_ListStatistics_Snapshot_UnsubscribesHeading', 'Unsubscribe statistics for email campaigns and autoresponders sent to contact list \'%s\'');
 define('LNG_ListStatistics_Snapshot_ForwardsHeading', 'Forward statistics for email campaigns and autoresponders sent to contact list \'%s\'');
 define('LNG_ListStatistics_Snapshot_BounceHeading', 'Bounce statistics for email campaigns and autoresponders sent to contact list \'%s\'');
-define('LNG_Stats_List_Step1_Intro', 'Statistics for your contact lists will show you how many people have subscribed, unsubscribed, bounced and how active the list is at what times.');
-define('LNG_Stats_Users_Step1_Intro', 'Click the <em>View</em> link next to a user account below to see detailed statistics including number of emails sent for a particular time period.');
+define('LNG_Stats_List_Step1_Intro', 'Statistics for your contact lists will show you how many people have subscribed, unsubscribed, bounced and how active the list is at what times.'.LNG_interspire_email_stats_help_link);
+define('LNG_Stats_Users_Step1_Intro', 'Click the <em>View</em> link next to a user account below to see detailed statistics including number of emails sent for a particular time period.'.LNG_interspire_email_stats_help_link);
 define('LNG_PrintListStatistics','Print Contact List Statistics');
-define('LNG_Stats_Newsletters_Step1_Intro', 'Email campaign statistics allow you to view detailed open, unsubscribe and bounce rates, see how many subscribers clicked on a link (if enabled), etc.');
+define('LNG_Stats_Newsletters_Step1_Intro', 'Email campaign statistics allow you to view detailed open, unsubscribe and bounce rates, see how many subscribers clicked on a link (if enabled), etc. '.LNG_interspire_email_stats_help_link);
 define('LNG_AutoresponderSentStatus_Unsubscribed', ' (They have unsubscribed from your contact list)');
 define('LNG_Bounce_Rule_', '(Unknown)');
-define('LNG_AutoresponderSentStatus_Search_criteria', ' <a href="#" onClick="LaunchHelp(\'%%WHITELABEL_INFOTIPS%%\',\'803\'); return false;">Why?</a>');
+define('LNG_AutoresponderSentStatus_Search_criteria', '');
 define('LNG_GD_Not_Enabled', 'Enable the GD module in PHP for charts to work.');
 define('LNG_BounceSoft', 'Soft');
 define('LNG_BounceHard', 'Hard');
