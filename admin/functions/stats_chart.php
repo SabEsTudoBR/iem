@@ -412,7 +412,7 @@ class StatsChart extends SendStudio_Functions
                     $data['chartData'] = [];
                     foreach ($labels as $key => $label) {
                         if (empty($label)) {
-                            break;
+                            continue;
                         }
                         $data['chartData'][$key]['category'] = $label;
                     }

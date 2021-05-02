@@ -1,5 +1,8 @@
 <?php
 
+define('LNG_NoValidPassword', 'Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.');
+define('LNG_HLP_Password', 'Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.');
+
 define('LNG_UserDetails', 'User Details');
 define('LNG_UserAdd', 'Create a User Account...');
 define('LNG_UserName', 'Username');

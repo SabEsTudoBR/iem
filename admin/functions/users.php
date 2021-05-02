@@ -319,6 +319,12 @@ class Users extends SendStudio_Functions
                                 $error = GetLang('CurrentPasswordError');
                             }
                         }
+						    $auth_pass = new AuthenticationSystem();
+							$result_auth_pass= $auth_pass->AuthenticatePassword($_POST['ss_p']);
+							if ($result_auth_pass === -1) {
+								 $error = GetLang('NewPassword_Errors');
+							}	
+							
                         if(!empty($result) && $result > 0){
                             if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
                                 $user->Set('password', $_POST['ss_p']);
@@ -459,8 +465,13 @@ class Users extends SendStudio_Functions
 					}
 					
 					$user->Set('smtppassword', $smtp_password);
-
-
+					
+					$auth_pass = new AuthenticationSystem();
+					$result_auth_pass= $auth_pass->AuthenticatePassword($_POST['ss_p']);
+					if ($result_auth_pass === -1) {
+						 $error = GetLang('NoValidPassword');
+					}
+					
 					if ($_POST['ss_p'] != '') {
 						if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
 							$user->Set('password', $_POST['ss_p']);

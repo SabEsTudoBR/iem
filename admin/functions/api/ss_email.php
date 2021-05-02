@@ -1025,7 +1025,7 @@ class SS_Email_API extends Email_API
 				}
 		}
 
-		$open_image = '<img src="' . SENDSTUDIO_APPLICATION_URL . '/open.php?' . str_replace('&C='.$info['confirmcode'], '', $linkdata) . '&F=H&image=.jpg" height="1" width="10">';
+		$open_image = '<img src="' . SENDSTUDIO_APPLICATION_URL . '/open.php?' . str_replace('&C='.$info['confirmcode'], '', $linkdata) . '&F=H&image=.jpg" height="1" width="10" alt="track the open">';
 		$matches = array();
 
         preg_match_all('/%%sendfriend_(.*?)%%/i', $text, $matches,PREG_SET_ORDER);

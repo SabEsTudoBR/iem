@@ -337,9 +337,9 @@ class xmlController
              *
              */
             if ($this->getRequestType() == 'subscribers' && strtolower($this->getRequestMethod()) == 'addsubscribertolist') {
-                if (sizeof(array_keys($subParams)) > 1) {
-                    if(array_key_exists('value', $subParams) && sizeof($subParams['value'][0]) > 1){
-                        $subParams['value'] = $subParams['value'][0];
+                if (count(array_keys($subParams)) > 1) {
+					if(array_key_exists('value', $subParams) && isset($subParams['value'])){
+						$subParams['value'] = $subParams['value'];
                     }
                     $return[$subKey][] = $subParams;
                 } else {

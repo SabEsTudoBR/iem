@@ -170,7 +170,15 @@ class Installer extends SendStudio_Functions
 						}
 					}
 				}
-
+				
+				// Validate password rules.
+				$auth_pass = new AuthenticationSystem();
+                $result_auth_pass= $auth_pass->AuthenticatePassword($_POST['admin_password']);
+				
+				if ($result_auth_pass === -1) {
+					$errors[] = 'Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.';
+						
+				}
 				// Collect database settings
 				if (!isset($_POST['dbtype'])) {
 					$errors[] = 'Please choose the type of database you want to use';
@@ -331,7 +339,7 @@ class Installer extends SendStudio_Functions
 						</table>
 						</td></tr></table>
 						<div style="padding:10px; margin-bottom:20px; text-align:center" class="InstallPageFooter">
-							Powered by <a href="http://www.interspire.com/" target="_blank">Interspire Email Marketer</a> &copy; 2004-<?php echo date('Y'); ?> Interspire Pty. Ltd.
+							Powered by <a href="https://www.interspire.com/" target="_blank">Interspire Email Marketer</a> &copy; 2004-<?php echo date('Y'); ?> Interspire Pty. Ltd.
 						</div>
 					</div>
 				<?php
@@ -589,7 +597,7 @@ class Installer extends SendStudio_Functions
 															value=""
 															autocomplete="off" />
 													<img	onmouseout="HideHelp('admin_password_help');"
-															onmouseover="ShowHelp('admin_password_help', 'Please enter a password', 'Please choose a password for the global administrator account.')"
+															onmouseover="ShowHelp('admin_password_help', 'Please enter a password', 'Please choose a password for the global administrator account. <p><u>Password Policy</u>: Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.</p>')"
 															src="images/help.gif"
 															width="24"
 															height="16"
@@ -820,15 +828,22 @@ class Installer extends SendStudio_Functions
 				    return false;
 				}
 
-				// validate the administrator password
-				// it must be greater than 3 characters and is required
-				if (form.admin_password.value == '' || form.admin_password.value.length < 3) {
-					alert("Please enter an administrator password at least 3 characters long.");
+				// validate the administrator password length
+				if (form.admin_password.value == '' || form.admin_password.value.length < 8) {
+					alert("Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.");
 					form.admin_password.select();
 					form.admin_password.focus();
 					return false;
 				}
-
+				
+				// validate the administrator password rules
+				var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/; 
+				if(!re.test($('#admin_password').val())){   
+					alert("Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.");
+					$('#admin_password').focus().select();
+					return false;
+				}
+				
 				// the confirmation password is required
 				if (form.admin_password_confirm.value == '') {
 					alert("Please confirm the administrator password.");
