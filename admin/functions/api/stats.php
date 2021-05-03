@@ -146,8 +146,7 @@ class Stats_API extends API
 
 				if ($tempContinue) {
 					foreach ($statids as $statid) {
-						$module_Tracker = new module_Tracker;
-						$module_Tracker->DeleteRecordsForAllTrackerByID($statid, $convertedStatType);
+						module_Tracker::DeleteRecordsForAllTrackerByID($statid, $convertedStatType);
 					}
 				}
 			}
