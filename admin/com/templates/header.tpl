@@ -52,6 +52,32 @@
 		Application.Misc.specifyDocumentMinWidth(935);
 		Application.Misc.setPingServer('ping.php', 120000);
 	</script>
+	<script type="text/javascript">
+
+		var IDLE_TIMEOUT_MIN =<?php echo SENDSTUDIO_SECURITY_SESSION_TIME;?>;
+		var IDLE_TIMEOUT = IDLE_TIMEOUT_MIN * 60;  //   minutes of inactivity
+		var _idleSecondsCounter = 0;
+		document.onclick = function() {
+			_idleSecondsCounter = 0;
+		};
+		document.onmousemove = function() {
+			_idleSecondsCounter = 0;
+		};
+		document.onkeypress = function() {
+			_idleSecondsCounter = 0;
+		};
+		window.setInterval(CheckIdleTime, 1000);
+		function CheckIdleTime() {
+        _idleSecondsCounter++;
+	   
+        if (_idleSecondsCounter >= IDLE_TIMEOUT) {
+		 if(IDLE_TIMEOUT != 0){
+            // destroy the session 			 
+			window.location="index.php?Page=Logout"; 
+			}			
+        }
+    }
+	</script>
 </head>
 
 <body>

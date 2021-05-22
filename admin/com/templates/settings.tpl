@@ -747,6 +747,24 @@
 				</div>
 				<div id="div5" style="padding-top: 10px; display: {if $ShowTab == 5}block{else}none{/if};">
 					<table border="0" cellspacing="0" cellpadding="2" width="100%" class="Panel">
+						<tr>
+						<td colspan="2" class="Heading2"> 
+							{template="Not_Required"}{$lang.SecuritySettings_Destroy_Session_Title}
+						</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
+								{$lang.SecuritySettings_Destroy_Session}						
+							</td>
+							<td>
+								<label for="security_session_time">
+								<input type="number"  style="width:4%" name="security_session_time" min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" id="security_session_time" value="{$security_settings.Expire_Session}" />
+								</label>
+								{$lnghlp.SecuritySettings_Destroy_Session}
+							</td>
+						</tr>
+						<tr><td colspan="2" class="EmptyRow">&nbsp;</td></tr>
 						<tr><td colspan="2" class="Heading2">{template="Not_Required"}{$lang.SecuritySettings_LoginSecurity_EnableLoginWait_Title}</td></tr>
 						<tr>
 							<td class="FieldLabel">

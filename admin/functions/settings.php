@@ -442,7 +442,12 @@ class Settings extends SendStudio_Functions
 							$settings['SECURITY_WRONG_LOGIN_THRESHOLD_COUNT'] = intval($settings['SECURITY_WRONG_LOGIN_THRESHOLD_COUNT']);
 							$settings['SECURITY_WRONG_LOGIN_THRESHOLD_DURATION'] = intval($settings['SECURITY_WRONG_LOGIN_THRESHOLD_DURATION']) * 60;
 							$settings['SECURITY_BAN_DURATION'] = intval($settings['SECURITY_BAN_DURATION']) * 60;
-
+							
+							$settings['SECURITY_SESSION_TIME'] = intval($_POST['security_session_time']);
+							if($settings['SECURITY_SESSION_TIME'] < 0){
+								$settings['SECURITY_SESSION_TIME'] = 0;
+							}
+							
 							if (!isset($_POST['security_wrong_login_wait_enable'])) {
 								$settings['SECURITY_WRONG_LOGIN_WAIT'] = 0;
 							}
@@ -1086,6 +1091,7 @@ class Settings extends SendStudio_Functions
 		// ----- Login Security settings
 			$security_settings = array(
 				'login_wait' => SENDSTUDIO_SECURITY_WRONG_LOGIN_WAIT,
+				'Expire_Session' => SENDSTUDIO_SECURITY_SESSION_TIME,
 				'threshold_login_count' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_COUNT,
 				'threshold_login_duration' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_DURATION / 60,
 				'ip_login_ban_duration' => SENDSTUDIO_SECURITY_BAN_DURATION / 60
