@@ -37,10 +37,7 @@ class Addons_debug extends Interspire_Addons
 	 */
 	public function Install()
 	{   
-	 
-		$this->enabled = true;
-		$this->configured = true;
-		try {
+	    try {
 			$this->InstallSettings(); 
 			$status = parent::Install();
 			 
@@ -61,28 +58,38 @@ class Addons_debug extends Interspire_Addons
 	public function InstallSettings()
 	{
 		$this->db = IEM::getDatabase();
-		$status_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='EMAIL_DEBUG'";
+		 
+		$query = "SHOW TABLES LIKE '[|PREFIX|]debugging_addon_settings'";
+		$check_table_name = $this->db->FetchOne($query);
+		if($check_table_name != $this->db->TablePrefix.'debugging_addon_settings'){		
+			$queries = "CREATE TABLE [|PREFIX|]debugging_addon_settings(area varchar(50), areavalue text) character set utf8 engine=innodb";
+			$this->db->Query($queries);
+		}
+		$this->enabled = true;
+		$this->configured = true;
+		  
+		$status_query = "SELECT areavalue FROM [|PREFIX|]debugging_addon_settings where area='EMAIL_DEBUG'";
 		$EmailDebug = $this->db->FetchOne($status_query);
 		if(empty($EmailDebug)){
-			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "config_settings(area, areavalue) VALUES('EMAIL_DEBUG', '0')";
+			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "debugging_addon_settings(area, areavalue) VALUES('EMAIL_DEBUG', '0')";
 			$result = $this->db->Query($query);
 		}
-		$status_bounce_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='BOUNCE_DEBUG'";
+		$status_bounce_query = "SELECT areavalue FROM [|PREFIX|]debugging_addon_settings where area='BOUNCE_DEBUG'";
 		$BounceDebug = $this->db->FetchOne($status_bounce_query);
 		if(empty($BounceDebug)){
-			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "config_settings(area, areavalue) VALUES('BOUNCE_DEBUG', '0')";
+			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "debugging_addon_settings(area, areavalue) VALUES('BOUNCE_DEBUG', '0')";
 			$result = $this->db->Query($query);
 		}
-		$status_triggeremail_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='TRIGGEREMAIL_DEBUG'";
+		$status_triggeremail_query = "SELECT areavalue FROM [|PREFIX|]debugging_addon_settings where area='TRIGGEREMAIL_DEBUG'";
 		$BounceTriggeremailDebug = $this->db->FetchOne($status_triggeremail_query);
 		if(empty($BounceTriggeremailDebug)){
-			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "config_settings(area, areavalue) VALUES('TRIGGEREMAIL_DEBUG', '0')";
+			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "debugging_addon_settings(area, areavalue) VALUES('TRIGGEREMAIL_DEBUG', '0')";
 			$result = $this->db->Query($query);
 		}
-		$status_autoresponder_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='AUTORESPONDER_DEBUG'";
+		$status_autoresponder_query = "SELECT areavalue FROM [|PREFIX|]debugging_addon_settings where area='AUTORESPONDER_DEBUG'";
 		$BounceAutoresponderDebug = $this->db->FetchOne($status_autoresponder_query);
 		if(empty($BounceAutoresponderDebug)){
-			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "config_settings(area, areavalue) VALUES('AUTORESPONDER_DEBUG', '0')";
+			$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "debugging_addon_settings(area, areavalue) VALUES('AUTORESPONDER_DEBUG', '0')";
 			$result = $this->db->Query($query);
 		}
 	}
@@ -101,6 +108,7 @@ class Addons_debug extends Interspire_Addons
 	public function Uninstall()
 	{      
 		try {
+			
 			$status = parent::Uninstall();
 			$this->UninstallSettings();
 		} catch (Interspire_Addons_Exception $e) {
@@ -114,9 +122,11 @@ class Addons_debug extends Interspire_Addons
 	
 	public function UninstallSettings()
 	{
-			$this->db = IEM::getDatabase(); 
-			$query = "DELETE FROM `[|PREFIX|]config_settings` where area in ('BOUNCE_DEBUG','EMAIL_DEBUG', 'AUTORESPONDER_DEBUG','TRIGGEREMAIL_DEBUG');";
-			if($this->db->Query($query)) {
+			$this->db = IEM::getDatabase();
+			$query = "DROP TABLE [|PREFIX|]debugging_addon_settings";
+           if($this->db->Query($query)) {
+			    $this->enabled = false;
+			    $this->configured = false;
 				return true;
 			}
 			return false;		
@@ -207,7 +217,7 @@ class Addons_debug extends Interspire_Addons
 					
 					$Emaildebug = empty($_POST['emaildebug'])? 0 : 1;
 					$ShowTab = 1;
-					$query = "UPDATE [|PREFIX|]config_settings SET areavalue ='".$Emaildebug."' where area ='EMAIL_DEBUG' ";
+					$query = "UPDATE [|PREFIX|]debugging_addon_settings SET areavalue ='".$Emaildebug."' where area ='EMAIL_DEBUG' ";
 					if($this->db->Query($query))
 						FlashMessage(GetLang ( 'Addon_debug_Update_Success' ), SS_FLASH_MSG_SUCCESS, 'index.php?Page=Addons&Addon=debug&Tab=1');
 					else
@@ -218,7 +228,7 @@ class Addons_debug extends Interspire_Addons
 
 					$Bouncedebug = empty($_POST['bouncedebug'])? 0 : 1;
 					$ShowTab = 2;			
-					$query = "UPDATE [|PREFIX|]config_settings SET areavalue =".$Bouncedebug." where area ='BOUNCE_DEBUG' ";
+					$query = "UPDATE [|PREFIX|]debugging_addon_settings SET areavalue =".$Bouncedebug." where area ='BOUNCE_DEBUG' ";
 					if($this->db->Query($query))
 						FlashMessage(GetLang ( 'Addon_debug_Update_Success' ), SS_FLASH_MSG_SUCCESS, 'index.php?Page=Addons&Addon=debug&Tab=2');
 					else
@@ -229,7 +239,7 @@ class Addons_debug extends Interspire_Addons
 				
 					$Triggeremaildebug = empty($_POST['triggeremaildebug'])? 0 : 1;
 					$ShowTab = 3;			
-					$query = "UPDATE [|PREFIX|]config_settings SET areavalue ='".$Triggeremaildebug."' where area ='TRIGGEREMAIL_DEBUG'";
+					$query = "UPDATE [|PREFIX|]debugging_addon_settings SET areavalue ='".$Triggeremaildebug."' where area ='TRIGGEREMAIL_DEBUG'";
 					if($this->db->Query($query))
 						FlashMessage(GetLang ( 'Addon_debug_Update_Success' ), SS_FLASH_MSG_SUCCESS, 'index.php?Page=Addons&Addon=debug&Tab=3');
 					else
@@ -240,7 +250,7 @@ class Addons_debug extends Interspire_Addons
 			    case'autoresponderdebug':			
 					$Autoresponderdebug = empty($_POST['autoresponderdebug'])? 0 : 1;
 					$ShowTab = 4;			
-					$query = "UPDATE [|PREFIX|]config_settings SET areavalue ='".$Autoresponderdebug."' where area ='AUTORESPONDER_DEBUG' ";
+					$query = "UPDATE [|PREFIX|]debugging_addon_settings SET areavalue ='".$Autoresponderdebug."' where area ='AUTORESPONDER_DEBUG' ";
 					if($this->db->Query($query))
 						FlashMessage(GetLang('Addon_debug_Update_Success'), SS_FLASH_MSG_SUCCESS, 'index.php?Page=Addons&Addon=debug&Tab=4');
 					else
@@ -295,15 +305,15 @@ class Addons_debug extends Interspire_Addons
 		$logsFileList  = [];
 		$TriggerLoglogsFileList  = [];
 		$logsAutoresponderFileList  = [];
-		$bounce_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]config_settings   where area ='BOUNCE_DEBUG' ");		 
+		$bounce_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]debugging_addon_settings   where area ='BOUNCE_DEBUG' ");		 
 		$row = $this->db->Fetch($bounce_debug_status);
 		$Bouncedebug = $row['areavalue'];
 		//for email active 
-		$email_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]config_settings where area ='EMAIL_DEBUG' ");		 
+		$email_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]debugging_addon_settings where area ='EMAIL_DEBUG' ");		 
 		$row = $this->db->Fetch($email_debug_status);
 		$Emaildebug = $row['areavalue'];
 		//for trigger 
-		$trigger_email_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]config_settings where area ='TRIGGEREMAIL_DEBUG' ");		 
+		$trigger_email_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]debugging_addon_settings where area ='TRIGGEREMAIL_DEBUG' ");		 
 		$row = $this->db->Fetch($trigger_email_debug_status);		 
 		$TriggerEmaildebug = $row['areavalue'];
 		
@@ -335,7 +345,7 @@ class Addons_debug extends Interspire_Addons
 		/*-----Total Autoresponder emails logs files------------------*/   
 		$logsAutoresponder_number_of_logs = count($logsAutoresponderFileList);		
 		
-		$autoresponder_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]config_settings where area ='AUTORESPONDER_DEBUG' ");		 
+		$autoresponder_debug_status = $this->db->Query("SELECT * FROM [|PREFIX|]debugging_addon_settings where area ='AUTORESPONDER_DEBUG' ");		 
 		$row = $this->db->Fetch($autoresponder_debug_status);		 
 		$Autoresponderdebug = $row['areavalue'];
 		$ShowTab = empty($_GET['Tab'])? 1 : $_GET['Tab'];
