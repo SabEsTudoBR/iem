@@ -12,9 +12,10 @@
 						triggertype_datecustomfields_list_not_selected: '{$lang.TriggerEmails_Form_Field_TriggerType_DateCustomField_Error_ChooseList|addslashes}',
 						triggertype_datecustomfields_creation_prompt: '{$lang.TriggerEmails_Form_Field_TriggerType_DateCustomField_Prompt_CreateCustomField|addslashes}',
 						triggertype_datecustomfields_instruction: '{$lang.TriggerEmails_Form_Field_TriggerType_DateCustomField_ChooseCustomField_Instruction|addslashes}',
-
+						triggertype_staticdatetime_empty_date: '{$lang.TriggerEmails_Form_Field_TriggerType_StaticDate_Error|addslashes}',
 						triggertype_staticdate_empty_date: '{$lang.TriggerEmails_Form_Field_TriggerType_StaticDate_Error|addslashes}',
 						triggertype_staticdate_empty_listid: '{$lang.TriggerEmails_Form_Field_TriggerType_StaticDate_List_Error|addslashes}',
+						triggertype_staticdatetime_empty_listid: '{$lang.TriggerEmails_Form_Field_TriggerType_StaticDate_List_Error|addslashes}',
 
 						triggertype_linkclicked_error_choosenewsletter: '{$lang.TriggerEmails_Form_Field_TriggerType_LinkClicked_Error_ChooseNewsletter}',
 						triggertype_linkclicked_error_chooseanothernewsletter: '{$lang.TriggerEmails_Form_Field_TriggerType_LinkClicked_Error_ChooseAnotherNewsletter}',
@@ -38,6 +39,9 @@
 						triggeractions_removefromlist_label_datecustomfield: '{$lang.TriggerEmails_Form_Field_TriggerAction_RemoveList_f|addslashes}',
 						triggeractions_removefromlist_label_staticdate_one: '{$lang.TriggerEmails_Form_Field_TriggerAction_RemoveList_s_One|addslashes}',
 						triggeractions_removefromlist_label_staticdate_many: '{$lang.TriggerEmails_Form_Field_TriggerAction_RemoveList_s_Many|addslashes}',
+						triggeractions_removefromlist_label_staticdatetime_one: '{$lang.TriggerEmails_Form_Field_TriggerAction_RemoveList_s_One|addslashes}',
+						triggeractions_removefromlist_label_staticdatetime_many: '{$lang.TriggerEmails_Form_Field_TriggerAction_RemoveList_s_Many|addslashes}',
+						
 						triggeractions_removefromlist_label_linkclicked: '{$lang.TriggerEmails_Form_Field_TriggerAction_RemoveList_l|addslashes}',
 						triggeractions_removefromlist_label_newsletteropen: '{$lang.TriggerEmails_Form_Field_TriggerAction_RemoveList_n|addslashes}'},
 
@@ -112,7 +116,23 @@
 
 
 		eventSubmitForm: function(event) {
-			try { if(Application.Page.TriggerEmailsForm.checkForm()) return true; } catch(e) { alert(e); }
+
+		    var f = document.frmTriggerForm;
+			var triggerType = $("input[name='record[triggertype]']:checked", f).val();
+			if( triggerType == 'ttt'){ 
+				f['record[data][staticdatetime]'].value = f['datetime[year]'].value+'-'+f['datetime[month]'].value+'-'+f['datetime[day]'].value+' '+f['sendtime_hours'].value+':'+f['sendtime_minutes'].value+' '+f['sendtime_ampm'].value.toLowerCase();
+				 
+				if(f['record[data][staticdatetime]'].value != ''){
+					var date_time =  f['record[data][staticdatetime]'].value;
+					var currentDateTime = new Date();
+					var postDateTime = new Date(date_time);
+					if(currentDateTime.getTime() > postDateTime.getTime()){
+						alert('You have tried to schedule the email campaign to send in the past. Please choose a date in the future.');
+						return false;
+					} 
+				}
+			}
+		    try { if(Application.Page.TriggerEmailsForm.checkForm()) return true; } catch(e) { alert(e); }
 			event.stopPropagation();
 			event.preventDefault();
 			return false;
@@ -125,7 +145,9 @@
 
 		eventChangeTriggerType: function(event) {
 			var triggerType = this.value;
-
+            if(triggerType =='t'){
+			  $(document.frmTriggerForm['record[data][staticdate]']).val('');
+             }
 			$('tr#TriggerTime_Row div#TriggerTime_Choosen').show();
 			$('tr#TriggerTime_Row div#TriggerTime_NotChoosen').hide();
 
@@ -276,7 +298,33 @@
 					if($('option:selected', f['record[data][staticdate_listids][]']).size() == 0)
 						return this.checkFormInvalid(f['record[data][staticdate_listids][]'], this._language.triggertype_staticdate_empty_listid);
 				break;
-
+               case 't':
+					
+			       var time_str = f['sendtime_hours'].value+':'+f['sendtime_minutes'].value+':00'+'  '+f['sendtime_ampm'].value.toLowerCase();
+				       var hours = f['sendtime_hours'].value;
+						var minutes = f['sendtime_minutes'].value;
+						var seconds = 00;
+						var meridian = f['sendtime_ampm'].value.toLowerCase();
+ 
+						if (meridian == 'pm' && hours < 12) {
+						  hours = +hours + +12;
+						}
+						else if (meridian == 'am' && hours == 12) {
+						  hours = -hours - - 12;
+						}
+						
+			       if(f['datetime[month]'].value  <10){
+				    f['record[data][staticdatetime]'].value = f['datetime[year]'].value+'-0'+f['datetime[month]'].value+'-'+f['datetime[day]'].value+' '+hours+':'+minutes;
+				   
+				   }else{
+				   f['record[data][staticdatetime]'].value = f['datetime[year]'].value+'-'+f['datetime[month]'].value+'-'+f['datetime[day]'].value+' '+hours+':'+minutes;
+				    
+				}
+			//f['record[data][staticdate]'].value = f['record[data][staticdatetime]'].value;
+					if ($.trim(f['record[data][staticdatetime]'].value) == '') return this.checkFormInvalid($(f['record[data][staticdatetime]']).prev().get(0), this._language.triggertype_staticdatetime_empty_date);
+					if($('option:selected', f['record[data][staticdatetime_listids][]']).size() == 0)
+						return this.checkFormInvalid(f['record[data][staticdatetime_listids][]'], this._language.triggertype_staticdatetime_empty_listid);
+				break;  
 				case 'l':
 					if (f['record[data][linkid_newsletterid]'].selectedIndex == 0) return this.checkFormInvalid(f['record[data][linkid_newsletterid]'], this._language.triggertype_linkclicked_error_choosenewsletter);
 					if ($('option', f['record[data][linkid]']).length == 0 || $(f['record[data][linkid]']).val() == 0) return this.checkFormInvalid(f['record[data][linkid]'], this._language.triggertype_linkclicked_error_chooseanothernewsletter);
@@ -323,9 +371,9 @@
 			var options = '';
 			var time = parseInt(document.frmTriggerForm['toprocess[time]'].value);
 
-			if (triggerType == 'f' || triggerType == 's') options = '<option value="before">{$lang.TriggerEmails_Form_Field_When_Context_Before}</option>';
+			if (triggerType == 'f' || triggerType == 's' || triggerType == 't') options = '<option value="before">{$lang.TriggerEmails_Form_Field_When_Context_Before}</option>';
 			options += '<option value="on" ' + (time? '' : 'selected="selected" ') + '>'
-			options += (triggerType == 'f' || triggerType == 's')? '{$lang.TriggerEmails_Form_Field_When_Context_On}' : '{$lang.TriggerEmails_Form_Field_When_Context_When}'
+			options += (triggerType == 'f' || triggerType == 's' || triggerType == 't')? '{$lang.TriggerEmails_Form_Field_When_Context_On}' : '{$lang.TriggerEmails_Form_Field_When_Context_When}'
 			options += '</option>';
 			options += '<option value="after" ' + ((time && triggerType != 'f')? 'selected="selected" ' : '') + '>{$lang.TriggerEmails_Form_Field_When_Context_After}</option>';
 
@@ -336,7 +384,7 @@
 			var selector = '';
 
 			switch(triggerType) {
-				case 'f': case 's': selector = 'TriggerTime_TimeUnit_Interval_Date'; break;
+				case 'f': case 's': case 't': selector = 'TriggerTime_TimeUnit_Interval_Date'; break;
 				case 'l': selector = 'TriggerTime_TimeUnit_Interval_Link'; break;
 				case 'n': selector = 'TriggerTime_TimeUnit_Interval_EmailOpen'; break;
 			}
@@ -419,7 +467,24 @@
 						default: label = this._language.triggeractions_removefromlist_label_staticdate_many.replace(/%s/, '<ul style="margin-top:5px; margin-bottom:5px; color: auto;"><li>' + selectedListText.join('</li><li>') + '</li></ul>'); break;
 					}
 				break;
+				case 't':
+				
+					 
+					document.getElementById("show_senddate").style.display="";
+					var selectedListText = [];
 
+					var obj = f['record[data][staticdatetime_listids][]'];
+					 
+					for (var i = 0, j = obj.options.length; i < j; ++i)
+						if (obj.options[i].selected) selectedListText.push(obj.options[i].text);
+					delete obj;
+
+					switch (selectedListText.length) {
+						case 0: break;
+						case 1: label = this._language.triggeractions_removefromlist_label_staticdatetime_one.replace(/%s/, selectedListText[0]); break;
+						default: label = this._language.triggeractions_removefromlist_label_staticdatetime_many.replace(/%s/, '<ul style="margin-top:5px; margin-bottom:5px; color: auto;"><li>' + selectedListText.join('</li><li>') + '</li></ul>'); break;
+					}
+				break;
 				case 'n':
 					var temp = f['record[data][newsletterid]'].selectedIndex;
 					if (temp != 0) label = this._language.triggeractions_removefromlist_label_newsletteropen.replace(/%s/, f['record[data][newsletterid]'].options[temp].text);
@@ -436,6 +501,14 @@
 	};
 
 	Application.init.push(Application.Page.TriggerEmailsForm.eventDOMReady);
+	function ShowSendTime(chkbox) {
+		if (chkbox.value !='t') {
+			document.getElementById('show_senddate').style.display='none';
+		}
+		 else {
+			 document.getElementById('show_senddate').style.display='block';
+		 }
+	}
 </script>
 <style>
 	.PanelRow {
@@ -574,7 +647,37 @@
 													</div>
 												</div>
 											{* ----- *}
-
+												{* ----- Triggered based on date time *}
+                                             	<div>
+													<input	type="radio"
+															name="record[triggertype]"
+															id="TriggerTypeStaticlDateTimeEvent"
+															class="TriggerType"
+															value="t"
+															{if $record.triggertype == 't'}checked="checked"{/if} onClick="ShowSendTime(this);"/>
+													  <label for="TriggerTypeStaticDateTimeEvent">Based on specific date Time</label>
+														 	<input type="hidden"  id= "staticdatetime" name="record[data][staticdatetime]" value="{$record.data.staticdatetime}" />
+													
+												 	   <div class="TriggerType_t_options TriggerType_options" id="show_senddate" {if  $record.triggertype != 't'}style="display:none;"{/if}>
+														
+														<div>
+														%%GLOBAL_SendTimeBox%%&nbsp;
+														
+												<script>
+														function SetSendTime() {
+														var f = document.frmTriggerForm;
+															f['record[data][staticdatetime]'].value = f['datetime[year]'].value+'-'+f['datetime[month]'].value+'-'+f['datetime[day]'].value+' '+f['sendtime_hours'].value+':'+f['sendtime_minutes'].value+' '+f['sendtime_ampm'].value ;
+				  
+															//var sendtime = y+'-'+m+'-'+d+' '+  h + ':' + m + a;
+															//$('#staticdatetime').val(sendtime);
+														}
+															</script>
+													</div>
+													</div>
+												</div>
+												
+													
+												 
 											{* ----- Triggered based on link being clicked *}
 												<div>
 													<input	type="radio"
@@ -669,6 +772,29 @@
 										</td>
 									</tr>
 								{* ----- *}
+								{* ----- Special case for "Static Date time" where it needs to be assigned to lists *}
+									<tr class="TriggerType_t_options TriggerType_options" {if $record.triggertype != 't'}style="display:none;"{/if}>
+										<td class="FieldLabel" width="10%">
+											<img src="images/blank.gif" width="200" height="1" /><br />
+											{template="Required"}
+											{$lang.TriggerEmails_Form_Field_TriggerType_StaticDate_ListTitle}:
+										</td>
+										<td>
+											<select name="record[data][staticdatetime_listids][]" id="record_data_staticdatetime_listids" multiple="multiple" class="ISSelectReplacement ISSelectSearch" onchange="Application.Page.TriggerEmailsForm.changeRemoveFromListLabel();">
+												{foreach from=$availableLists item=each}
+													{if $each.listid != $record.listid}
+														<option value="{$each.listid}"
+															{if (is_array($record.data.staticdatetime_listids) && in_array($each.listid, $record.data.staticdatetime_listids)) || ($record.data.staticdatetime_listids == $each.listid)}
+																selected="selected"
+															{/if}>
+															{$each.name|htmlspecialchars, ENT_QUOTES, SENDSTUDIO_CHARSET}
+														</option>
+													{/if}
+												{/foreach}
+											</select>
+										</td>
+									</tr>
+								{* ----- *}
 
 
 								{* ----- Trigger Time *}
@@ -682,7 +808,7 @@
 											<input type="hidden" name="record[triggerhours]" value="{$record.triggerhours}" />
 											<div id="TriggerTime_Choosen" {if !$record.triggeremailsid}style="display:none;"{/if}>
 												<select name="toprocess[when]" class="Field250" style="width:auto;">
-													{if $record.triggertype == 'f' || $record.triggertype == 's'}
+													{if $record.triggertype == 'f' || $record.triggertype == 's' ||  $record.triggertype == 't'}
 														<option value="before" {if $record.triggerhours < 0}selected="selected"{/if}>
 															{$lang.TriggerEmails_Form_Field_When_Context_Before}
 														</option>
@@ -700,7 +826,7 @@
 													</select>
 													<span id="TriggerTime_TimeUnit_Postfix">{if $record.triggerhours < 0}{$lang.TriggerEmails_Form_Field_When_Context_Before}{elseif $record.triggerhours > 0}{$lang.TriggerEmails_Form_Field_When_Context_After}{/if}</span>
 												</span>
-												<span id="TriggerTime_TimeUnit_Interval_Date" class="TriggerTime_TimeInterval" {if $record.triggertype != 'f' && $record.triggertype != 's'}style="display:none;"{/if}>
+												<span id="TriggerTime_TimeUnit_Interval_Date" class="TriggerTime_TimeInterval" {if $record.triggertype != 'f' && $record.triggertype != 's' && $record.triggertype != 't'}style="display:none;"{/if}>
 													<select name="record[triggerinterval]" class="Field250" style="width:auto;">
 														<option value="0" {if $record.triggerinterval == 0}selected="selected"{/if}>{$lang.TriggerEmails_Form_Field_When_Interval_TheDate}</option>
 														<option value="1" {if $record.triggerinterval == 1}selected="selected"{/if}>{$lang.TriggerEmails_Form_Field_When_Interval_TheNextAnniversary}</option>

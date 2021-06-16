@@ -181,6 +181,8 @@
 								{$lang.TriggerEmails_Manage_Column_TriggeredBy_LinkClicked}
 							{elseif $each.triggeremailstype == 's'}
 								{$lang.TriggerEmails_Manage_Column_TriggeredBy_StaticDate}
+							{elseif $each.triggeremailstype == 't'}
+							{$lang.TriggerEmails_Manage_Column_TriggeredBy_StaticDateTime}
 							{else}
 								-
 							{/if}

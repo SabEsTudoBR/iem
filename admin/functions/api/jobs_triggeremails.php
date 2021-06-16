@@ -141,7 +141,7 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 	{    	
 		//set up debug value from db table 'config_settings'
 		$this->debug_db = IEM::getDatabase();
-		$status_query1 = "SELECT areavalue FROM [|PREFIX|]config_settings where area='TRIGGEREMAIL_DEBUG'";
+		$status_query1 = "SELECT areavalue FROM [|PREFIX|]config_addons_settings where area='TRIGGEREMAIL_DEBUG'";
 		$Triggeremail_Debug = $this->debug_db->FetchOne($status_query1);
 		
 		return ($Triggeremail_Debug == 1)? true : false;
@@ -966,6 +966,9 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 		}
 
 		if (!$this->_populateQueueByStaticDate()) {
+			return false;
+		}  
+		if (!$this->_populateQueueByStaticDateTime()) {
 			return false;
 		}
 
@@ -1816,10 +1819,104 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 					WHERE	q.queueid IS NULL
 					        AND lo.triggeremailsid IS NULL
         ";
-
+		 
+   
 		if (!$this->Db->Query(trim($query))) {
 			list($msg, $errno) = $this->Db->GetError();
 			$this->_log('Cannot populate queue table with static date based triggeremails: ' . $msg . "\n\nThe query was: {$query}");
+			trigger_error($msg, $errno);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * _populateQueueByStaticDateTime
+	 * Populate queue table with "Static Date Time" based trigger emails
+	 *
+	 * This method will populate queue table with records that trigger needs to action against.
+	 * Population of this queue is based on "Static Date" rule.
+	 *
+	 * @return Boolean Returns TRUE if successful, FALSE otherwise
+	 */
+	private function _populateQueueByStaticDateTime()
+	{    
+		$now = time();
+		$startOfDayString = date('Y-m-d 00:00:00', $now);
+		$endOfDayString = date('Y-m-d 23:59:59', $now);
+		$cutoff = (intval($now / 86400) - 1) * 86400;
+		$year = date('Y', $now);
+
+        $query = "
+					INSERT INTO [|PREFIX|]queues (queueid, queuetype, ownerid, recipient, processed, sent, processtime)
+
+					SELECT  t.queueid,
+					        'triggeremail',
+					        t.ownerid,
+					        s.subscriberid,
+					        0,
+					        0,
+					        date_add(LEFT(t.staticdatetime, 16), INTERVAL t.triggerhours HOUR)
+
+					FROM    -- Select All of the required trigger emails information
+					        (   SELECT  t.triggeremailsid       AS triggeremailsid,
+					                    t.queueid               AS queueid,
+					                    t.ownerid               AS ownerid,
+					                    t.triggerhours          AS triggerhours,
+					                    t.triggerinterval       AS triggerinterval,
+					                    td.datavaluestring      AS staticdatetime,
+					                    tdl.datavalueinteger    AS listid
+					            FROM    [|PREFIX|]triggeremails AS t
+					                        JOIN [|PREFIX|]triggeremails_data AS td
+					                            ON (    td.triggeremailsid = t.triggeremailsid
+					                                    AND td.datakey = 'staticdatetime'
+					                                    AND  LEFT(td.datavaluestring, 4) <= {$year}
+					                                    AND (   (   t.triggerinterval <> 0 
+					                                                AND date_add(str_to_date(LEFT(td.datavaluestring, 16), '%Y-%m-%d %H:%i'), INTERVAL t.triggerhours HOUR) >= '{$startOfDayString}'
+					                                                AND date_add(str_to_date(LEFT(td.datavaluestring, 16), '%Y-%m-%d %H:%i'),INTERVAL t.triggerhours HOUR) <= '{$endOfDayString}')
+					                                            OR (    t.triggerinterval = 0   
+					                                                    AND date_add(str_to_date(td.datavaluestring, '%Y-%m-%d %H:%i'), INTERVAL t.triggerhours HOUR) >= '{$startOfDayString}'
+					                                                    AND date_add(str_to_date(td.datavaluestring, '%Y-%m-%d %H:%i'), INTERVAL t.triggerhours HOUR) <= '{$endOfDayString}')))
+					                        JOIN [|PREFIX|]triggeremails_data AS tdl    
+					                            ON (    tdl.triggeremailsid = t.triggeremailsid
+					                                    AND tdl.datakey = 'staticdatetime_listids')
+					            WHERE   t.active = '1'
+					                    AND t.triggertype = 't') AS t
+
+					            -- Join with subscribers table, making sure that subscriber is not bounced and not unsubscribed
+					            JOIN [|PREFIX|]list_subscribers AS s
+					                ON (    s.listid = t.listid
+					                        AND (s.bounced IS NULL OR s.bounced = 0)
+					                        AND (s.unsubscribed IS NULL OR s.unsubscribed = 0))
+
+					            -- Left join with triggeremails recipients used to check whether or not subscribers have received a particular trigger or not
+					            -- INCLUSION of a record for a subscriber will INDICATE that the SUBSCRIBER IS NOT ELIGIBLE to receive the trigger, because they either:
+					            -- (1) Have received more than the specified interval
+					            -- (2) Trigger has recently gone off (within 24 hours) for the particular subscriber
+					            LEFT JOIN [|PREFIX|]triggeremails_log_summary AS lo
+					                ON (    lo.triggeremailsid = t.triggeremailsid  
+					                        AND lo.subscriberid = s.subscriberid
+					                        AND (   -- Exclude anything that doesn't have perpetual interval
+					                                t.triggerinterval <> -1
+
+					                                -- Or if it does have an interval, include record if the interval has already been exceeded
+					                                OR (t.triggerinterval >= 0 AND lo.actionedoncount >= t.triggerinterval)
+
+					                                -- Or include anything that has been sent out today
+					                                OR (lo.lastactiontimestamp >= {$cutoff})))
+
+					             -- Left join with queue table to make sure that the trigger is not currently being queued.
+					            LEFT JOIN [|PREFIX|]queues AS q
+					                ON (    q.queueid = t.queueid
+					                        AND q.recipient = s.subscriberid)
+
+					WHERE	q.queueid IS NULL
+					        AND lo.triggeremailsid IS NULL
+        "; 
+     
+		if (!$this->Db->Query(trim($query))) {
+			list($msg, $errno) = $this->Db->GetError();
+			$this->_log('Cannot populate queue table with static date time based triggeremails: ' . $msg . "\n\nThe query was: {$query}");
 			trigger_error($msg, $errno);
 			return false;
 		}
