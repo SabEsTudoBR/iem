@@ -55,11 +55,11 @@ function utf8_isvalid($str)
 */
 function utf8_charlength($str, $offset=0)
 {
-	if (strlen($str{$offset}) == 0) {
+	if (strlen($str[$offset]) == 0) {
 		return 0;
 	}
 
-	$ord = ord($str{$offset});
+	$ord = ord($str[$offset]);
 
 	if ($ord <= 0x7F) {
 		return 1;

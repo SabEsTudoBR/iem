@@ -37,7 +37,7 @@ class Bounce_API extends Jobs_API
 	 *
 	 * @see LogFile
 	 */
-	var $Debug = null;
+	var $Debug = false;
 
 	/**
 	 * Where to save debug messages.
@@ -278,20 +278,30 @@ class Bounce_API extends Jobs_API
 		    
 		return true;
 	}
+	
 	/**
 	* debugging
-	* Check the value of EMAIL_DEBUG in config_settings table.
+	* Check the value of BOUNCE_DEBUG in [|PREFIX|]debugging_addon_settings table.
 	*
 	* @return Boolean Returns false if it can't be set (invalid data), or true if it enabled.
 	*/
-	
 	function debugging()
-	{
-		//set up debug value from db settings config table
-		$status_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='BOUNCE_DEBUG'";
-		$BounceDebug = $this->db->FetchOne($status_query);
-		return ($BounceDebug == 1)? true : false;
+	{	
+		require_once(SENDSTUDIO_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . 'interspire_addons.php');
+		$addon_system = new Interspire_Addons();
+		$addon = "debug";
+		
+		// Check if 'debug' addon is enabled or disabled
+		if ($addon_system->isEnabled($addon)) {
+			// Check 'BOUNCE_DEBUG' value
+			$status_query = "SELECT areavalue FROM [|PREFIX|]debugging_addon_settings where area='BOUNCE_DEBUG'";
+			$BounceDebug = $this->db->FetchOne($status_query);
+			return ($BounceDebug == 1)? true : false;
+		} else {
+			return false;
+		}
 	}
+	
 	/**
 	 * Login
 	 * Logs in to the email account using the settings provided.

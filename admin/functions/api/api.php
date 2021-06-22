@@ -219,7 +219,7 @@ class API
 			$format = strval($format);
 		}
 
-		$format = strtolower($format{0}); // only get the first character in case the whole name is passed in.
+		$format = strtolower($format[0]); // only get the first character in case the whole name is passed in.
 		if (!in_array($format, array_keys($this->AllFormats))) {
 			return false;
 		}

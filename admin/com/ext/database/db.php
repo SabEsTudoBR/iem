@@ -95,13 +95,6 @@ abstract class Db
 	public $QueryList = array();
 
 	/**
-	* Is magic quotes runtime on ?
-	*
-	* @var Boolean
-	*/
-	public $magic_quotes_runtime_on = false;
-
-	/**
 	* The database table prefix that is being used.
 	*
 	* @var String
@@ -210,7 +203,6 @@ abstract class Db
 
     public function __construct()
 	{
-		$this->magic_quotes_runtime_on = get_magic_quotes_runtime();
 	}
 
 	abstract public function Connect();
@@ -445,9 +437,7 @@ abstract class Db
 		if (!isset($row[$item])) {
 			return false;
 		}
-		if($this->magic_quotes_runtime_on) {
-			$row[$item] = stripslashes($row[$item]);
-		}
+	
 		return $row[$item];
 	}
 

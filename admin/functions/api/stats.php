@@ -307,7 +307,7 @@ class Stats_API extends API
 		$result = $this->Db->Query($query);
 		$statsdetails = $this->Db->Fetch($result);
 
-		if ($statstype{0} == 'a') {
+		if ($statstype[0] == 'a') {
 			$query = "SELECT listid FROM " . SENDSTUDIO_TABLEPREFIX . "autoresponders WHERE autoresponderid='" . (int)$statsdetails['autoresponderid'] . "'";
 			$result = $this->Db->Query($query);
 			$lists[] = $this->Db->FetchOne($result, 'listid');

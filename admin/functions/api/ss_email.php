@@ -426,7 +426,7 @@ class SS_Email_API extends Email_API
 
 			// if there is a "#" as the first or second char, ignore it. Could be second if it is quoted: '#' or "#"
 			$check = str_replace('href=', '', $url);
-			if ($check{0} == '#' || $check{1} == '#') {
+			if ($check[0] == '#' || $check[1] == '#') {
 				continue;
 			}
 
@@ -819,7 +819,7 @@ class SS_Email_API extends Email_API
 
                 // if there is a "#" as the first or second char, ignore it. Could be second if it is quoted: '#' or "#"
                 $check = str_replace('href=', '', $url);
-                if ($check{0} == '#' || $check{1} == '#') {
+                if ($check[0] == '#' || $check[1] == '#') {
                     continue;
                 }
 
@@ -1264,7 +1264,6 @@ class SS_Email_API extends Email_API
 
 		if ((int)$this->statid > 0) {
 			$extra_headers[] = 'List-Unsubscribe: <%%HEADER_UNSUBSCRIBELINK%%>';
-			$extra_headers[] = 'X-Mailer-RecptId: %%HEADER_SUBSCRIBERID%%';
 			$extra_headers[] = 'X-Mailer-SID: ' . (int)$this->statid;
 		}
 

@@ -187,7 +187,7 @@ class Bounce extends SendStudio_Functions
 		$list_api = $obj->GetApi('Lists');
 		$bd = self::hold('TestBounceDetails');
 		if(isset($_POST['list'])){
-			$list = IEM::ifsetor(intval($_POST['list']), null);
+			$list = IEM::ifsetor($_POST['list'], null);
 		}
 		if (!isset($list)) {
 			$list = self::hold('list');

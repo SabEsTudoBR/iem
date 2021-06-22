@@ -336,7 +336,7 @@ class Email_API
 	*
 	* @var Boolean
 	*/
-	var $Debug = null;
+	var $Debug = false;
 
 	/**
 	* LogFile
@@ -546,21 +546,30 @@ class Email_API
 		}
 		$this->Debug = $this->debugging();
 	}
+	
   	/**
 	* debugging
-	* Check the value of EMAIL_DEBUG in config_settings table.
+	* Check the value of EMAIL_DEBUG in [|PREFIX|]debugging_addon_settings table.
 	*
 	* @return Boolean Returns false if it can't be set (invalid data), or true if it enabled.
 	*/
-	
 	function debugging()
 	{
-		//set up debug value from db settings config table
-		$status_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='EMAIL_DEBUG'";
-		$EmailDebug = $this->db->FetchOne($status_query);
+		require_once(SENDSTUDIO_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . 'interspire_addons.php');
+		$addon_system = new Interspire_Addons();
+		$addon = 'debug';
 		
-		return ($EmailDebug == 1)? true : false;
+		// Check if 'debug' addon is enabled or disabled
+		if ($addon_system->isEnabled($addon)) {
+			// Check 'EMAIL_DEBUG' value
+			$status_query = "SELECT areavalue FROM [|PREFIX|]debugging_addon_settings where area='EMAIL_DEBUG'";
+			$EmailDebug = $this->db->FetchOne($status_query);
+			
+			return ($EmailDebug == 1)? true : false;
+		} 
+			return false;
 	}
+	
 	/**
 	* Set
 	* This sets the class var to the value passed in.
@@ -677,7 +686,7 @@ class Email_API
 	*/
 	function AddBody($bodytype='text', $body='')
 	{
-		$bodytype = strtolower($bodytype{0});
+		$bodytype = strtolower($bodytype[0]);
 		if (!in_array($bodytype, array_keys($this->body))) {
 			return false;
 		}
@@ -705,7 +714,7 @@ class Email_API
 			return true;
 		}
 
-		$bodytype = strtolower($bodytype{0});
+		$bodytype = strtolower($bodytype[0]);
 		if (!in_array($bodytype, array_keys($this->body))) {
 			return false;
 		}
@@ -1275,7 +1284,7 @@ class Email_API
 	*/
 	function _JoinBody($type='', $boundary=2, $add_bottom_boundary=true)
 	{
-		$type = strtolower($type{0});
+		$type = strtolower($type[0]);
 		$content_type = ($type == 'h') ? 'text/html' : 'text/plain; format=flowed';
 		$body = '';
 		$body .= '--' . $this->_Boundaries[$boundary] . $this->_newline;
@@ -1612,7 +1621,7 @@ class Email_API
 			$cmds = array();
 			$cmds[] = "MAIL FROM:<" . $this->BounceAddress . ">";
 			$cmds[] = "RCPT TO:<" . $rcpt_to . ">";
-			$data = implode($cmds, $this->_smtp_newline);
+			$data = implode($this->_smtp_newline, $cmds);
 			if (!$this->_Put_Smtp_Connection($data)) {
 				$this->ErrorCode = 5;
 				$this->ErrorCodeSMTPEnhanced = false;
