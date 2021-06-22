@@ -125,27 +125,36 @@ class Jobs_TriggerEmails_API extends TriggerEmails_API
 	{
 		// Set up debug environment
 		 	
-		$this->_debugMode =   $this->debugging();
+		$this->_debugMode = $this->debugging();
 
 		$this->_log('Trigger Emails Jobs object constructed');
 		$this->GetDb();
 	}
-    	/**
+    
+	/**
 	* debugging
-	* Check the value of TRIGGEREMAIL_DEBUG in config_settings table.
+	* Check the value of TRIGGEREMAIL_DEBUG in [|PREFIX|]debugging_addon_settings table.
 	*
 	* @return Boolean Returns false if it can't be set (invalid data), or true if it is enabled.
 	*/
-	
 	function debugging()
-	{    	
-		//set up debug value from db table 'config_settings'
-		$this->debug_db = IEM::getDatabase();
-		$status_query1 = "SELECT areavalue FROM [|PREFIX|]config_addons_settings where area='TRIGGEREMAIL_DEBUG'";
-		$Triggeremail_Debug = $this->debug_db->FetchOne($status_query1);
+	{   
+		require_once(SENDSTUDIO_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . 'interspire_addons.php');
+		$addon_system = new Interspire_Addons();
+		$addon = "debug";
 		
-		return ($Triggeremail_Debug == 1)? true : false;
+		// Check if 'debug' addon is enabled or disabled
+		if ($addon_system->isEnabled($addon)) {
+			// Check 'TRIGGEREMAIL_DEBUG' value
+			$this->debug_db = IEM::getDatabase();
+			$status_query1 = "SELECT areavalue FROM [|PREFIX|]debugging_addon_settings where area='TRIGGEREMAIL_DEBUG'";
+			$Triggeremail_Debug = $this->debug_db->FetchOne($status_query1);
+		
+			return ($Triggeremail_Debug == 1)? true : false;
+		} 
+			return false;
 	}
+	
 	/**
 	 * StartJob
 	 * Updates the job status in the database to mark it as 'in progress' (i).

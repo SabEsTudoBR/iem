@@ -852,23 +852,23 @@ class InterspireTemplate
 			for ($i=0; $i<strlen($functionsPart); ++$i) {
 
 				// are we starting a new string? If so, set the flag
-				if($inQuotes === false && in_array($functionsPart{$i}, array("'", '"'))) {
-					$currentQuote = $functionsPart{$i};
+				if($inQuotes === false && in_array($functionsPart[$i], array("'", '"'))) {
+					$currentQuote = $functionsPart[$i];
 					$inQuotes = true;
 
 				// are we closing a string?
-				} elseif($inQuotes === true && @$functionsPart{$i-1} != '\\' && $functionsPart{$i} === $currentQuote) {
+				} elseif($inQuotes === true && @$functionsPart[$i-1] != '\\' && $functionsPart[$i] === $currentQuote) {
 					$inQuotes = false;
 				}
 
 				// check to make sure its a valid function splitter thats not in quotes
-				if($functionsPart{$i} === '|' && !$inQuotes) {
+				if($functionsPart[$i] === '|' && !$inQuotes) {
 					$arrFunctions[] = $newStr;
 					$newStr = '';
 					continue;
 				}
 
-				$newStr .= $functionsPart{$i};
+				$newStr .= $functionsPart[$i];
 			}
 
 			// add newStr as the last function, as normally an array entry is only inserted at |

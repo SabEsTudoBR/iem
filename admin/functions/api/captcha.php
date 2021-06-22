@@ -352,7 +352,7 @@ class Captcha_API extends API
 				for($i=0;$i<$length;$i++){
 					$x = 10+rand(-2, 2);
 					$x = $x + (12*($i));
-					imagettftext($img_handle, $this->fontSize, rand(-4, 4), $x, 15+rand(-1, 1), $text_color, $this->fontPath, $this->__secret{$i});
+					imagettftext($img_handle, $this->fontSize, rand(-4, 4), $x, 15+rand(-1, 1), $text_color, $this->fontPath, $this->__secret[$i]);
 				}
 				#imagettftext($img_handle, $this->fontSize, rand(-4, 4), 10+rand(-3, 3), 15+rand(-3, 3), $text_color, $this->fontPath, $this->__secret);
 			} else {

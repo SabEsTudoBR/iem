@@ -492,7 +492,7 @@ class Splittest_Stats_API extends API
 
 			// some values useful displaying from the template
 			$row['campaigns'] = $this->newsletterStats;
-			$row['campaign_names'] = implode($row['campaign_names'], ', ');
+			$row['campaign_names'] = implode(',',$row['campaign_names']);
 			$row['campaign_statistics'] = $compareCampaignStats;
 			$row['campaign_winner_id'] = $this->campaignWinner['winnerId'];
 			$row['campaign_winner_name'] = $this->campaignWinner['winnerName'];
