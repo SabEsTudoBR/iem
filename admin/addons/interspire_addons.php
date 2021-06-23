@@ -1159,13 +1159,14 @@ class Interspire_Addons
 		}
 
 		$res = $this->db->Fetch($result);
-		$enable = $res['enabled'];
-		if ($enable && $enable === '1') {
-			return true;
+		if(!empty($res)){  
+			$enable = $res['enabled'];
+			if ($enable && $enable === '1') {
+				return true;
+			}
 		}
 		return false;
 	}
-
 	/**
 	 * _unregisterListeners
 	 * This is called when you uninstall or disable an addon.
