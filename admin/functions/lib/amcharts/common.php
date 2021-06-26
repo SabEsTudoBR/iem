@@ -13,9 +13,6 @@ if (!function_exists('stripslashes_deep')) {
 	*/
 	function stripslashes_deep($value='')
 	{
-		if (!get_magic_quotes_gpc()) {
-			return $value;
-		}
 		if (is_array($value)) {
 			foreach ($value as $k=>$v) {
 				$sk = stripslashes($k); // we may need to strip the key as well
