@@ -1,24 +1,29 @@
 # Interspire Email Marketer Changelog
 
 Version: 6.3.0
-Released: 28th June, 2021
+Released: 30th June, 2021
 - PHP 7.4 supported
-- Fixed Statistics 'Total Unique Clicks Discrepancy'
-- Fixed Debugging Addon 'setting reverts back to unchecked'
-- Added Triggers on Specific Time
-- Implemented "User session timeout after certain time of inactivity"
-- Fixed 'Autoresponders Filter By Custom Field Issue'
-- Removed deprecated PHP methods causing notices/errors
-- Misc. minor fixes and code cleanup
+- updated TinyMCE to 5.8.2
+- fixed statistics total unique clicks discrepancy
+- fixed debugging addon setting reverting to unchekced in some edge cases
+- added triggers on specific time
+- implemented user session timeout
+- fixed autoresponders filter by custom field issue
+- removed deprecated php methods causing notices/errors
+- misc. minor fixes and code cleanup
 
 Files Changed:
 -------------
 	admin/com/language/default/triggeremails.php
+	admin/com/templates/editor.tpl 
+	admin/com/templates/header.tpl
     admin/com/templates/stats_triggeremails_manage.tpl
     admin/com/templates/triggeremails_form.tpl
     admin/com/templates/triggeremails_manage.tpl
     admin/functions/api/jobs_triggeremails.php
+	admin/functions/api/send.php
     admin/functions/api/triggeremails.php
+	admin/functions/newsletters.php
     admin/functions/triggeremails.php
     admin/functions/api/stats.php
     admin/com/language/default/settings.php
@@ -47,7 +52,10 @@ Files Changed:
     admin/functions/process.php
     changelog.txt
     version.txt
-	
+
+Files Added:
+-----------
+	admin/functions/emoji.php	
 
 Version: 6.2.3
 Released: 5th May, 2021

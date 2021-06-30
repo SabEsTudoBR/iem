@@ -13,6 +13,7 @@
 * Require the base API class.
 */
 require_once(dirname(__FILE__) . '/jobs.php');
+require_once(dirname(dirname(__FILE__)) . '/emoji.php');
 
 /**
  * The send class handles basic processing of sending jobs.
@@ -363,9 +364,10 @@ class Send_API extends Jobs_API
 		
 		$this->newsletter                = array();
 		$this->newsletter['Format']      = $this->Newsletters_API->Get('format');
-		$this->newsletter['Subject']     = $this->Newsletters_API->Get('subject');
-		$this->newsletter['TextBody']    = $this->Newsletters_API->Get('textbody');
-		$this->newsletter['HTMLBody']    = $this->Newsletters_API->Get('htmlbody');
+		//$this->newsletter['Subject']     = $this->Newsletters_API->Get('subject');
+		$this->newsletter['Subject']     = Emoji::Decode($this->Newsletters_API->Get('subject'));
+		$this->newsletter['TextBody']    = Emoji::Decode($this->Newsletters_API->Get('textbody'));
+		$this->newsletter['HTMLBody']    = Emoji::Decode($this->Newsletters_API->Get('htmlbody'));
 		$this->newsletter['Attachments'] = $this->sendstudio_functions->GetAttachments('newsletters', $this->jobdetails['Newsletter'], true);
 
 		$this->Email_API->ForgetEmail();
