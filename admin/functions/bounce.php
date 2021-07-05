@@ -186,12 +186,16 @@ class Bounce extends SendStudio_Functions
 		$obj = new SendStudio_Functions; 
 		$list_api = $obj->GetApi('Lists');
 		$bd = self::hold('TestBounceDetails');
-		if(isset($_POST['list'])){
-			$list = IEM::ifsetor($_POST['list'], null);
+		if (isset($_POST['list'])){
+			$list = intval($_POST['list']);
+		} else {
+			$list = null;
 		}
+		
 		if (!isset($list)) {
 			$list = self::hold('list');
 		}
+		
 		// User should have edit permissions for the list since they can change its bounce settings.
 		// TODO: it should be for all lists that share this bounce server and username.
 		$access = $user->HasAccess('lists', 'edit', $list);
