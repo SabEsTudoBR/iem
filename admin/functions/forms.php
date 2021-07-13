@@ -1026,7 +1026,7 @@ class Forms extends SendStudio_Functions
 			$GLOBALS['ConfirmHTMLField'] = '';
 		}
 
-		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ConfirmPageHTML'], false, 'confirmhtml', 'exact', 260, 400, false, false);
+		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ConfirmPageHTML'], false, 'confirmhtml', 'exact', 450, 650, false, false);
 		$GLOBALS['HTMLEditorName'] = 'confirmhtml';
 		$GLOBALS['ConfirmHTML'] = $this->ParseTemplate('Form_Editor_HTML', true, false);
 
@@ -1043,7 +1043,7 @@ class Forms extends SendStudio_Functions
 			break;
 		}
 
-		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($htmlvalue, false, 'confirmemail_html', 'exact', 260, 400);
+		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($htmlvalue, false, 'confirmemail_html', 'exact', 450, 650);
 		$GLOBALS['HTMLEditorName'] = 'confirmemail_html';
 		$GLOBALS['EditorHTML'] = $this->ParseTemplate('Form_Editor_HTML', true, false);
 		$GLOBALS['EditorText'] = $this->ParseTemplate('Form_Editor_Text', true, false);
@@ -1193,12 +1193,12 @@ class Forms extends SendStudio_Functions
 			$GLOBALS['Intro'] = GetLang('ThanksPageIntro_Edit');
 		}
 
-		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($htmlvalue, false, 'thanksemail_html', 'exact', 260, 400);
+		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($htmlvalue, false, 'thanksemail_html', 'exact', 450, 650);
 		$GLOBALS['HTMLEditorName'] = 'thanksemail_html';
 		$GLOBALS['EditorHTML'] = $this->ParseTemplate('Form_Editor_HTML', true, false);
 		$GLOBALS['EditorText'] = $this->ParseTemplate('Form_Editor_Text', true, false);
 
-		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ThanksPageHTML'], false, 'thankspage_html', 'exact', 260, 400, false, false);
+		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ThanksPageHTML'], false, 'thankspage_html', 'exact', 450, 650, false, false);
 		$GLOBALS['HTMLEditorName'] = 'thankspage_html';
 		$GLOBALS['ThanksPage_HTML'] = $this->ParseTemplate('Form_Editor_HTML', true, false);
 
@@ -1283,7 +1283,7 @@ class Forms extends SendStudio_Functions
 			$GLOBALS['ThanksPageHTMLField'] = '';
 		}
 
-		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ThanksPageHTML'], false, 'thankspage_html', 'exact', 260, 400, false, false);
+		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ThanksPageHTML'], false, 'thankspage_html', 'exact', 450, 650, false, false);
 		$GLOBALS['HTMLEditorName'] = 'thankspage_html';
 		$GLOBALS['ThanksPage_HTML'] = $this->ParseTemplate('Form_Editor_HTML', true, false);
 
@@ -1458,7 +1458,7 @@ class Forms extends SendStudio_Functions
 			$GLOBALS['ErrorPageHTMLField'] = '';
 		}
 
-		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ErrorPageHTML'], false, 'errorhtml', 'exact', 260, 400, false, false);
+		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($GLOBALS['ErrorPageHTML'], false, 'errorhtml', 'exact', 450, 650, false, false);
 		$GLOBALS['HTMLEditorName'] = 'errorhtml';
 		$GLOBALS['ErrorHTML'] = $this->ParseTemplate('Form_Editor_HTML', true, false);
 
@@ -1518,7 +1518,7 @@ class Forms extends SendStudio_Functions
 		$GLOBALS['HTMLHelpTip'] = $this->_GenerateHelpTip('HLP_SendFriendHTMLVersion');
 
 		$GLOBALS['ShowCustomFields'] = 'none';
-		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($htmlvalue, false, 'myDevEditControl', 'exact', 260, 400);
+		$GLOBALS['HTMLContent'] = $this->GetHTMLEditor($htmlvalue, false, 'myDevEditControl', 'exact', 450, 650);
 		$GLOBALS['EditorHTML'] = $this->ParseTemplate('Form_Editor_HTML', true, false);
 		$GLOBALS['EditorText'] = $this->ParseTemplate('Form_Editor_Text', true, false);
 
