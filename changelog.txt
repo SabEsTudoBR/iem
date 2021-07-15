@@ -1,52 +1,56 @@
 # Interspire Email Marketer Changelog
 
 Version: 6.3.0
-Released: 28th June, 2021
+Released: 15th July, 2021
 - PHP 7.4 supported
-- Fixed Statistics 'Total Unique Clicks Discrepancy'
-- Fixed Debugging Addon 'setting reverts back to unchecked'
-- Added Triggers on Specific Time
-- Implemented "User session timeout after certain time of inactivity"
-- Fixed 'Autoresponders Filter By Custom Field Issue'
-- Removed deprecated PHP methods causing notices/errors
-- Misc. minor fixes and code cleanup
+- fixed statistics total unique clicks discrepancy
+- fixed debugging addon setting reverting to unchekced in some edge cases
+- fixed 'Trying to access array offset on value of type null' issue
+- added triggers on specific time
+- implemented user session timeout
+- fixed autoresponders filter by custom field issue
+- removed deprecated php methods causing notices/errors
+- misc. minor fixes and code cleanup
 
 Files Changed:
 -------------
 	admin/com/language/default/triggeremails.php
-    admin/com/templates/stats_triggeremails_manage.tpl
-    admin/com/templates/triggeremails_form.tpl
-    admin/com/templates/triggeremails_manage.tpl
-    admin/functions/api/jobs_triggeremails.php
-    admin/functions/api/triggeremails.php
-    admin/functions/triggeremails.php
-    admin/functions/api/stats.php
-    admin/com/language/default/settings.php
-    admin/com/templates/header.tpl
-    admin/com/templates/settings.tpl
-    admin/functions/api/settings.php
-    admin/functions/settings.php
-    admin/functions/autoresponders.php
-    admin/addons/dynamiccontenttags/dynamiccontenttags.php
-    admin/addons/splittest/api/splittest_stats.php
-    admin/com/ext/database/db.php
-    admin/com/ext/interspire_email/email.php
-    admin/com/ext/interspire_template/class.template.php
-    admin/com/init-legacy.php
-    admin/com/lib/IEM.class.php
-    admin/functions/api/api.php
-    admin/functions/api/bounce.php
-    admin/functions/api/captcha.php
-    admin/functions/api/jobs_autoresponders.php
-    admin/functions/api/jobs_triggeremails.php
-    admin/functions/api/ss_email.php
-    admin/functions/api/stats.php
-    admin/functions/api/upgrade.php
-    admin/functions/api/user.php
-    admin/functions/bounce.php
-    admin/functions/process.php
-    changelog.txt
-    version.txt
+	admin/com/templates/stats_triggeremails_manage.tpl
+	admin/com/templates/triggeremails_form.tpl
+	admin/com/templates/triggeremails_manage.tpl
+	admin/functions/api/jobs_triggeremails.php
+	admin/functions/api/triggeremails.php
+	admin/functions/triggeremails.php
+	admin/addons/interspire_addons.php
+	admin/functions/api/stats.php
+	admin/com/language/default/settings.php
+	admin/com/templates/header.tpl
+	admin/com/templates/settings.tpl
+	admin/functions/api/settings.php
+	admin/functions/settings.php
+	admin/functions/autoresponders.php
+	admin/addons/dynamiccontenttags/dynamiccontenttags.php
+	admin/addons/splittest/api/splittest_stats.php
+	admin/com/ext/database/db.php
+	admin/functions/lib/amcharts/common.php
+	admin/com/ext/interspire_email/email.php
+	admin/com/ext/interspire_template/class.template.php
+	admin/com/init-legacy.php
+	admin/com/lib/IEM.class.php
+	admin/functions/api/api.php
+	admin/functions/api/bounce.php
+	admin/functions/api/captcha.php
+	admin/functions/api/jobs_autoresponders.php
+	admin/functions/api/jobs_triggeremails.php
+	admin/com/upgrades/20210715/update_db_version.php
+	admin/functions/api/ss_email.php
+	admin/functions/api/stats.php
+	admin/functions/api/upgrade.php
+	admin/functions/api/user.php
+	admin/functions/bounce.php
+	admin/functions/process.php
+	changelog.txt
+	version.txt
 	
 
 Version: 6.2.3

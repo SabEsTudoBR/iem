@@ -71,7 +71,7 @@ class Upgrade_API extends API
 		'20190626' => '6.2.1',
 		'20200907' => '6.2.2',
 		'20210505' => '6.2.3',
-		'20210628' => '6.3.0',
+		'20210715' => '6.3.0',
 	);
 
 	/**
@@ -703,7 +703,7 @@ class Upgrade_API extends API
 		'20210505' => array (
             'update_db_version',
         ),
-		'20210628' => array (
+		'20210715' => array (
             'update_db_version',
         ),		
 	);
