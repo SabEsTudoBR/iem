@@ -1295,6 +1295,7 @@ class Autoresponders extends SendStudio_Functions
 				if (isset($criteria['search_options']['CustomFields'][$fieldid])) {
 					$GLOBALS['CheckboxFilterType_AND'] = '';
 					$GLOBALS['CheckboxFilterType_OR'] = '';
+					$GLOBALS['CheckboxFilterType_NONE'] = '';
 					$GLOBALS['CheckboxFilterType_'.$criteria['search_options']['CustomFields'][$fieldid]] = ' SELECTED';
 				}
 

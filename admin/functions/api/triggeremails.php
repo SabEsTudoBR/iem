@@ -395,7 +395,7 @@ class TriggerEmails_API extends API
 		switch ($this->triggertype) {
 			case 'f': break;
 			case 's': break;
-
+			case 't': break;
 			case 'l':
 				// Only send once for "Link Click"
 				$this->triggerinterval = 0;
@@ -2154,6 +2154,41 @@ class TriggerEmails_API extends API
 				$listapi = new Lists_API();
 				$count = $listapi->GetLists($data['staticdate_listids'], array(), true);
 				if (!$count || count($data['staticdate_listids']) != $count) {
+					trigger_error('Some (or All) the contact list assigned to this record is not available', E_USER_NOTICE);
+					return false;
+				}
+			break;
+			case 't':
+			 
+				// staticdatetime must be populated
+				if (!isset($data['staticdatetime']) || empty($data['staticdatetime'])) {
+					trigger_error('staticdatetime data must be sepecified', E_USER_NOTICE);
+					return false;
+				}
+				$dateTime = explode(' ', $data['staticdatetime']); 
+				 
+				list($year, $month, $day) = explode('-',$dateTime[0]);
+				list($hour, $minute) = explode(':',$dateTime[1]);
+			 
+				$tempTime = mktime($hour, $minute, 0, $month, $day, $year);
+				if (!$tempTime || $tempTime == -1) {
+					trigger_error('Invalid date specified', E_USER_NOTICE);
+					return false;
+				}
+
+				if (!isset($data['staticdatetime_listids']) || empty($data['staticdatetime_listids'])) {
+					trigger_error('staticdatetime must be assigned to a specific list', E_USER_NOTICE);
+					return false;
+				}
+
+				if (!is_array($data['staticdatetime_listids'])) {
+					$data['staticdatetime_listids'] = array($data['staticdatetime_listids']);
+				}
+				 
+				require_once(dirname(__FILE__) . '/lists.php');
+				$listapi = new Lists_API();
+				$count = $listapi->GetLists($data['staticdatetime_listids'], array(), true);
+				if (!$count || count($data['staticdatetime_listids']) != $count) {
 					trigger_error('Some (or All) the contact list assigned to this record is not available', E_USER_NOTICE);
 					return false;
 				}

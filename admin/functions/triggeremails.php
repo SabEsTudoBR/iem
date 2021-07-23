@@ -444,6 +444,26 @@ class TriggerEmails extends SendStudio_Functions
 				$record['data'] = $tempData[$id];
 			}
 
+			if(!empty(($record['data']['staticdatetime']))){	
+				$job_time =($record['data']['staticdatetime']);
+			
+				$check_date = date('Y-m-d H:i:s a', strtotime($job_time));
+						
+				$dateAndTime = explode(' ',$check_date);
+								
+				  
+				list($hr,$minute,$sec)  = explode(':',$dateAndTime[1]);
+				$ampm =  $dateAndTime[2];
+	 
+				list($year, $month, $day) = explode('-',$dateAndTime[0]);
+					
+				$job_time  = AdjustTime(array($hr, $minute, 0, (int)$month, (int)$day, (int)$year), true);
+				$GLOBALS['SendTimeBox'] =  $this->CreateDateTimeBox( $job_time );             
+			}else{
+				$GLOBALS['SendTimeBox'] = $this->CreateDateTimeBox(0, false, 'datetime', true);
+			}
+				 
+		 
 			unset($tempData);
 		// -----
 
@@ -491,6 +511,7 @@ class TriggerEmails extends SendStudio_Functions
 			if (count($tempListRecord) == 0 || count($tempNewsletterRecord) == 0) {
 				return $this->_manage($parameters);
 			}
+			$GLOBALS['SendTimeBox'] = $this->CreateDateTimeBox(0, false, 'datetime', true);
 
 			unset($tempNewsletterRecord);
 			unset($tempListRecord);
@@ -653,7 +674,28 @@ class TriggerEmails extends SendStudio_Functions
 
 		$api = $this->GetApi();
 		$record = IEM::requestGetPOST('record', array());
+		
+		 if(!empty($record['data']['staticdatetime'])){ 
+				 $hr = $_POST['sendtime_hours'];
+				 $minute = $_POST['sendtime_minutes'];
+				 $ampm = $_POST['sendtime_ampm'];
+				 
+				if (strtolower($ampm) == 'pm' && $hr != 12) {
+					$hr = $hr + 12;
+				}
 
+				if (strtolower($ampm) == 'am' && $hr == 12) {
+					$hr = 0;
+				}
+
+				if ($hr > 23) {
+					$hr = $hr - 24;
+				}
+				  
+				$check_schedule_time = AdjustTime(array($hr, $minute, 0, (int)$_POST['datetime']['month'], (int)$_POST['datetime']['day'], (int)$_POST['datetime']['year']), true);
+				
+		 }
+		 $five_mins_ago = time() - (5*60);
 		if (empty($record['triggeremailsid'])) {
 			if (!$parameters['user']->HasAccess('triggeremails', 'create')) {
 				$this->DenyAccess();
@@ -710,6 +752,14 @@ class TriggerEmails extends SendStudio_Functions
         }
 
 		// Save
+		 if (isset($check_schedule_time) && $check_schedule_time < $five_mins_ago) {
+			$GLOBALS['Error'] = GetLang('Send_Step4_CannotSendInPast');
+			$parameters['message'] .= $this->ParseTemplate('errormsg', true);
+			unset($GLOBALS['Error']);
+
+			return $this->_manage($parameters);
+			   
+         } 
 		$triggerid = $api->Save();
 		if ($triggerid === false) {
 			$GLOBALS['Error'] = GetLang('TriggerEmails_Form_Save_Failed');

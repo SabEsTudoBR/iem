@@ -139,7 +139,9 @@ class Settings_API extends API
 		'CREDIT_INCLUDE_TRIGGERS',
 		'CREDIT_WARNINGS',
 
-		'DEFAULT_EMAILSIZE'
+		'DEFAULT_EMAILSIZE',
+		
+		'SECURITY_SESSION_TIME'
     ];
 
 	/**
@@ -467,7 +469,12 @@ class Settings_API extends API
 			if (!defined('SENDSTUDIO_CONTACTCANMODIFYEMAIL')) {
 				define('SENDSTUDIO_CONTACTCANMODIFYEMAIL', '0');
 			}
-
+			
+			//session destroy time
+			if (!defined('SENDSTUDIO_SECURITY_SESSION_TIME')) {
+				define('SENDSTUDIO_SECURITY_SESSION_TIME', 'SECURITY_SESSION_TIME');
+			}
+			
 			// Number of seconds to sleep when login failed
 			if (!defined('SENDSTUDIO_SECURITY_WRONG_LOGIN_WAIT')) {
 				define('SENDSTUDIO_SECURITY_WRONG_LOGIN_WAIT', 5);

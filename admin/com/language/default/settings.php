@@ -1,4 +1,9 @@
 <?php
+
+define('LNG_SecuritySettings_Destroy_Session_Title', 'End Session After Inactivity');
+define('LNG_SecuritySettings_Destroy_Session', 'Session Timeout in minute(s)');
+define('LNG_HLP_SecuritySettings_Destroy_Session', 'Destroy current session after some time of inactivity. Time is given in minutes. 0 means no timeout');
+
 define('LNG_interspire_email_settings_help_link', '<a href="https://www.interspire.com/settings"   target="_blank">Read More</a>');
 define('LNG_interspire_email_crown_help_link', '<a href="https://www.interspire.com/setting-up-cron-and-windows-scheduled-tasks"   target="_blank">Read More</a>');
 

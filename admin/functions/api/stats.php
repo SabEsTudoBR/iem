@@ -307,7 +307,7 @@ class Stats_API extends API
 		$result = $this->Db->Query($query);
 		$statsdetails = $this->Db->Fetch($result);
 
-		if ($statstype{0} == 'a') {
+		if ($statstype[0] == 'a') {
 			$query = "SELECT listid FROM " . SENDSTUDIO_TABLEPREFIX . "autoresponders WHERE autoresponderid='" . (int)$statsdetails['autoresponderid'] . "'";
 			$result = $this->Db->Query($query);
 			$lists[] = $this->Db->FetchOne($result, 'listid');
@@ -933,8 +933,8 @@ class Stats_API extends API
 		}
 
 		$query = "
-			SELECT COUNT(DISTINCT lc.subscriberid) AS count FROM " . SENDSTUDIO_TABLEPREFIX . "stats_linkclicks lc
-			WHERE lc.statid IN(" . implode(',', $statids) . ") ";
+			SELECT COUNT(DISTINCT lc.subscriberid) AS count FROM " . SENDSTUDIO_TABLEPREFIX . "stats_linkclicks lc, " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l
+			WHERE l.subscriberid=lc.subscriberid and lc.statid IN(" . implode(',', $statids) . ") ";
 
 		if (is_numeric($linkid)) {
 			$query .= " AND lc.linkid='" . $linkid . "'";

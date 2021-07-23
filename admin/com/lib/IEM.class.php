@@ -24,13 +24,13 @@ class IEM
 	/**
 	 * Define current version
 	 */
-	const VERSION = '6.2.3';   
+	const VERSION = '6.3.0';   
 	/**
 	 * Define current database version
 	 *
 	 * @todo deprecate this... find a way to organize the upgrades based on versions instead
 	 */
-	const DATABASE_VERSION = '20210505';
+	const DATABASE_VERSION = '20210715';
 
 	/**
 	 * Session name that is used by IEM framework

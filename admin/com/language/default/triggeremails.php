@@ -5,6 +5,9 @@ define('LNG_interspire_email_stats_trigger_link', '<a href="https://www.interspi
 define('LNG_TriggerEmails_Intro', 'A trigger activates an action when a specific event occurs, such as sending a birthday email on a contacts birthday or adding a contact to a new list when they click a link.'.LNG_interspire_email_trigger_help_link);
 define('LNG_TriggerEmails_Create', 'Create a Trigger');
 define('LNG_TriggerEmails_Edit', 'Edit a Trigger');
+define('LNG_Send_Step4_CannotSendInPast', 'You have tried to schedule the email campaign to send in the past. Please choose a date in the future.');
+
+define('LNG_Schedule_At', 'at');
 define('LNG_TriggerEmails_Cannot_Load_Record', 'Cannot get record');
 define('LNG_TriggerEmails_Cannot_Invalid_ID', 'Invalid trigger ID specified');
 define('LNG_TriggerEmails_Manage', 'Triggers');
@@ -29,6 +32,7 @@ define('LNG_TriggerEmails_Manage_Column_TriggeredBy_CustomField', 'Custom Field'
 define('LNG_TriggerEmails_Manage_Column_TriggeredBy_CampaignOpen', 'Email&nbsp;Campaign&nbsp;Opened');
 define('LNG_TriggerEmails_Manage_Column_TriggeredBy_LinkClicked', 'Link Clicked');
 define('LNG_TriggerEmails_Manage_Column_TriggeredBy_StaticDate', 'Predefined Date');
+define('LNG_TriggerEmails_Manage_Column_TriggeredBy_StaticDateTime', 'Predefined Date Time');
 define('LNG_TriggerEmails_Manage_Column_TriggerDays_Immediate', 'Immediately&nbsp;After');
 define('LNG_TriggerEmails_Manage_Column_TriggerDays_HoursBefore', '%s&nbsp;Hours&nbsp;Before');
 define('LNG_TriggerEmails_Manage_Column_TriggerDays_OneHourBefore', '1&nbsp;Hour&nbsp;Before');

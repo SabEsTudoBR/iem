@@ -2391,7 +2391,7 @@ class User_API extends API
             }
 
             $quicksearch = $this->Db->Quote($quicksearch);
-            if ($quicksearch{0} != '%' && substr($quicksearch, -1) != '%') {
+            if ($quicksearch[0] != '%' && substr($quicksearch, -1) != '%') {
                 $quicksearch = "%{$quicksearch}%";
             }
 
@@ -2976,6 +2976,7 @@ class User_API extends API
         }
 
     	$server_timezone = $server_timezone == '' ? '+0:00' :  $server_timezone;
+		$user_timezone = $user_timezone == '' ? '+0:00' :  $user_timezone;
 
     	list($server_hrs, $server_min) = explode(':', $server_timezone);
     	list($user_hrs, $user_min) = explode(':', $user_timezone);

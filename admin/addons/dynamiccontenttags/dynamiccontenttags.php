@@ -1224,7 +1224,7 @@ class Addons_dynamiccontenttags extends Interspire_Addons {
         $tmpTags = [];
         $query = "SELECT dct.* FROM [|PREFIX|]dynamic_content_tags dct, [|PREFIX|]list_tags dcl ";
         if (is_array($listId) && sizeof($listId)) {
-            $query .= " WHERE dct.tagid = dcl.tagid AND dcl.listid in ('".implode($listId, "','")."')";
+            $query .= " WHERE dct.tagid = dcl.tagid AND dcl.listid in ('".implode("','",$listId)."')";
         }
 
         $result = $this->db->Query ( $query );
