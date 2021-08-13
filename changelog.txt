@@ -1,61 +1,78 @@
 # Interspire Email Marketer Changelog
 
-Version: 6.3.0
-Released: 30th June, 2021
-- PHP 7.4 supported
-- updated TinyMCE to 5.8.2
-- fixed statistics total unique clicks discrepancy
-- fixed debugging addon setting reverting to unchekced in some edge cases
-- added triggers on specific time
-- implemented user session timeout
-- fixed autoresponders filter by custom field issue
-- removed deprecated php methods causing notices/errors
-- misc. minor fixes and code cleanup
+Version: 6.4.0
+Released: 10th August, 2021
+- Updated TinyMCE to 5.8.2
 
 Files Changed:
 -------------
-	admin/com/language/default/triggeremails.php
-	admin/com/templates/editor.tpl 
+	admin/com/templates/editor.tpl
 	admin/com/templates/header.tpl
-    admin/com/templates/stats_triggeremails_manage.tpl
-    admin/com/templates/triggeremails_form.tpl
-    admin/com/templates/triggeremails_manage.tpl
-    admin/functions/api/jobs_triggeremails.php
 	admin/functions/api/send.php
-    admin/functions/api/triggeremails.php
+	admin/functions/api/stats.php
+	admin/functions/emoji.php
 	admin/functions/newsletters.php
-    admin/functions/triggeremails.php
-    admin/functions/api/stats.php
-    admin/com/language/default/settings.php
-    admin/com/templates/header.tpl
-    admin/com/templates/settings.tpl
-    admin/functions/api/settings.php
-    admin/functions/settings.php
-    admin/functions/autoresponders.php
-    admin/addons/dynamiccontenttags/dynamiccontenttags.php
-    admin/addons/splittest/api/splittest_stats.php
-    admin/com/ext/database/db.php
-    admin/com/ext/interspire_email/email.php
-    admin/com/ext/interspire_template/class.template.php
-    admin/com/init-legacy.php
-    admin/com/lib/IEM.class.php
-    admin/functions/api/api.php
-    admin/functions/api/bounce.php
-    admin/functions/api/captcha.php
-    admin/functions/api/jobs_autoresponders.php
-    admin/functions/api/jobs_triggeremails.php
-    admin/functions/api/ss_email.php
-    admin/functions/api/stats.php
-    admin/functions/api/upgrade.php
-    admin/functions/api/user.php
-    admin/functions/bounce.php
-    admin/functions/process.php
-    changelog.txt
-    version.txt
+	admin/includes/js/tiny_mce/{files and directories}
+	changelog.txt
+	version.txt
 
 Files Added:
------------
-	admin/functions/emoji.php	
+-------------
+	admin/functions/emoji.php
+
+
+Version: 6.3.0
+Released: 15th July, 2021
+- PHP 7.4 supported
+- Added triggers on specific time
+- Added user session timeout
+- Fixed statistics total unique clicks discrepancy
+- Fixed debugging addon setting reverting to unchekced in some edge cases
+- Fixed autoresponders filter by custom field issue
+- Fixed 'Trying to access array offset on value of type null' issue
+- Removed deprecated php methods causing notices/errors
+- Misc. minor fixes and code cleanup
+
+Files Changed:
+-------------
+	admin/addons/debug/debug.php	
+	admin/addons/dynamiccontenttags/dynamiccontenttags.php	
+	admin/addons/interspire_addons.php	
+	admin/addons/splittest/api/splittest_stats.php	
+	admin/com/ext/database/db.php	
+	admin/com/ext/interspire_email/email.php	
+	admin/com/ext/interspire_template/class.template.php	
+	admin/com/init-legacy.php	
+	admin/com/language/default/settings.php	
+	admin/com/language/default/triggeremails.php	
+	admin/com/lib/IEM.class.php	
+	admin/com/templates/header.tpl	
+	admin/com/templates/settings.tpl	
+	admin/com/templates/stats_triggeremails_manage.tpl	
+	admin/com/templates/triggeremails_form.tpl	
+	admin/com/templates/triggeremails_manage.tpl	
+	admin/com/upgrades/20210715/update_db_version.php	
+	admin/functions/api/api.php	
+	admin/functions/api/bounce.php	
+	admin/functions/api/captcha.php	
+	admin/functions/api/jobs_autoresponders.php	
+	admin/functions/api/jobs_triggeremails.php	
+	admin/functions/api/settings.php	
+	admin/functions/api/ss_email.php	
+	admin/functions/api/stats.php	
+	admin/functions/api/triggeremails.php	
+	admin/functions/api/upgrade.php	
+	admin/functions/api/user.php
+	admin/functions/autoresponders.php
+	admin/functions/bounce.php	
+	admin/functions/lib/amcharts/common.php	
+	admin/functions/lib/general/utf8.php	
+	admin/functions/process.php	
+	admin/functions/settings.php	
+	admin/functions/triggeremails.php
+	changelog.txt	
+	version.txt	
+	
 
 Version: 6.2.3
 Released: 5th May, 2021
@@ -72,6 +89,7 @@ Files Changed:
 	admin/com/lib/AuthenticationSystem.class.php
 	admin/com/templates/forgotpassword_step2.tpl
 	admin/com/templates/user_form.tpl
+	admin/functions/autoresponders.php
 	admin/functions/api/ss_email.php
 	admin/functions/bounce.php
 	admin/functions/login.php

@@ -1,4 +1,4 @@
-Interspire Email Marketer 6.3.0
+Interspire Email Marketer 6.4.0
 
 Copyright Interspire Pty Ltd
 https://www.interspire.com
