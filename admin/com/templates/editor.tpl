@@ -23,6 +23,7 @@ tinymce.init({
 		  width : "{$editor.Width}",
 		  height : "{$editor.Height}",
 		  theme: 'silver',
+		  resize: 'both',
 		  convert_fonts_to_spans : false,
 		  force_hex_style_colors : false,
 		  fix_table_elements : true,
