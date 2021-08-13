@@ -766,69 +766,38 @@ class Stats_API extends API
 			}
 		}
 
-		if (SENDSTUDIO_DATABASE_TYPE == 'mysql') {
-            $difference = $user->ServerHoursDifference();
-            $difference = (int)$difference;
+		$difference = $user->ServerHoursDifference();
+		$difference = (int)$difference;
 
-            $operator = "ADDTIME";
+		$operator = "ADDTIME";
 
-            if ((int)$difference < 0) {
-				$operator = "SUBTIME";
-			}
-
-            $difference = abs($difference) . ":00";
-			$timestamp = "{$operator}(FROM_UNIXTIME($fieldname), '{$difference}')";
-
-			switch ($stats_type) {
-				case 'today':
-				case 'yesterday':
-				case 'daily':
-				case 'last24hours':
-					$query = " EXTRACT(hour FROM $timestamp) AS hr";
-				break;
-
-				case 'last7days':
-					$query = " DATE_FORMAT($timestamp, '%w') AS dow";
-				break;
-
-				case 'last30days':
-				case 'thismonth':
-				case 'lastmonth':
-				case 'monthly':
-					$query = " EXTRACT(day FROM $timestamp) AS dom";
-				break;
-				default:
-					$query = " EXTRACT(month FROM $timestamp) AS mth, EXTRACT(year FROM $timestamp) AS yr";
-			}
+		if ((int)$difference < 0) {
+			$operator = "SUBTIME";
 		}
 
-		if (SENDSTUDIO_DATABASE_TYPE == 'pgsql') {
-			$user_tz = explode(':', $user_tz);
-			$user_tz_seconds = (int)$user_tz[0] * 3600 + (int)$user_tz[1] * 60;
-			$timestamp = "TIMESTAMP WITH TIME ZONE 'epoch' + ($fieldname + $user_tz_seconds) * INTERVAL '1 second'";
+		$difference = abs($difference) . ":00";
+		$timestamp = "{$operator}(FROM_UNIXTIME($fieldname), '{$difference}')";
 
-			switch ($stats_type) {
-				case 'today':
-				case 'yesterday':
-				case 'daily':
-				case 'last24hours':
-					$query = "EXTRACT(hour FROM $timestamp) AS hr";
-				break;
+		switch ($stats_type) {
+			case 'today':
+			case 'yesterday':
+			case 'daily':
+			case 'last24hours':
+				$query = " EXTRACT(hour FROM $timestamp) AS hr";
+			break;
 
-				case 'last7days':
-					$query = "EXTRACT(dow FROM $timestamp) AS dow";
-				break;
+			case 'last7days':
+				$query = " DATE_FORMAT($timestamp, '%w') AS dow";
+			break;
 
-				case 'last30days':
-				case 'thismonth':
-				case 'lastmonth':
-				case 'monthly':
-					$query = "EXTRACT(day FROM $timestamp) AS dom";
-				break;
-
-				default:
-					$query = "EXTRACT(month FROM $timestamp) AS mth, EXTRACT(year FROM $timestamp) AS yr";
-			}
+			case 'last30days':
+			case 'thismonth':
+			case 'lastmonth':
+			case 'monthly':
+				$query = " EXTRACT(day FROM $timestamp) AS dom";
+			break;
+			default:
+				$query = " EXTRACT(month FROM $timestamp) AS mth, EXTRACT(year FROM $timestamp) AS yr";
 		}
 		return $query;
 	}
@@ -1032,7 +1001,7 @@ class Stats_API extends API
 			return $this->Db->FetchOne($result, 'count');
 		}
 
-	$query = "SELECT l.emailaddress, clicktime, clickip, url FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_linkclicks lc, " . SENDSTUDIO_TABLEPREFIX . "links ml WHERE ml.linkid=lc.linkid AND l.subscriberid=lc.subscriberid AND lc.statid IN(" . implode(',', $statids) . ") group by l.emailaddress, clicktime " . $calendar_restrictions;
+		$query = "SELECT l.emailaddress, clicktime, clickip, url FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_linkclicks lc, " . SENDSTUDIO_TABLEPREFIX . "links ml WHERE ml.linkid=lc.linkid AND l.subscriberid=lc.subscriberid AND lc.statid IN(" . implode(',', $statids) . ") group by l.emailaddress, clicktime " . $calendar_restrictions;
 
 		if (is_numeric($linkid)) {
 			$query .= " AND ml.linkid='" . $linkid . "'";
@@ -1383,7 +1352,7 @@ class Stats_API extends API
 
 		if (!$only_unique) {
 			if ($count_only) {
-				$query = "SELECT COUNT(DISTINCT l.subscriberid) AS count FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE l.subscriberid=o.subscriberid AND o.statid IN(" . implode(',', $statids) . ") " . $calendar_restrictions;
+				$query = "SELECT COUNT(DISTINCT l.subscriberid, opentime) AS count FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE l.subscriberid=o.subscriberid AND o.statid IN(" . implode(',', $statids) . ") " . $calendar_restrictions;
 				$result = $this->Db->Query($query);
 				return $this->Db->FetchOne($result, 'count');
 			}
@@ -1400,20 +1369,12 @@ class Stats_API extends API
 				return $this->Db->FetchOne($result, 'count');
 			}
 
-			// mysql lets you only group by one field in the select list, so we'll take the easy way out.
-			// also only v4.1+ supports subselects so we're out of luck doing it that way anyway.
-			if (SENDSTUDIO_DATABASE_TYPE == 'mysql') {
 				$query = "SELECT l.emailaddress, opentime, openip, opentype FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE l.subscriberid=o.subscriberid AND o.statid IN(" . implode(',', $statids) . ") " . $calendar_restrictions . " GROUP BY l.emailaddress ORDER BY $order_by $order_dir ";
-			} else {
-				// postgres supports subselects and won't let you group by only one field in the select list, so we have to do it this way.
-				// this will get the latest opentime for an email open (in the subselect) and use that as the joining criteria.
-				$query = "SELECT l.emailaddress, oo.opentime, oo.openip, oo.opentype FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens oo WHERE (SELECT opentime FROM " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE o.subscriberid=l.subscriberid AND o.statid IN(" . implode(',', $statids) . ") ORDER BY opentime DESC LIMIT 1)=oo.opentime AND l.subscriberid=oo.subscriberid " . $calendar_restrictions . " ORDER BY $order_by $order_dir ";
-			}
 		}
 		if ($perpage != 'all' && ($start || $perpage)) {
 			$query .= $this->Db->AddLimit($start, $perpage);
 		}
-
+		
 		$result = $this->Db->Query($query);
 
 		$return = array();
@@ -2154,21 +2115,16 @@ class Stats_API extends API
 		$stats = $this->Db->Fetch($result);
 
 		/* 
-		* Reset Total opens statistics values i.e.  'SELECT count distinct on the fly'
-		* Reset variables $emailopens_unique,$htmlopens_unique, emailopens and OpenRate based on the opens variables.
+		* Reset array values $stats['emailopens'], $stats['htmlopens_unique'], $stats['emailopens_unique'] and OpenRate based on the opens variables.
 		* 
-		*/
-		$opens_query = "SELECT COUNT(DISTINCT o.subscriberid) AS emailopens_unique, COUNT(DISTINCT o.subscriberid, o.opentime) AS emailopens  FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l,
-		" . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o 
-		WHERE l.subscriberid=o.subscriberid AND o.statid ='".$statid."'";
+		*/	
+		//GetOpens total count only
+		$stats['emailopens'] = $this->GetOpens($statid, 0, 0, false, '', true);
 		
-		$result_opens = $this->Db->Query($opens_query);
-		$opens_records = $this->Db->Fetch($result_opens);
+		//GetOpens total unique count only
+		$stats['htmlopens_unique'] = $stats['emailopens_unique'] = $this->GetOpens($statid, 0, 0, true, '', true);
 		
-		$stats['emailopens'] = $opens_records['emailopens'];
-		$stats['emailopens_unique'] = $opens_records['emailopens_unique'];
-		$stats['htmlopens_unique'] = $opens_records['emailopens_unique'];
-		/* End of resetting opens stats values script*/
+		/* End of resetting stats array values*/
 		
 		$lists = array();
 		$query = "
