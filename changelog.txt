@@ -69,7 +69,7 @@ Files Changed:
 	admin/functions/lib/general/utf8.php	
 	admin/functions/process.php	
 	admin/functions/settings.php	
-	admin/functions/triggeremails.php
+	admin/functions/triggeremails.php	
 	changelog.txt	
 	version.txt	
 	
