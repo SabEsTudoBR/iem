@@ -1,16 +1,37 @@
 # Interspire Email Marketer Changelog
 
+Version: 6.4.0
+Released: 10th August, 2021
+- Updated TinyMCE to 5.8.2
+
+Files Changed:
+-------------
+	admin/com/templates/editor.tpl
+	admin/com/templates/header.tpl
+	admin/functions/api/send.php
+	admin/functions/api/stats.php
+	admin/functions/emoji.php
+	admin/functions/newsletters.php
+	admin/includes/js/tiny_mce/{files and directories}
+	changelog.txt
+	version.txt
+
+Files Added:
+-------------
+	admin/functions/emoji.php
+
+
 Version: 6.3.0
 Released: 15th July, 2021
 - PHP 7.4 supported
-- fixed statistics total unique clicks discrepancy
-- fixed debugging addon setting reverting to unchekced in some edge cases
-- fixed 'Trying to access array offset on value of type null' issue
-- added triggers on specific time
-- implemented user session timeout
-- fixed autoresponders filter by custom field issue
-- removed deprecated php methods causing notices/errors
-- misc. minor fixes and code cleanup
+- Added triggers on specific time
+- Added user session timeout
+- Fixed statistics total unique clicks discrepancy
+- Fixed debugging addon setting reverting to unchekced in some edge cases
+- Fixed autoresponders filter by custom field issue
+- Fixed 'Trying to access array offset on value of type null' issue
+- Removed deprecated php methods causing notices/errors
+- Misc. minor fixes and code cleanup
 
 Files Changed:
 -------------

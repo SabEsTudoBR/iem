@@ -14,6 +14,7 @@
  * Include the base sendstudio functions.
  */
 require_once(dirname(__FILE__) . '/sendstudio_functions.php');
+require_once(dirname(__FILE__) . '/emoji.php');
 
 /**
  * Class for management of newsletters.
@@ -215,14 +216,13 @@ class Newsletters extends SendStudio_Functions {
                 if (!$newsletter->Load($id)) {
                     break;
                 }
-
                 // Log this to "User Activity Log"
                 $logURL = SENDSTUDIO_APPLICATION_URL . '/admin/index.php?Page=Newsletters&Action=Edit&id=' . $_GET['id'];
                 IEM::logUserActivity($logURL, 'images/newsletters_view.gif', $newsletter->name);
 
                 $details = array();
-                $details['htmlcontent'] = $newsletter->GetBody('HTML');
-                $details['textcontent'] = $newsletter->GetBody('Text');
+                $details['htmlcontent'] = Emoji::Decode($newsletter->GetBody('HTML'));
+                $details['textcontent'] = Emoji::Decode($newsletter->GetBody('Text'));
                 $details['format'] = $newsletter->format;
 
                 $this->PreviewWindow($details);
@@ -237,8 +237,8 @@ class Newsletters extends SendStudio_Functions {
                 }
 
                 $details = array();
-                $details['htmlcontent'] = $newsletter->GetBody('HTML');
-                $details['textcontent'] = $newsletter->GetBody('Text');
+                $details['htmlcontent'] = Emoji::Decode($newsletter->GetBody('HTML'));
+                $details['textcontent'] = Emoji::Decode($newsletter->GetBody('Text'));
                 $details['format'] = $newsletter->format;
 
                 $this->PreviewWindow($details, false, $id);
@@ -325,14 +325,16 @@ class Newsletters extends SendStudio_Functions {
                         $htmlcontent = "";
 
                         if (isset($_POST['TextContent'])) {
-                            $textcontent = $_POST['TextContent'];
+                            //$textcontent = $_POST['TextContent'];
+							$textcontent = Emoji::Encode($_POST['TextContent']);
                             $newsletter->SetBody('Text', $textcontent);
                             $text_unsubscribelink_found = $this->CheckForUnsubscribeLink($textcontent, 'text');
                             $session_newsletter['contents']['text'] = $textcontent;
                         }
 
                         if (isset($_POST['myDevEditControl_html'])) {
-                            $htmlcontent = $_POST['myDevEditControl_html'];
+                            //$htmlcontent = $_POST['myDevEditControl_html'];
+							$htmlcontent = Emoji::Encode($_POST['myDevEditControl_html']);
 
                             /**
                              * This is an effort not to overwrite the eixsting HTML contents
@@ -351,7 +353,8 @@ class Newsletters extends SendStudio_Functions {
                             $session_newsletter['contents']['html'] = $htmlcontent;
                         }
 
-                        if (isset($_POST['subject'])) {$newsletter->subject = $_POST['subject'];}
+                        //if (isset($_POST['subject'])) {$newsletter->subject = $_POST['subject'];}
+						if (isset($_POST['subject'])) {$newsletter->subject = Emoji::Encode($_POST['subject']);}
                         
                         $newsletter->name = $session_newsletter['Name'];
                         
@@ -522,21 +525,24 @@ class Newsletters extends SendStudio_Functions {
                         $html_unsubscribelink_found = true;
 
                         if (isset($_POST['TextContent'])) {
-                            $textcontent = $_POST['TextContent'];
+                            //$textcontent = $_POST['TextContent'];
+							$textcontent = Emoji::Encode($_POST['TextContent']);
                             $newnewsletter->SetBody('Text', $textcontent);
                             $text_unsubscribelink_found = $this->CheckForUnsubscribeLink($textcontent, 'text');
                             $session_newsletter['contents']['text'] = $textcontent;
                         }
 
                         if (isset($_POST['myDevEditControl_html'])) {
-                            $htmlcontent = $_POST['myDevEditControl_html'];
+                            //$htmlcontent = $_POST['myDevEditControl_html'];
+							$htmlcontent = Emoji::Encode($_POST['myDevEditControl_html']);
                             $newnewsletter->SetBody('HTML', $htmlcontent);
                             $html_unsubscribelink_found = $this->CheckForUnsubscribeLink($htmlcontent, 'html');
                             $session_newsletter['contents']['html'] = $htmlcontent;
                         }
 
                         if (isset($_POST['subject'])) {
-                            $newnewsletter->subject = $_POST['subject'];
+                            //$newnewsletter->subject = $_POST['subject'];
+							$newnewsletter->subject = Emoji::Encode($_POST['subject']);
                         }
                         
                         $newnewsletter->name = $session_newsletter['Name'];
@@ -818,7 +824,8 @@ class Newsletters extends SendStudio_Functions {
             $GLOBALS['Owner'] = $newsletterdetails['owner'];
 
             $GLOBALS['Subject'] = htmlspecialchars($newsletterdetails['subject'], ENT_QUOTES, SENDSTUDIO_CHARSET);
-            $GLOBALS['Short_Subject'] = htmlspecialchars($this->TruncateName($newsletterdetails['subject'], 37), ENT_QUOTES, SENDSTUDIO_CHARSET);
+            //$GLOBALS['Short_Subject'] = htmlspecialchars($this->TruncateName($newsletterdetails['subject'], 37), ENT_QUOTES, SENDSTUDIO_CHARSET);
+			$GLOBALS['Short_Subject'] = Emoji::Decode(htmlspecialchars($this->TruncateName($newsletterdetails['subject'], 37), ENT_QUOTES, SENDSTUDIO_CHARSET));
 
             $GLOBALS['id'] = $newsletterid;
 
@@ -1323,10 +1330,13 @@ class Newsletters extends SendStudio_Functions {
             $newsletter->Load($newsletterid);
             $GLOBALS['IsActive'] = ($newsletter->Active()) ? ' CHECKED' : '';
             $GLOBALS['Archive'] = ($newsletter->Archive()) ? ' CHECKED' : '';
-            $newslettercontents['text'] = $newsletter->GetBody('text');
-            $newslettercontents['html'] = $newsletter->GetBody('html');
+            //$newslettercontents['text'] = $newsletter->GetBody('text');
+            //$newslettercontents['html'] = $newsletter->GetBody('html');
+			$newslettercontents['text'] = Emoji::Decode($newsletter->GetBody('text'));
+            $newslettercontents['html'] = Emoji::Decode($newsletter->GetBody('html'));
 
-            $GLOBALS['Subject'] = htmlspecialchars($newsletter->subject, ENT_QUOTES, SENDSTUDIO_CHARSET);
+            //$GLOBALS['Subject'] = htmlspecialchars($newsletter->subject, ENT_QUOTES, SENDSTUDIO_CHARSET);
+			$GLOBALS['Subject'] = Emoji::Decode(htmlspecialchars($newsletter->subject, ENT_QUOTES, SENDSTUDIO_CHARSET));
         } else {
             $GLOBALS['SaveAction'] = 'Create&SubAction=Save&id=' . $newsletterid;
             $GLOBALS['Heading'] = GetLang('CreateNewsletter');
