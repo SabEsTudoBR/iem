@@ -299,7 +299,7 @@ class User_API extends API
             'newsletter', 'user', 'autoresponder', 'list', 'triggeremails'
         ],
         'user' => [
-            'smtp', 'smtpcom'
+            'smtp'
         ],
         'segments' => [
             'view', 'create', 'edit', 'delete', 'send'

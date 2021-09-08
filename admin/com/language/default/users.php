@@ -180,7 +180,6 @@ define('LNG_HLP_ListAdministrator', 'A List Administrator is able to perform cer
 define('LNG_HLP_SystemAdministrator', 'A System Administrator can access the settings page as well as all Lists and all users.');
 define('LNG_HLP_TemplateAdministrator', 'A Template Administrator can perform certain functions for <i><u>all</u></i> templates, including editing and deleting.');
 define('LNG_HLP_UserAdministrator', 'A User Administrator can add, delete and edit user accounts in ' . LNG_ApplicationTitle . '.');
-define('LNG_HLP_SettingsShowSMTPCOM', 'Tick this option if you would like users to be able to choose SMTP.com as an option when sending emails. SMTP.com provides mail servers for those who want to send a large amount of emails. Click the \\\'Email Settings\\\' tab above for more information on SMTP.com.');
 
 
 

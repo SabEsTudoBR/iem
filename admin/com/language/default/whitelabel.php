@@ -14,33 +14,6 @@
 
 defined('LNG_ApplicationTitle') or define('LNG_ApplicationTitle', 'Interspire Email Marketer');
 define('LNG_HLP_UseSMTP', 'Choose this option to specify the details of your own external SMTP server, which will be used to send your email campaigns and autoresponders.');
-define('LNG_UseSMTPCOM', 'SMTP.com Sending');
-define('LNG_HLP_UseSMTPCOM', 'Choose this option if you have an SMTP.com account or would like to sign up for one. SMTP.com have partnered with Interspire to offer our customers a way to send large amounts of emails through their own SMTP server.');
-define('LNG_SMTPCOM_UseSMTPOption', 'Sign up for an SMTP.com account');
-define('LNG_SMTPCOM_UseSMTPOptionSeeBelow', ' (see below)');
-define('LNG_SMTPCOM_Header', 'What is SMTP.com?');
-define('LNG_SMTPCOM_Explain', '
-	<a href="http://www.smtp.com/interspire/" target="_blank" border="0"><img src="images/smtp_com_logo.png" border="0" /></a>
-
-	<div class="toolTipBox" style="width:95%; padding:10px">SMTP.com provides a way to send
-	emails without relying on your web hosting provider. They take care of email sending
-	and handle large amounts of emails reliably, so if you\'re on a shared server or need to
-	send a large amount of emails, SMTP.com can provide you with a custom SMTP server. They
-	take care of dealing with blacklisting and all other server administration tasks, so you
-	can focus on creating and sending your email campaigns and autoresponders, without
-	worrying about deliverability issues.</div>
-
-	<div>
-		To get started with SMTP.com, just follow the steps below.
-
-		<ol style="line-height:1.5">
-			<li><a href="http://www.smtp.com/interspire/" target="_blank">Sign up for an SMTP.com account here</a></li>
-			<li>Once you\'ve received your SMTP server details, select the "Let me specify my own SMTP server details" option above.</li>
-			<li>Enter the details of your new SMTP.com account and click save.</li>
-			<li>All email campaigns and autoresponders will now be sent using your new SMTP.com mail server.</li>
-		</ol>
-	</div>
-');
 define('LNG_NoMoreLists_LK', 'Your license key does not allow you to create any more mailing lists. Please upgrade');
 define('LNG_Subject_Guide_Link', '');
 define('LNG_CronNotSetup', 'You have enabled cron support, but the system has not yet detected a cron job running.');

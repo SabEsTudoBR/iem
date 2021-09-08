@@ -91,8 +91,6 @@
 
 		$(document.settings.usesmtp).click(function() {
 			$('.SMTPOptions')[$('#usesmtp').attr('checked') ? 'show' : 'hide']();
-			$('.sectionSignuptoSMTP')[$('#signtosmtp').attr('checked') ? 'show' : 'hide']();
-			$('#sectionSMTPComOption').html($('#signtosmtp').attr('checked') ? '%%LNG_SMTPCOM_UseSMTPOption%% %%LNG_SMTPCOM_UseSMTPOptionSeeBelow%%' : '%%LNG_SMTPCOM_UseSMTPOption%%');
 		});
 
 		$(document.settings.cmdTestSMTP).click(function() {
@@ -578,29 +576,6 @@
 								<input type="button" name="cmdTestSMTP" value="%%LNG_TestSMTPSettings%%" class="FormButton" style="width: 120px;" />
 							</td>
 						</tr>
-						<tr style="display:%%GLOBAL_ShowSmtpComOptionShow%%;">
-							<td class="FieldLabel">&nbsp;</td>
-							<td>
-								<label for="signtosmtp">
-									<input type="radio" name="usesmtp" id="signtosmtp" value="2" />
-									<span id="sectionSMTPComOption">%%LNG_SMTPCOM_UseSMTPOption%%</span>
-								</label>
-								%%LNG_HLP_UseSMTPCOM%%
-							</td>
-						</tr>
-						<tr class="sectionSignuptoSMTP" style="display: none;">
-							<td colspan="2" class="EmptyRow">
-								&nbsp;
-							</td>
-						</tr>
-						<tr class="sectionSignuptoSMTP" style="display: none;">
-							<td colspan="2" class="Heading2">
-								&nbsp;&nbsp;%%LNG_SMTPCOM_Header%%
-							</td>
-						</tr>
-						<tr class="sectionSignuptoSMTP" style="display: none;">
-							<td colspan="2" style="padding-left: 20px;">%%LNG_SMTPCOM_Explain%%</td>
-						</tr>
 					</table>
 				</div>
 
@@ -970,19 +945,6 @@
 									{$lang.PrivateLabelSettings_YesUpdatesCheck}
 								</label>
 								{$lnghlp.PrivateLabelSettings_UpdatesCheck}
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel" >
-								{template="Not_Required"}
-								{$lang.PrivateLabelSettings_SmtpSending}
-							</td>
-							<td >
-								<input id="Id_Show_Smtp_Com_Option" type="checkbox" name="show_smtp_com_option" value="1" %%GLOBAL_ShowSmtpComOption%% />
-								<label for="Id_Show_Smtp_Com_Option" >
-									{$lang.PrivateLabelSettings_YesSmtpSending}
-								</label>
-								{$lnghlp.PrivateLabelSettings_SmtpSending}
 							</td>
 						</tr>
 						<tr>

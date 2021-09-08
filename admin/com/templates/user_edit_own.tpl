@@ -26,7 +26,6 @@
 
 		$(document.settings.smtptype).click(function() {
 			$('.SMTPDetails')[document.settings.smtptype[1].checked? 'show' : 'hide']();
-			if(document.settings.smtptype[2]) $('.sectionSignuptoSMTP')[document.settings.smtptype[2].checked? 'show' : 'hide']();
 		});
 
 		$(document.settings.cmdTestSMTP).click(function() {
@@ -51,7 +50,6 @@
 
 		if('%%GLOBAL_ShowSMTPInfo%%' != 'none') {
 			$('.SMTPDetails')[document.settings.smtptype[1].checked? 'show' : 'hide']();
-			if(document.settings.smtptype[2]) $('.sectionSignuptoSMTP')[document.settings.smtptype[2].checked? 'show' : 'hide']();
 		}
 	});
 
@@ -305,29 +303,6 @@
 						<td>
 							<input type="button" name="cmdTestSMTP" value="%%LNG_TestSMTPSettings%%" class="FormButton" style="width: 120px;">
 						</td>
-					</tr>
-					<tr style="display:%%GLOBAL_ShowSMTPCOMOption%%">
-						<td class="FieldLabel">&nbsp;</td>
-						<td>
-							<label for="signtosmtp">
-								<input type="radio" name="smtptype" id="signtosmtp" value="2"/>
-								%%LNG_SMTPCOM_UseSMTPOption%%
-							</label>
-							%%LNG_HLP_UseSMTPCOM%%
-						</td>
-					</tr>
-					<tr class="sectionSignuptoSMTP" style="display: none;">
-						<td colspan="2" class="EmptyRow">
-							&nbsp;
-						</td>
-					</tr>
-					<tr class="sectionSignuptoSMTP" style="display: none;">
-						<td colspan="2" class="Heading2">
-							&nbsp;&nbsp;%%LNG_SMTPCOM_Header%%
-						</td>
-					</tr>
-					<tr class="sectionSignuptoSMTP" style="display: none;">
-						<td colspan="2" style="padding-left: 20px;">%%LNG_SMTPCOM_Explain%%</td>
 					</tr>
 					<tr>
 						<td colspan="2" class="EmptyRow"></td>
