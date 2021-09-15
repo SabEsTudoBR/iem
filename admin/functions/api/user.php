@@ -552,7 +552,7 @@ class User_API extends API
         $this->lastloggedin = (int) $user['lastloggedin'];
         $this->createdate = (int) $user['createdate'];
         $this->forgotpasscode = $user['forgotpasscode'];
-
+		$this->otp = isset($user['otp'])? $user['otp'] : NULL;
 
         if (isset($user['usewysiwyg'])) {
             $wysiwyg = intval($user['usewysiwyg']);
@@ -1057,7 +1057,45 @@ class User_API extends API
         $query = "UPDATE " . SENDSTUDIO_TABLEPREFIX . "users SET forgotpasscode='" . $this->Db->Quote($code) . "' WHERE userid='" . (int) $this->userid . "'";
         return $this->Db->Query($query);
     }
+    /**
+     * OTP
+     * This updates the OTP in db against current user. 
+     *
+     * @param String $code this is 6 digit OTP code.
+     * @param String $userID This is the current user ID passed in).
+     *
+     * @return the query execution.
+    */
+    public function OTP($code='',$userID='') {    
+        $this->userid =$userID ;
+        if ($code == '') {
+            return false;
+        }
 
+        $query = "UPDATE " . SENDSTUDIO_TABLEPREFIX . "users SET otp='" . $this->Db->Quote($code) . "' WHERE userid='" . (int) $this->userid . "'";
+        return $this->Db->Query($query);
+    }
+    
+    /**
+     * CheckOTPCol
+     * Checking the otp colum in users table.
+     *
+     * @param String $columnName this is a column in users table where otp is saved in.
+     *
+     * @return the query execution.
+    */
+    public function CheckOTPCol($columnName ='') {    
+          
+         $query =  "SHOW COLUMNS FROM " . SENDSTUDIO_TABLEPREFIX."users LIKE '".$columnName."'";
+	 $result = $this->Db->Query($query);
+		 
+	 $exists = ($this->Db->CountResult($result))?TRUE:FALSE; 
+	 
+	 if(!$exists) { 
+		 $query =  "ALTER TABLE  " . SENDSTUDIO_TABLEPREFIX."users  ADD  COLUMN  ".$columnName." varchar(100) DEFAULT NULL";	  
+		 return $this->Db->Query($query);
+	 }	  
+    }
     /**
      * UpdateLoginTime
      * Updates the time the user last logged in.

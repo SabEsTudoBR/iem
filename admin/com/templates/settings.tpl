@@ -739,6 +739,24 @@
 								{$lnghlp.SecuritySettings_Destroy_Session}
 							</td>
 						</tr>
+						<tr>
+						<td colspan="2" class="Heading2"> 
+							{template="Not_Required"}{$lang.SecuritySettings_OTP_Settings_Title}
+						</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
+								{$lang.SecuritySettings_OTP}						
+							</td>
+							<td>
+								<label for="security_two_factor_auth">
+								<input type="checkbox" name="security_two_factor_auth" id="security_two_factor_auth" value="1" {if $security_settings.two_factor_auth != 0}checked="checked"{/if} />
+								 {$lang.SecuritySettings_Two_Factor_Auth} 
+								 </label>
+								{$lnghlp.SecuritySettings_OTP}
+							</td>
+						</tr>
 						<tr><td colspan="2" class="EmptyRow">&nbsp;</td></tr>
 						<tr><td colspan="2" class="Heading2">{template="Not_Required"}{$lang.SecuritySettings_LoginSecurity_EnableLoginWait_Title}</td></tr>
 						<tr>

@@ -1,6 +1,11 @@
 <?php
 
 define('LNG_SecuritySettings_Destroy_Session_Title', 'End Session After Inactivity');
+define('LNG_SecuritySettings_OTP_Settings_Title','Two-factor Authentication');
+define('LNG_SecuritySettings_OTP', 'Enable Two-factor Authentication '); 
+define('LNG_SecuritySettings_Two_Factor_Auth', 'Yes, enable Two-factor Authentication feature');  
+define('LNG_HLP_SecuritySettings_OTP', 'When this option is enabled, two-factor authentication will be required. By default this option is disabled.');
+
 define('LNG_SecuritySettings_Destroy_Session', 'Session Timeout in minute(s)');
 define('LNG_HLP_SecuritySettings_Destroy_Session', 'Destroy current session after some time of inactivity. Time is given in minutes. 0 means no timeout');
 

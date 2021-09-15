@@ -84,17 +84,8 @@ class Login extends SendStudio_Functions
 				$user = new User_API();
 				$username = IEM::requestGetPOST('ss_username', '');
 
-				/**
-				 * Fix vulnerabilities with MySQL
-				 * Documented here: http://www.suspekt.org/2008/08/18/mysql-and-sql-column-truncation-vulnerabilities/
-				 *
-				 * Basically MySQL is truncating values in a column
-				 */
-					$username = preg_replace('/\s+/', ' ', $username);
-					$username = trim($username);
-				/**
-				 * -----
-				 */
+				$username = preg_replace('/\s+/', ' ', $username);
+				$username = trim($username);
 
 				$founduser = $user->Find($username);
 				if (!$founduser) {
@@ -178,9 +169,82 @@ class Login extends SendStudio_Functions
 					$this->ShowLoginForm('login_error', GetLang($msg));
 					break;
 				}
+				 
+				if (!empty($result)) {
+					 
+					//send email					
+					$user = new User_API();
+					$username = IEM::requestGetPOST('ss_username', '');
+					
+					$username = preg_replace('/\s+/', ' ', $username);
+					$username = trim($username);
 
-				IEM::userLogin($result['userid']);
+					$founduser = $user->Find($username);
+					 if (!$founduser) {
+					$this->ShowForgotForm('login_error', GetLang('BadLogin_Forgot'));
+					break;
+					}  
 
+					$user->Load($founduser, false);
+					if(SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH == 1){
+						$code = rand(100000,999999);
+						$user->CheckOTPCol('otp');
+						$user->OTP($code,$founduser);
+						$OTP= sprintf(GetLang('EmailContent_OTP'), $code); 
+						$message = $OTP;
+						$email_api = $this->GetApi('Email');
+						$email_api->Set('CharSet', SENDSTUDIO_CHARSET);
+						$email_api->Set('Multipart', false);
+						$email_api->AddBody('text', $message);
+						$email_api->Set('Subject', GetLang('EmailSubject_OTP'));
+
+						$email_api->Set('FromAddress', SENDSTUDIO_EMAIL_ADDRESS);
+						$email_api->Set('ReplyTo', SENDSTUDIO_EMAIL_ADDRESS);
+						$email_api->Set('BounceAddress', SENDSTUDIO_EMAIL_ADDRESS);
+
+						$email_api->SetSmtp(SENDSTUDIO_SMTP_SERVER, SENDSTUDIO_SMTP_USERNAME, @base64_decode(SENDSTUDIO_SMTP_PASSWORD), SENDSTUDIO_SMTP_PORT);
+
+						$user_fullname = $user->Get('fullname');
+						$email_api->AddRecipient($user->emailaddress, $user_fullname, 't');
+						
+						$send_return = $email_api->Send();
+						
+						if($send_return['success'] === 0) {
+							$this->ShowOTPForm('otp_Error', $message=GetLang('EmailNotSent_OTP'), $user=$founduser);
+						}else{
+							$message = sprintf(GetLang('Help_OTP'), $this->mask_emailaddress($user->emailaddress));
+						
+							$this->ShowOTPForm('otp_Success', $message, $user=$founduser);
+						}
+					}else{
+						IEM::userLogin($user);
+						$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
+
+						header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/' . $redirect);
+						exit();
+					}
+					break;
+				}
+				 
+			break;
+			case 'confirmotp':
+				$user = IEM::requestGetGET('user', false, 'intval');
+				$otp = IEM::requestGetPost('otp', false, 'trim');
+				 
+				if (empty($user) || empty($otp)) {
+					$this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$user);
+					break;
+				}
+
+				$userapi = new User_API();
+				$loaded = $userapi->Load($user, false);
+
+				if (!$loaded || $userapi->Get('otp') != $otp) {
+					 $this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$user);
+					break;
+				}
+
+				IEM::userLogin($user);
 				$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
 
 				header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/' . $redirect);
@@ -293,6 +357,66 @@ class Login extends SendStudio_Functions
 		$this->ParseTemplate('ForgotPassword');
 
 		$this->PrintFooter(true);
+	}
+	/**
+	* ShowOTPForm
+	* This shows the OTP form and handles the confirm OTP actions. If the template and message are passed in, there will be a success/error message shown. If one is not present, nothing is shown.
+	*
+	* @param String $template If there is a template (will either be success or error template) use that as a message.
+	* @param String $msg This also tells us what's going on (otp has been validated and so on).
+	* @param String $user This is the current user ID passed in).
+	*
+	* @see PrintHeader
+	* @see ParseTemplate
+	* @see PrintFooter
+	*
+	* @return Void Doesn't return anything, only prints out the form.
+	*/
+	public function ShowOTPForm($template=false, $msg=false, $user='')
+	{
+		$this->printLoginHeader();
+		if ($template && $msg) {
+			switch (strtolower($template)) {
+				case 'otp_error':
+					$GLOBALS['Error'] = $msg;
+				break;
+				case 'otp_success':
+					
+					$GLOBALS['Success'] = $msg;
+				break;
+			}
+			$GLOBALS['Message'] = $this->ParseTemplate($template, true, false);
+		}
+		$GLOBALS['ss_takemeto'] = 'index.php';
+
+		$this->GlobalAreas['SubmitAction'] = 'ConfirmOtp&user='.$user;
+		$GLOBALS['SubmitAction'] = 'ConfirmOtp&user='.$user;
+		 $this->ParseTemplate('otp');
+
+		$this->PrintFooter(true);
+		 		
+	}
+	
+	/**
+	* mask_emailaddress
+	* This function will mask/partially hide email address i.e. It gives an idea about who the user might be, without revealing the actual email address.
+	*
+	* @param String $emailaddress This email address will be masked.
+	*
+	* @return it returns masked email address.
+	*/
+	function mask_emailaddress($email)
+	{
+		if(empty($email)) {
+			return false;
+		}
+		
+		$em   = explode("@",$email);
+		$name = implode('@', array_slice($em, 0, count($em)-1));
+		$len  = floor(strlen($name)/2);
+		$masked = substr($name,0, $len) . str_repeat('*', $len) . "@" . end($em);
+		
+		return $masked;
 	}
 
 	/**

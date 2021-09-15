@@ -140,7 +140,8 @@ class Settings_API extends API
 
 		'DEFAULT_EMAILSIZE',
 		
-		'SECURITY_SESSION_TIME'
+		'SECURITY_SESSION_TIME',
+		'SECURITY_TWO_FACTOR_AUTH'
     ];
 
 	/**
@@ -473,7 +474,10 @@ class Settings_API extends API
 			if (!defined('SENDSTUDIO_SECURITY_SESSION_TIME')) {
 				define('SENDSTUDIO_SECURITY_SESSION_TIME', 'SECURITY_SESSION_TIME');
 			}
-			
+			//two factor auth settings
+			if (!defined('SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH')) {
+				define('SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH', 0);
+			}
 			// Number of seconds to sleep when login failed
 			if (!defined('SENDSTUDIO_SECURITY_WRONG_LOGIN_WAIT')) {
 				define('SENDSTUDIO_SECURITY_WRONG_LOGIN_WAIT', 5);

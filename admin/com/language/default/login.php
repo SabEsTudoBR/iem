@@ -46,6 +46,13 @@ define('LNG_ValidPassword_Help', 'Password should be at least 8 characters in le
 ***************************
 */
 define('LNG_SendPassword', 'Send Email');
+define('LNG_OTP', 'OTP');
+define('LNG_Bad_OTP', 'Wrong OTP, please enter correct OTP');
+define('LNG_EmailNotSent_OTP', 'OTP Not Sent. Please contact your administrator!');
+define('LNG_Help_OTP', 'Check your Email for OTP and enter the OTP which sent to your Email Address: %s');
+define('LNG_EmailSubject_OTP', 'Your One Time Password(OTP) request for Secure Login');
+define('LNG_EmailContent_OTP', 'Your One Time Password: %s');
+
 define('LNG_BadLogin', 'The username or password you provided are incorrect. Please check them and try again.');
 define('LNG_Help_ForgotPassword', 'Fill in the form to generate a new password. An email will be sent to you containing a link which you must click to confirm your password change.');
 define('LNG_Help_Login', 'Login with your username and password below.');
