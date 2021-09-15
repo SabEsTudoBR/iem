@@ -51,7 +51,10 @@ define('LNG_ApplicationEmail', 'Contact Email Address');
 define('LNG_HLP_ApplicationEmail', 'The return email address for \\\'Forgot Password\\\' requests.');
 define('LNG_CronPath', 'Cron Command to Run');
 define('LNG_HLP_CronPath', 'This is the path to the scheduled email batch script which is required for cron jobs to work. The script makes sure scheduled sending, autoresponders and automatic bounce processing tasks are executed.<br /><br />You will need this path when setting up your server for cron support (click the <em>How can I enable cron?</em> link above for help).');
-
+define('LNG_HLP_Self_Signed_Cert', 'WARNING: Enabling this option is very dangerous. Ignoring the certificate check is a very bad idea, it opens the door for man in the middle attacks! Ignoring the certificate checks comes close to using plain communication.');
+define('LNG_Self_Signed_Cert', 'Allow Self-Signed Certs');
+define('LNG_SelfSignedCert_explain', 'Yes, but it\'s not a good idea');
+ 
 
 
 /**
@@ -408,9 +411,6 @@ define('LNG_PrivateLabelSettings_UpdatesCheck', 'Updates Check?');
 define('LNG_PrivateLabelSettings_YesUpdatesCheck', 'Yes, enable automatic update checking');
 define('LNG_HLP_PrivateLabelSettings_UpdatesCheck', 'Tick this box to have the application automatically check for new versions and show a notification message in the control panel when one is available for download. The notification message does not include any references or links to any third parties.');
 
-define('LNG_PrivateLabelSettings_SmtpSending', 'SMTP Sending?');
-define('LNG_PrivateLabelSettings_YesSmtpSending', 'Yes, show SMTP.com sending options');
-define('LNG_HLP_PrivateLabelSettings_SmtpSending', 'Tick this box to show the SMTP.com sending options when creating/editing this user account. SMTP.com is a third party which provides outsourced mail servers and integrates with the software.');
 
 define('LNG_PrivateLabelSettings_GettingStartedVideo', 'Getting Started Video & Guide?');
 define('LNG_PrivateLabelSettings_YesGettingStartedVideo', 'Yes, link to getting started video and guide');

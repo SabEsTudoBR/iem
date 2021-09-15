@@ -1980,7 +1980,19 @@ class Email_API
 			$this->Error = sprintf(GetLang('UnableToConnectToEmailServer'), $errstr . '(' . $errno . ')');
 			return false;
 		}
-
+		
+		// Checking value of SELF_SIGNED_CERT(1 or 0)
+		$cert_query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='SELF_SIGNED_CERT'";
+		$self_signed_cert = $this->db->FetchOne($cert_query);
+		
+		if($self_signed_cert){
+			stream_context_set_option($socket, 'ssl', 'verify_peer', false);
+			stream_context_set_option($socket, 'ssl', 'verify_peer_name', false);
+			stream_context_set_option($socket, 'ssl', 'allow_self_signed', true);
+			
+			$this->DebugMemUsage('allow_self_signed = true');
+		}
+        
         stream_set_blocking($socket, true);
 
 		$response = $this->_get_response($socket);

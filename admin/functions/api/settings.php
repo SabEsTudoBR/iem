@@ -141,6 +141,7 @@ class Settings_API extends API
 		'DEFAULT_EMAILSIZE',
 		
 		'SECURITY_SESSION_TIME',
+		'SELF_SIGNED_CERT',
 		'SECURITY_TWO_FACTOR_AUTH'
     ];
 

@@ -457,7 +457,6 @@ class Settings extends SendStudio_Functions
 							if (!isset($_POST['security_wrong_login_threshold_enable'])) {
 								$settings['SECURITY_WRONG_LOGIN_THRESHOLD_COUNT'] = 0;
 							}
-						// -----
 
 						$api->Set('Settings', $settings);
 
@@ -586,7 +585,12 @@ class Settings extends SendStudio_Functions
 		if (!isset($SENDSTUDIO_FORCE_UNSUBLINK)) {
 			$SENDSTUDIO_FORCE_UNSUBLINK = '';
 		}
-
+		if (isset($SENDSTUDIO_SELF_SIGNED_CERT) && $SENDSTUDIO_SELF_SIGNED_CERT == 1) {
+			$SENDSTUDIO_SELF_SIGNED_CERT = ' CHECKED';
+		}
+		if (!isset($SENDSTUDIO_SELF_SIGNED_CERT)) {
+			$SENDSTUDIO_SELF_SIGNED_CERT = '';
+		}
 		$cron_checked = false;
 		if (isset($SENDSTUDIO_CRON_ENABLED) && $SENDSTUDIO_CRON_ENABLED == 1) {
 			$SENDSTUDIO_CRON_ENABLED = ' CHECKED';
@@ -857,6 +861,7 @@ class Settings extends SendStudio_Functions
 		$GLOBALS['HTMLFooter'] = $SENDSTUDIO_HTMLFOOTER;
 
 		$GLOBALS['ForceUnsubLink'] = $SENDSTUDIO_FORCE_UNSUBLINK;
+		$GLOBALS['SelfSignedCert'] = $SENDSTUDIO_SELF_SIGNED_CERT;
 
 		$GLOBALS['CronEnabled'] = $SENDSTUDIO_CRON_ENABLED;
 

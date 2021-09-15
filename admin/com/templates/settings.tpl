@@ -421,6 +421,16 @@
 						<tr>
 							<td class="FieldLabel">
 								{template="Not_Required"}
+									%%LNG_Self_Signed_Cert%%:
+								
+							</td>
+							<td><label for="force_self_signed_cert"><input type="checkbox" name="self_signed_cert" id="self_signed_cert" value="1"%%GLOBAL_SelfSignedCert%%>%%LNG_SelfSignedCert_explain%%</label> %%LNG_HLP_Self_Signed_Cert%%
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
 								%%LNG_ForceUnsubLink%%:
 							</td>
 							<td>
