@@ -1,5 +1,7 @@
 <?php
-
+define('LNG_ForceHideSMTP', 'Force own SMTP sever');
+define('LNG_HLP_ForceHideSMTP', 'Force users to select and configure their own SMTP server. Do not let them use the default SMTP server.');
+define('LNG_ForceHideSMTPExplain', 'Yes, hide the default SMTP selection for users');
 define('LNG_SecuritySettings_Destroy_Session_Title', 'End Session After Inactivity');
 define('LNG_SecuritySettings_OTP_Settings_Title','Two-factor Authentication');
 define('LNG_SecuritySettings_OTP', 'Enable Two-factor Authentication '); 

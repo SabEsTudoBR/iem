@@ -93,6 +93,14 @@
 			$('.SMTPOptions')[$('#usesmtp').attr('checked') ? 'show' : 'hide']();
 		});
 
+		$(document.settings.force_own_smtp_server).click(function() {			 
+			 if($(document.settings.force_own_smtp_server).attr('checked')){
+				document.getElementById("default_email_settings").style.display = "none";			 
+			 }else{
+				document.getElementById("default_email_settings").style.display = "";
+			 }
+				}
+			 );
 		$(document.settings.cmdTestSMTP).click(function() {
 			var f = document.forms[0];
 			if (f.smtp_server.value == '') {
@@ -427,7 +435,16 @@
 							<td><label for="force_self_signed_cert"><input type="checkbox" name="self_signed_cert" id="self_signed_cert" value="1"%%GLOBAL_SelfSignedCert%%>%%LNG_SelfSignedCert_explain%%</label> %%LNG_HLP_Self_Signed_Cert%%
 							</td>
 						</tr>
-						
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
+						     %%LNG_ForceHideSMTP%%:
+								
+							</td>
+							<td><label for="force_own_smtp_server"><input type="checkbox" name="force_own_smtp_server" id="force_own_smtp_server" value="1"%%GLOBAL_ForceOwnSmtpServer%%>
+								%%LNG_ForceHideSMTPExplain%%</label> %%LNG_HLP_ForceHideSMTP%%
+							</td>
+						</tr>
 						<tr>
 							<td class="FieldLabel">
 								{template="Not_Required"}
@@ -504,7 +521,7 @@
 								&nbsp;&nbsp;%%LNG_SmtpServerIntro%%
 							</td>
 						</tr>
-						<tr>
+						<tr id="default_email_settings"  style="display: %%GLOBAL_DisplayDefaultMailSettings%%">
 							<td class="FieldLabel">
 								{template="Not_Required"}
 								%%LNG_UseSMTP%%:

@@ -448,7 +448,9 @@ class Settings extends SendStudio_Functions
 								$settings['SECURITY_SESSION_TIME'] = 0;
 							}
 							 
-							$settings['SECURITY_TWO_FACTOR_AUTH'] = isset($_POST['security_two_factor_auth'])? intval($_POST['security_two_factor_auth']) : 0; 
+							if (isset($_POST['security_two_factor_auth'])) { 
+							 $settings['SECURITY_TWO_FACTOR_AUTH'] = intval($_POST['security_two_factor_auth']);
+							}
 							
 							if (!isset($_POST['security_wrong_login_wait_enable'])) {
 								$settings['SECURITY_WRONG_LOGIN_WAIT'] = 0;
@@ -591,6 +593,20 @@ class Settings extends SendStudio_Functions
 		if (!isset($SENDSTUDIO_SELF_SIGNED_CERT)) {
 			$SENDSTUDIO_SELF_SIGNED_CERT = '';
 		}
+		//force own smtp server
+		if (isset($SENDSTUDIO_FORCE_OWN_SMTP_SERVER) && $SENDSTUDIO_FORCE_OWN_SMTP_SERVER == 1) {
+			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = ' CHECKED';
+			$GLOBALS['DisplayDefaultMailSettings'] = 'none';
+			
+		}else{
+			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = '';
+			$GLOBALS['DisplayDefaultMailSettings'] = "'';";
+			
+		}
+		if (!isset($SENDSTUDIO_FORCE_OWN_SMTP_SERVER)) {
+			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = '';
+		}
+		
 		$cron_checked = false;
 		if (isset($SENDSTUDIO_CRON_ENABLED) && $SENDSTUDIO_CRON_ENABLED == 1) {
 			$SENDSTUDIO_CRON_ENABLED = ' CHECKED';
@@ -862,6 +878,8 @@ class Settings extends SendStudio_Functions
 
 		$GLOBALS['ForceUnsubLink'] = $SENDSTUDIO_FORCE_UNSUBLINK;
 		$GLOBALS['SelfSignedCert'] = $SENDSTUDIO_SELF_SIGNED_CERT;
+		$GLOBALS['ForceOwnSmtpServer'] = $SENDSTUDIO_FORCE_OWN_SMTP_SERVER;
+		
 
 		$GLOBALS['CronEnabled'] = $SENDSTUDIO_CRON_ENABLED;
 

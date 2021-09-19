@@ -706,7 +706,11 @@ class Users extends SendStudio_Functions
 		$GLOBALS['CustomSmtpServer_Display'] = '0';
 
 		$GLOBALS['XmlPath'] = SENDSTUDIO_APPLICATION_URL . '/xml.php';
-
+		
+		//Get value of FORCE_OWN_SMTP_SERVER
+		$force_own_smtp_server = $user->getSettingValue('FORCE_OWN_SMTP_SERVER');	 
+		$GLOBALS['DisplayDefaultMailSettings'] = $force_own_smtp_server == 1 ? 'none' : '';
+		
 		if ($userid > 0) {
 			$user = GetUser($userid);
 			if ($user->Get('userid') <= 0) {

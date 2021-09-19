@@ -259,7 +259,7 @@
 									{template="Not_Required"}
 									%%LNG_SmtpServer%%:
 								</td>
-								<td width="90%">
+								<td width="90%" style="display: %%GLOBAL_DisplayDefaultMailSettings%%">
 									<label for="usedefaultsmtp">
 										<input type="radio" name="smtptype" id="usedefaultsmtp" value="0" {if !$showSmtpInfo}checked="checked"{/if} />
 										%%LNG_SmtpDefault%%

@@ -552,7 +552,7 @@ class User_API extends API
         $this->lastloggedin = (int) $user['lastloggedin'];
         $this->createdate = (int) $user['createdate'];
         $this->forgotpasscode = $user['forgotpasscode'];
-		$this->otp = isset($user['otp'])? $user['otp'] : NULL;
+		$this->otp = isset($user['otp'])? $user['otp'] : '';
 
         if (isset($user['usewysiwyg'])) {
             $wysiwyg = intval($user['usewysiwyg']);
@@ -599,8 +599,10 @@ class User_API extends API
         $this->adminnotify_send_emailtext = IEM::ifsetor($user['adminnotify_send_emailtext'], '');
         $this->adminnotify_import_flag = IEM::ifsetor($user['adminnotify_import_flag'], 0);
         $this->adminnotify_import_threshold = IEM::ifsetor($user['adminnotify_import_threshold'], 0);
-        $this->adminnotify_import_emailtext = IEM::ifsetor($user['adminnotify_import_emailtext'], '');
-
+        $this->adminnotify_import_emailtext = IEM::ifsetor($user['adminnotify_import_emailtext'], '');		
+		 
+		$force_own_smtp_server =$this->getSettingValue('FORCE_OWN_SMTP_SERVER');		 
+		$GLOBALS['DisplayDefaultMailSettings'] = $force_own_smtp_server == 1 ? 'none' : '';
         if ($load_permissions) {
             $this->LoadPermissions($userid);
         }
