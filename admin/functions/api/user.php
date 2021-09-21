@@ -1080,24 +1080,25 @@ class User_API extends API
     
     /**
      * CheckOTPCol
-     * Checking the otp colum in users table.
+     * Checking the otp column in users table.
      *
      * @param String $columnName this is a column in users table where otp is saved in.
      *
      * @return the query execution.
     */
-    public function CheckOTPCol($columnName ='') {    
+    public function CheckOTPCol($columnName ='otp') {    
           
-         $query =  "SHOW COLUMNS FROM " . SENDSTUDIO_TABLEPREFIX."users LIKE '".$columnName."'";
-	 $result = $this->Db->Query($query);
+        $query =  "SHOW COLUMNS FROM " . SENDSTUDIO_TABLEPREFIX."users LIKE '".$columnName."'";
+		$result = $this->Db->Query($query);
 		 
-	 $exists = ($this->Db->CountResult($result))?TRUE:FALSE; 
+		$exists = ($this->Db->CountResult($result))?TRUE:FALSE; 
 	 
-	 if(!$exists) { 
-		 $query =  "ALTER TABLE  " . SENDSTUDIO_TABLEPREFIX."users  ADD  COLUMN  ".$columnName." varchar(100) DEFAULT NULL";	  
-		 return $this->Db->Query($query);
-	 }	  
+		if(!$exists) { 
+			$query =  "ALTER TABLE  " . SENDSTUDIO_TABLEPREFIX."users  ADD  COLUMN  ".$columnName." varchar(100) DEFAULT NULL";	  
+			return $this->Db->Query($query);
+		}	  
     }
+	
     /**
      * UpdateLoginTime
      * Updates the time the user last logged in.

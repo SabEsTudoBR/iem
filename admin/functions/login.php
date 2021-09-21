@@ -173,23 +173,27 @@ class Login extends SendStudio_Functions
 				if (!empty($result)) {
 					 
 					//send email					
-					$user = new User_API();
+					$user_api = new User_API();
 					$username = IEM::requestGetPOST('ss_username', '');
 					
 					$username = preg_replace('/\s+/', ' ', $username);
 					$username = trim($username);
 
-					$founduser = $user->Find($username);
-					 if (!$founduser) {
-					$this->ShowForgotForm('login_error', GetLang('BadLogin_Forgot'));
-					break;
+					$founduser = $user_api->Find($username);
+					
+					if (!$founduser) {
+						$this->ShowForgotForm('login_error', GetLang('BadLogin_Forgot'));
+						break;
 					}  
 
-					$user->Load($founduser, false);
+					$userid = $founduser;
+					
+					$user_api->Load($founduser, false);
+					
 					if(SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH == 1){
 						$code = rand(100000,999999);
-						$user->CheckOTPCol('otp');
-						$user->OTP($code,$founduser);
+						$user_api->CheckOTPCol('otp');
+						$user_api->OTP($code,$founduser);
 						$OTP= sprintf(GetLang('EmailContent_OTP'), $code); 
 						$message = $OTP;
 						$email_api = $this->GetApi('Email');
@@ -204,20 +208,21 @@ class Login extends SendStudio_Functions
 
 						$email_api->SetSmtp(SENDSTUDIO_SMTP_SERVER, SENDSTUDIO_SMTP_USERNAME, @base64_decode(SENDSTUDIO_SMTP_PASSWORD), SENDSTUDIO_SMTP_PORT);
 
-						$user_fullname = $user->Get('fullname');
-						$email_api->AddRecipient($user->emailaddress, $user_fullname, 't');
+						$user_fullname = $user_api->Get('fullname');
+						$email_api->AddRecipient($user_api->emailaddress, $user_fullname, 't');
 						
 						$send_return = $email_api->Send();
 						
 						if($send_return['success'] === 0) {
-							$this->ShowOTPForm('otp_Error', $message=GetLang('EmailNotSent_OTP'), $user=$founduser);
+							$this->ShowOTPForm('otp_Error', $message=GetLang('EmailNotSent_OTP'), $userid);
 						}else{
-							$message = sprintf(GetLang('Help_OTP'), $this->mask_emailaddress($user->emailaddress));
+							$message = sprintf(GetLang('Help_OTP'), $this->mask_emailaddress($user_api->emailaddress));
 						
-							$this->ShowOTPForm('otp_Success', $message, $user=$founduser);
+							$this->ShowOTPForm('otp_Success', $message, $userid);
 						}
+						
 					}else{
-						IEM::userLogin($user);
+						IEM::userLogin($result['userid']);
 						$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
 
 						header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/' . $redirect);
@@ -228,23 +233,23 @@ class Login extends SendStudio_Functions
 				 
 			break;
 			case 'confirmotp':
-				$user = IEM::requestGetGET('user', false, 'intval');
+				$userid = IEM::requestGetGET('user', false, 'intval');
 				$otp = IEM::requestGetPost('otp', false, 'trim');
 				 
-				if (empty($user) || empty($otp)) {
-					$this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$user);
+				if (empty($userid) || empty($otp)) {
+					$this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$userid);
 					break;
 				}
 
 				$userapi = new User_API();
-				$loaded = $userapi->Load($user, false);
+				$loaded = $userapi->Load($userid, false);
 
 				if (!$loaded || $userapi->Get('otp') != $otp) {
-					 $this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$user);
+					 $this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$userid);
 					break;
 				}
 
-				IEM::userLogin($user);
+				IEM::userLogin($userid);
 				$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
 
 				header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/' . $redirect);
@@ -364,7 +369,7 @@ class Login extends SendStudio_Functions
 	*
 	* @param String $template If there is a template (will either be success or error template) use that as a message.
 	* @param String $msg This also tells us what's going on (otp has been validated and so on).
-	* @param String $user This is the current user ID passed in).
+	* @param String $userid This is the current user ID passed in).
 	*
 	* @see PrintHeader
 	* @see ParseTemplate
@@ -372,8 +377,9 @@ class Login extends SendStudio_Functions
 	*
 	* @return Void Doesn't return anything, only prints out the form.
 	*/
-	public function ShowOTPForm($template=false, $msg=false, $user='')
+	public function ShowOTPForm($template=false, $msg=false, $userid='')
 	{
+		
 		$this->printLoginHeader();
 		if ($template && $msg) {
 			switch (strtolower($template)) {
@@ -389,8 +395,8 @@ class Login extends SendStudio_Functions
 		}
 		$GLOBALS['ss_takemeto'] = 'index.php';
 
-		$this->GlobalAreas['SubmitAction'] = 'ConfirmOtp&user='.$user;
-		$GLOBALS['SubmitAction'] = 'ConfirmOtp&user='.$user;
+		$this->GlobalAreas['SubmitAction'] = 'ConfirmOtp&user='.$userid;
+		$GLOBALS['SubmitAction'] = 'ConfirmOtp&user='.$userid;
 		 $this->ParseTemplate('otp');
 
 		$this->PrintFooter(true);
