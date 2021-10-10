@@ -602,7 +602,7 @@ class User_API extends API
         $this->adminnotify_import_emailtext = IEM::ifsetor($user['adminnotify_import_emailtext'], '');		
 		 
 		$force_own_smtp_server =$this->getSettingValue('FORCE_OWN_SMTP_SERVER');		 
-		$GLOBALS['DisplayDefaultMailSettings'] = $force_own_smtp_server == 1 ? 'none' : '';
+		$GLOBALS['DisplayDefaultMailSettings'] = $force_own_smtp_server == 1 ? 'DISABLED' : '';
         if ($load_permissions) {
             $this->LoadPermissions($userid);
         }

@@ -106,7 +106,7 @@
 									</select>&nbsp;&nbsp;&nbsp;%%LNG_HLP_TimeZone%%
 								</td>
 							</tr>
-                            {if $UserID != 0}
+                            {if $UserID != 0 && $UserID == $current_user && $loginuser_groupid == 1}
                             <tr>
                                 <td class="FieldLabel">
                                     {template="Required"}
@@ -123,6 +123,7 @@
                                     {$lang.Password}:
                                 </td>
                                 <td>
+								<input type="hidden" name="loginuser_groupid" value="{$loginuser_groupid}">
                                     <input type="password" name="ss_p" id="ss_p" value="" class="Field250" autocomplete="off" />&nbsp;%%LNG_HLP_Password%%
                                 </td>
                             </tr>
@@ -135,6 +136,17 @@
                                     <input type="password" name="ss_p_confirm" id="ss_p_confirm" value="" class="Field250" autocomplete="off" />
                                 </td>
                             </tr>
+							{if $ShowSendPassLink}
+							<tr>
+                                <td class="FieldLabel"> 
+                                </td>
+                                <td>OR
+                                 <br /><a href="%%GLOBAL_ResetPassword%%" name="SubmitButton"  class="FormButton" style="display:%%GLOBAL_OTP_Status%%">%%LNG_SendPasswordRestText%%</a><br>
+                                 <br> %%GLOBAL_Email_Message%%
+								</td>
+								<input type="hidden" name="loginuser_groupid" value="{$loginuser_groupid}">
+                            </tr>
+							{/if}
 						</table>
 					</div>
 					
@@ -259,16 +271,16 @@
 									{template="Not_Required"}
 									%%LNG_SmtpServer%%:
 								</td>
-								<td width="90%" style="display: %%GLOBAL_DisplayDefaultMailSettings%%">
+								<td width="90%" >
 									<label for="usedefaultsmtp">
-										<input type="radio" name="smtptype" id="usedefaultsmtp" value="0" {if !$showSmtpInfo}checked="checked"{/if} />
+										<input type="radio" name="smtptype" id="usedefaultsmtp" value="0" {if $GLOBAL_DisplayDefaultMailSettings  == 'DISABLED'} {if !$showSmtpInfo}checked="checked"{/if}{/if}  %%GLOBAL_DisplayDefaultMailSettings%% />
 										%%LNG_SmtpDefault%%
 									</label>
 									%%LNG_HLP_UseDefaultMail%%
 								</td>
 							</tr>
 							<tr>
-								<td class="FieldLabel">&nbsp;</td>
+								<td class="FieldLabel"> </td>
 								<td>
 									<label for="usecustomsmtp">
 										<input type="radio" name="smtptype" id="usecustomsmtp" value="1" {if $showSmtpInfo}checked="checked"{/if} />
@@ -336,6 +348,7 @@
 									<input type="button" name="cmdTestSMTP" value="%%LNG_TestSMTPSettings%%" class="FormButton" style="width: 120px;"/>
 								</td>
 							</tr>
+							
 							<tr>
 								<td colspan="2" class="Heading2" style="padding-left:10px">
 									%%LNG_HeaderFooter_Heading%%

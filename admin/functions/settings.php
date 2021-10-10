@@ -593,19 +593,7 @@ class Settings extends SendStudio_Functions
 		if (!isset($SENDSTUDIO_SELF_SIGNED_CERT)) {
 			$SENDSTUDIO_SELF_SIGNED_CERT = '';
 		}
-		//force own smtp server
-		if (isset($SENDSTUDIO_FORCE_OWN_SMTP_SERVER) && $SENDSTUDIO_FORCE_OWN_SMTP_SERVER == 1) {
-			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = ' CHECKED';
-			$GLOBALS['DisplayDefaultMailSettings'] = 'none';
-			
-		}else{
-			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = '';
-			$GLOBALS['DisplayDefaultMailSettings'] = "'';";
-			
-		}
-		if (!isset($SENDSTUDIO_FORCE_OWN_SMTP_SERVER)) {
-			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = '';
-		}
+		
 		
 		$cron_checked = false;
 		if (isset($SENDSTUDIO_CRON_ENABLED) && $SENDSTUDIO_CRON_ENABLED == 1) {
@@ -672,7 +660,23 @@ class Settings extends SendStudio_Functions
 			$GLOBALS['UseDefaultMail'] = ' CHECKED';
 			$GLOBALS['DisplaySMTP'] = 'none';
 		}
-
+		//force own smtp server
+		if (isset($SENDSTUDIO_FORCE_OWN_SMTP_SERVER) && $SENDSTUDIO_FORCE_OWN_SMTP_SERVER == 1) {
+			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = 'CHECKED';
+			$GLOBALS['DisplayDefaultMailSettings'] = 'DISABLED';
+			$GLOBALS['UseDefaultMail'] = '';
+			$GLOBALS['DisplaySMTP'] = '';
+			$GLOBALS['UseSMTP'] = ' CHECKED';
+			
+		}else{
+			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = '';
+			$GLOBALS['DisplayDefaultMailSettings'] = "'';";
+			 
+			
+		}
+		if (!isset($SENDSTUDIO_FORCE_OWN_SMTP_SERVER)) {
+			$SENDSTUDIO_FORCE_OWN_SMTP_SERVER = '';
+		}
 		$GLOBALS['ShowCronInfo'] = 'none';
 		$GLOBALS['CronRunTime'] = GetLang('CronRunTime_Never');
 		$GLOBALS['CronRunTime_Explain'] = GetLang('CronRunTime_Explain');

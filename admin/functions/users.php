@@ -300,12 +300,13 @@ class Users extends SendStudio_Functions
                         $user->Set('smtppassword', '');
                         $user->Set('smtpport', 25);
                     }
-
+					$thisuser    = IEM::getCurrentUser();
+					 
+					$UserID = IEM::requestGetGET('UserID', 0, 'intval');
+					 
                     if ($_POST['ss_p'] != '') {
-                        if ($_POST['ss_p_current'] == ''){
-                            $error = GetLang('CurrentPasswordMissing');
-                        } else {
-                            $auth_system = new AuthenticationSystem();
+                        if ($thisuser ->userid == $UserID) {
+							$auth_system = new AuthenticationSystem();
                             $username = IEM::requestGetPOST('username', '');
                             $password = IEM::requestGetPOST('ss_p_current', '');
                             $result = $auth_system->Authenticate($username, $password);
@@ -318,15 +319,29 @@ class Users extends SendStudio_Functions
                             } elseif ($result && defined('IEM_SYSTEM_ACTIVE') && !IEM_SYSTEM_ACTIVE) {
                                 $error = GetLang('CurrentPasswordError');
                             }
+                             
+                        } else {
+				$username = IEM::requestGetPOST('username', '');
+                            	$password = IEM::requestGetPOST('ss_p', '');						 
                         }
-						    $auth_pass = new AuthenticationSystem();
+						  	
+							$auth_pass = new AuthenticationSystem();
 							$result_auth_pass= $auth_pass->AuthenticatePassword($_POST['ss_p']);
 							if ($result_auth_pass === -1) {
 								 $error = GetLang('NewPassword_Errors');
-							}	
-							
-                        if(!empty($result) && $result > 0){
-                            if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
+							}
+						//for super admin
+						if ($thisuser ->userid == $UserID && $_POST['loginuser_groupid'] == 1){
+							if(!empty($result) && $result > 0){
+								if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
+									$user->Set('password', $_POST['ss_p']);
+								} else {
+									$error = GetLang('PasswordsDontMatch');
+								}
+							}							
+                        
+						} else { //for other user
+							if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
                                 $user->Set('password', $_POST['ss_p']);
                             } else {
                                 $error = GetLang('PasswordsDontMatch');
@@ -545,14 +560,67 @@ class Users extends SendStudio_Functions
 				
 				$this->PrintEditForm(0, $details);
 			break;
+			case 'resetpaswordlink':
+				$user = new User_API();
+				$username = IEM::requestGetGET('userid', false, 'intval');
 
+				$founduser = $username;
+			     
+				if (!$founduser) {
+					$this->ShowForgotForm('login_error', GetLang('BadLogin_Forgot'));
+					break;
+				}
+
+				$user->Load($founduser, false);
+
+				$code = md5(uniqid(rand(), true));				 
+				$user->ResetForgotCode($code);
+
+				$link = SENDSTUDIO_APPLICATION_URL . '/admin/index.php?Page=Login&Action=ResetPassword&user=' . $founduser . '&code=' . $code;
+ 
+				$message = sprintf(GetLang('ChangePasswordEmailRequest'), $link);
+				
+				$email_subject = GetLang('ChangePasswordRequestSubject').' for user ['.$user->Get('username').']';
+  
+				$email_api = $this->GetApi('Email');
+				$email_api->Set('CharSet', SENDSTUDIO_CHARSET);
+				$email_api->Set('Multipart', false);
+				$email_api->AddBody('text', $message);
+				$email_api->Set('Subject', $email_subject);
+				
+				$email_api->Set('FromName', $thisuser->fullname);
+
+				$email_api->Set('FromAddress', SENDSTUDIO_EMAIL_ADDRESS);
+				$email_api->Set('ReplyTo', SENDSTUDIO_EMAIL_ADDRESS);
+				$email_api->Set('BounceAddress', SENDSTUDIO_EMAIL_ADDRESS);
+
+				$email_api->SetSmtp(SENDSTUDIO_SMTP_SERVER, SENDSTUDIO_SMTP_USERNAME, @base64_decode(SENDSTUDIO_SMTP_PASSWORD), SENDSTUDIO_SMTP_PORT);
+
+				$user_fullname = $user->Get('fullname');
+
+				$email_api->AddRecipient($user->emailaddress, $user_fullname, 't');
+				 
+				$send_return = $email_api->Send();
+				
+				$GLOBALS['Email_Message'] = '';
+				 if($send_return['success'] === 0) {
+					 $GLOBALS['Email_Message'] ="Email did not send!"; 
+					
+					$this->PrintEditForm($username); 
+				}else{
+					$GLOBALS['Email_Message'] ="Email sent successfully!"; 
+					$this->PrintEditForm($username); 
+					}  
+			break;
 			case 'edit':
 				$userid = IEM::requestGetGET('UserID', 0, 'intval');
 				
 				if ($userid == 0) {
 					$this->DenyAccess();
 				}
-
+				$GLOBALS['ResetPassword'] ="index.php?Page=Users&Action=resetpaswordlink&userid=".$userid;
+				
+				 
 				$this->PrintEditForm($userid);
 			break;
 
@@ -709,7 +777,7 @@ class Users extends SendStudio_Functions
 		
 		//Get value of FORCE_OWN_SMTP_SERVER
 		$force_own_smtp_server = $user->getSettingValue('FORCE_OWN_SMTP_SERVER');	 
-		$GLOBALS['DisplayDefaultMailSettings'] = $force_own_smtp_server == 1 ? 'none' : '';
+		$GLOBALS['DisplayDefaultMailSettings'] = $force_own_smtp_server == 1 ? 'DISABLED' : '';
 		
 		if ($userid > 0) {
 			$user = GetUser($userid);
@@ -807,7 +875,15 @@ class Users extends SendStudio_Functions
 				if ($smtp_access) {
 					$GLOBALS['ShowSMTPInfo'] = '';
 				}
-
+                //Get value of FORCE_OWN_SMTP_SERVER
+				$force_own_smtp_server = $user->getSettingValue('FORCE_OWN_SMTP_SERVER');
+				if($force_own_smtp_server == 1){
+					$GLOBALS['DisplayDefaultMailSettings'] = 'DISABLED';
+					$GLOBALS['ShowSMTPInfo'] = 'none';
+				}else{
+					$GLOBALS['DisplayDefaultMailSettings'] = '';
+				}
+								
 				if ($GLOBALS['SmtpServer']) {
 					$GLOBALS['CustomSmtpServer_Display'] = '1';
 					if ($smtp_access) {
@@ -948,10 +1024,17 @@ class Users extends SendStudio_Functions
 		}
 
 		$available_users = $user->AvailableUsers();
-
+		$show_sendpassword_link = false;
+		if($thisuser->isAdmin() and $userid != $thisuser->userid and $userid  != 0) {
+			$show_sendpassword_link = true;
+		}
+		
 		$template = GetTemplateSystem();
         
+		$template->Assign('ShowSendPassLink', $show_sendpassword_link);
 		$template->Assign('UserID', $user->userid);
+		$template->Assign('loginuser_groupid', $thisuser->groupid);
+		$template->Assign('current_user', $thisuser->userid);
 		$template->Assign('groupid', $user->groupid);
 		$template->Assign('canChangeUserGroup', !$user->isLastAdmin());
 		$template->Assign('AgencyEdition', get_agency_license_variables());

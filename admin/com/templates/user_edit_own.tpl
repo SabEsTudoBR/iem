@@ -91,7 +91,7 @@
 					<tr><td class=Heading2 colspan=2>%%LNG_UserDetails%%</td></tr>
 					<tr>
 						<td class="FieldLabel" width="10%">
-							<img src="images/blank.gif" width="200" height="1" /><br />
+							<img src="images/blank.gif" width="150" height="1" /><br />
 							{template="Required"}
 							%%LNG_UserName%%:
 						</td>
@@ -229,9 +229,9 @@
 							{template="Not_Required"}
 							%%LNG_SmtpServer%%:
 						</td>
-						<td style="display: %%GLOBAL_DisplayDefaultMailSettings%%">
+						<td>
 							<label for="usedefaultsmtp">
-								<input type="radio" name="smtptype" id="usedefaultsmtp" value="0"/>
+								<input type="radio" name="smtptype" id="usedefaultsmtp" value="0"   %%GLOBAL_DisplayDefaultMailSettings%%/>
 								%%LNG_SmtpDefault%%
 							</label>
 							%%LNG_HLP_UseDefaultMail%%

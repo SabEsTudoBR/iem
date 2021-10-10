@@ -127,7 +127,70 @@ class Login extends SendStudio_Functions
 					$this->ShowForgotForm_Step2($username,'login_success', sprintf(GetLang('ChangePassword_Emailed'), $user->emailaddress));
 				}
 			break;
+			case 'updatepassword':
+				/* if (!IEM::sessionGet('ForgotUser')) {
+					$this->ShowForgotForm('login_error', GetLang('BadLogin_Link'));
+					break;
+				} */
+				$user = IEM::requestGetGET('user', false, 'intval');
+				$this->userid = $user ;
+				$userapi = new User_API();
+				$loaded = $userapi->Load($user);
+			
+				 if (!$loaded) {
+					$this->ShowForgotForm('login_error', GetLang('BadLogin_Link'));
+					break;
+				}  
+               
+				$password = IEM::requestGetPOST('ss_password', false);
+				$confirm = IEM::requestGetPOST('ss_password_confirm', false);
+				 
+				#Added password rules.
+				/* $auth_pass = new AuthenticationSystem();
+                $result_auth_pass= $auth_pass->AuthenticatePassword($password);
+				
+				if ($result_auth_pass === -1) {
+					 $this->ShowForgotForm_Step2($userapi->Get('username'), 'login_error', GetLang('NoValidPassword'));
+					break;
+				} */
 
+				if ($password == false || ($password != $confirm)) {
+					$this->ShowForgotForm_Step2($userapi->Get('username'), 'resetpassword', GetLang('PasswordsDontMatch'));
+					break;
+				}
+				
+				$userapi->password =  $password ;
+				$userapi->Save();
+
+				$code = md5(uniqid(rand(), true));
+
+				$userapi->ResetForgotCode($code);
+
+				$this->ShowLoginForm('login_success', GetLang('PasswordUpdated'));
+			break;
+			 
+			case 'resetpassword':
+				$user = IEM::requestGetGET('user', false, 'intval');
+				$code = IEM::requestGetGET('code', false, 'trim');
+
+				if (empty($user) || empty($code)) {
+					$this->ShowForgotForm('login_error', GetLang('BadLogin_Link'));
+					break;
+				}
+
+				$userapi = new User_API();
+				$loaded = $userapi->Load($user, false);
+
+				/* if (!$loaded || $userapi->Get('forgotpasscode') != $code) {
+					$this->ShowForgotForm('login_error', GetLang('BadLogin_Link'));
+					break;
+				} */
+				$GLOBALS['UpdatePassword']= "updatepassword&user=".$user;
+				IEM::sessionSet('ResetUser', $user);
+  
+				$this->ShowForgotForm_Step2($userapi->Get('username'),'resetpassword',true);
+			break;
+			 
 			case 'confirmcode':
 				$user = IEM::requestGetGET('user', false, 'intval');
 				$code = IEM::requestGetGET('code', false, 'trim');
@@ -455,6 +518,11 @@ class Login extends SendStudio_Functions
 					$GLOBALS['Message'] = $msg;
 					$template = false;
 					$template_page = 'ForgotPassword_Sendpass';
+				break;
+				case 'resetpassword':
+					$GLOBALS['Message'] = $msg;
+					$template = false;
+					$template_page = 'resetpassword';
 				break;
 			}
 			if ($template) {

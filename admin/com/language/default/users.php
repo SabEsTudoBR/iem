@@ -4,6 +4,11 @@ define('LNG_NoValidPassword', 'Password should be at least 8 characters in lengt
 define('LNG_HLP_Password', 'Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.');
 
 define('LNG_UserDetails', 'User Details');
+
+define('LNG_SendPasswordRestText', 'Send Password reset Link');
+define('LNG_ChangePasswordRequestSubject', 'Change your password');
+define('LNG_ChangePasswordEmailRequest', 'To reset your password, please click on the following link : %s');
+
 define('LNG_UserAdd', 'Create a User Account...');
 define('LNG_UserName', 'Username');
 define('LNG_FullName', 'Full Name');

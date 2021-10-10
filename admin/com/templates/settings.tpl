@@ -95,9 +95,15 @@
 
 		$(document.settings.force_own_smtp_server).click(function() {			 
 			 if($(document.settings.force_own_smtp_server).attr('checked')){
-				document.getElementById("default_email_settings").style.display = "none";			 
+					document.getElementById("usephpmail").disabled = true;					 
+					document.getElementById("usesmtp").checked = true;
+					document.getElementById("usephpmail").checked = false;
+		 		 
 			 }else{
-				document.getElementById("default_email_settings").style.display = "";
+				 
+				 document.getElementById("usephpmail").disabled = false;
+				 document.getElementById("usesmtp").checked = false;
+		 		 
 			 }
 				}
 			 );
@@ -346,7 +352,7 @@
 						</tr>
 						<tr>
 							<td class="FieldLabel" width="10%">
-								<img src="images/blank.gif" width="200" height="1" /><br />
+								<img src="images/blank.gif" width="160" height="1" /><br />
 								{template="Not_Required"}
 								%%LNG_EmailSize_Warning%%:
 							</td>
@@ -521,14 +527,14 @@
 								&nbsp;&nbsp;%%LNG_SmtpServerIntro%%
 							</td>
 						</tr>
-						<tr id="default_email_settings"  style="display: %%GLOBAL_DisplayDefaultMailSettings%%">
+						<tr id="default_email_settings">
 							<td class="FieldLabel">
 								{template="Not_Required"}
 								%%LNG_UseSMTP%%:
 							</td>
 							<td>
 								<label for="usephpmail">
-									<input type="radio" name="usesmtp" id="usephpmail" value="0"%%GLOBAL_UseDefaultMail%%/>
+									<input type="radio" name="usesmtp" id="usephpmail" value="0"%%GLOBAL_UseDefaultMail%%  %%GLOBAL_DisplayDefaultMailSettings%%/>
 									%%LNG_SmtpDefaultSettings%%
 								</label>
 								%%LNG_HLP_UseDefaultMail%%
