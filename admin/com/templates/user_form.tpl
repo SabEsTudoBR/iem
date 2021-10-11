@@ -140,7 +140,7 @@
 							<tr>
                                 <td class="FieldLabel"> 
                                 </td>
-                                <td>OR
+                                <td>
                                  <br /><a href="%%GLOBAL_ResetPassword%%" name="SubmitButton"  class="FormButton" style="display:%%GLOBAL_OTP_Status%%">%%LNG_SendPasswordRestText%%</a><br>
                                  <br> %%GLOBAL_Email_Message%%
 								</td>
