@@ -1,13 +1,12 @@
 # Interspire Email Marketer Changelog
 
 Version: 6.4.1
-Released: 22nd Sep, 2021
+Released: 13th Oct, 2021
 - Added Two factor authentication feature
 - Added admin can force users to select and configure their own SMTP server
 - Added Self signed certificate setting option
 - Fixed export statistics count issue
 - Removed deprecated php methods causing notices/errors
-- Misc. minor fixes and code cleanup
 
 Files Changed:
 -------------
@@ -36,6 +35,7 @@ Files Added:
 	admin/com/templates/otp.tpl
 	admin/com/templates/otp_error.tpl
 	admin/com/templates/otp_success.tpl
+	admin/com/templates/resetpassword.tpl
 	
 	
 Version: 6.4.0
