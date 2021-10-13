@@ -1,7 +1,31 @@
+<script src="includes/js/jquery/form.js"></script>
+<script src="includes/js/jquery/thickbox.js"></script>
 <script>
 	$(function() {
 		$(document.frmLogin.ss_takemeto).val('%%GLOBAL_ss_takemeto%%');
 	});
+	
+	$(document.frmLogin).submit(function() {
+			if ($('#ss_password').val().trim().length < 8) {
+				 
+					alert("%%LNG_NoValidPassword%%");
+					$('#ss_password').focus().select();
+					return false;
+				} 
+				var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/; 
+				if(!re.test($('#ss_password').val())){   
+					alert("%%LNG_NoValidPassword%%");
+					$('#ss_password').focus().select();
+					return false;
+				}
+				if ($('#ss_password').val() != $('#ss_password_confirm').val()) {
+					 
+					alert("%%LNG_PasswordsDontMatch%%");
+					$('#ss_password_confirm').focus().select();
+					return false;
+				}
+	});
+
 </script>
 
 <form action="index.php?Page=Login&Action=%%GLOBAL_UpdatePassword%%" method="post" name="frmLogin" id="frmLogin" autocomplete="off">
@@ -19,31 +43,37 @@
 			<tr>
 			<td>
 				<table>
-
+				<tr>
+						<td class="SmallFieldLabel">%%LNG_UserName%%:</td>
+						<td align="left">
+							%%GLOBAL_UserName%%
+						</td>
+					</tr>
 				<tr>
 					<td nowrap="nowrap" style="padding:0px 10px 0px 10px">New %%LNG_EnterPassword%%:</td>
 
 					<td>
-					<input type="password" name="ss_password" id="password" class="Field150" autocomplete="off">
+					<input type="hidden" name="code" id="code" value="%%GLOBAL_CODE%%">
+					<input type="password" name="ss_password" id="ss_password" class="Field150" autocomplete="off">
 					</td>
 				</tr>
 				<tr>
 					<td nowrap="nowrap" style="padding:0px 10px 0px 10px">Confirm %%LNG_EnterPassword%%:</td>
 
 					<td>
-					<input type="password" name="ss_password_confirm" id="password" class="Field150" autocomplete="off">
+					<input type="password" name="ss_password_confirm" id="ss_password_confirm" class="Field150" autocomplete="off">
 					</td>
 				</tr>
 				 
 					<tr>
 					<td>&nbsp;</td>
 					<td>
-						<input type="submit" name="resetpassword" value="Reset" class="FormButton">
+						<input type="submit" name="resetpassword" value="%%LNG_ChangePassword%%" class="Field150">
 						 
 					</td>
 					</tr>
 
-					<tr><td class="Gap"></td></tr>
+					<tr><td colspan="3" class="Gap">%%LNG_ValidPassword_Help%%</td></tr>
 				</table>
 			</td>
 			</tr>

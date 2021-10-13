@@ -96,13 +96,12 @@
 		$(document.settings.force_own_smtp_server).click(function() {			 
 			 if($(document.settings.force_own_smtp_server).attr('checked')){
 					document.getElementById("usephpmail").disabled = true;					 
-					document.getElementById("usesmtp").checked = true;
-					document.getElementById("usephpmail").checked = false;
+					$('.SMTPOptions')[$('#usesmtp').attr('checked') ? 'show' : 'hide']();
 		 		 
 			 }else{
 				 
-				 document.getElementById("usephpmail").disabled = false;
-				 document.getElementById("usesmtp").checked = false;
+				 document.getElementById("usephpmail").disabled = false;				 
+				 $('.SMTPOptions')[$('#usesmtp').attr('checked') ? 'show' : 'hide']();
 		 		 
 			 }
 				}

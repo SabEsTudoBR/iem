@@ -5,7 +5,7 @@ define('LNG_HLP_Password', 'Password should be at least 8 characters in length a
 
 define('LNG_UserDetails', 'User Details');
 
-define('LNG_SendPasswordRestText', 'Send Password reset Link');
+define('LNG_SendPasswordRestText', 'Send Password Reset Email');
 define('LNG_ChangePasswordRequestSubject', 'Change your password');
 define('LNG_ChangePasswordEmailRequest', 'To reset your password, please click on the following link : %s');
 
