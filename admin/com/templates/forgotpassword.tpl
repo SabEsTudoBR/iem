@@ -17,8 +17,7 @@
 		</tr>
 		<tr>
 			<td>
-				<table   style="display:%%GLOBAL_ResetPassError%%">
-
+				<table>
 				<tr>
 					<td nowrap="nowrap" style="padding:0px 10px 0px 10px">%%LNG_UserName%%:</td>
 					<td>

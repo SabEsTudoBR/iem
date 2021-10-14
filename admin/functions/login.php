@@ -168,7 +168,7 @@ class Login extends SendStudio_Functions
 				$code = IEM::requestGetGET('code', false, 'trim');
  
 				if (empty($user) || empty($code)) {
-					$this->ShowForgotForm('login_error', GetLang('BadLogin_Link'));
+					$this->ShowResetPasswordError('login_error', GetLang('BadLogin_Link'));
 					break;
 				}
 
@@ -177,9 +177,10 @@ class Login extends SendStudio_Functions
 
 				if (!$loaded || $userapi->Get('forgotpasscode') != $code) { 
 					$GLOBALS['ResetPassError']= 'none'; 
-					$this->ShowForgotForm('login_error', GetLang('Something_wrong'));
+					$this->ShowResetPasswordError('login_error', GetLang('Something_wrong'));
 					break;
 				} 
+				
 				$GLOBALS['UpdatePassword']= "updatepassword&user=".$user;
 				IEM::sessionSet('ResetUser', $user);
 				$GLOBALS['CODE']= $code;
@@ -383,7 +384,41 @@ class Login extends SendStudio_Functions
 
 		$this->PrintFooter(true);
 	}
+	
+	/**
+	* ShowResetPasswordError
+	* This shows the send reset password error. If the template and message are passed in, there will be an error message shown. If one is not present, nothing is shown.
+	*
+	* @param String $template If there is a template (will either be success or error template) use that as a message.
+	* @param String $msg This also tells us what's going on (password has been reset and so on).
+	*
+	* @see PrintHeader
+	* @see ParseTemplate
+	* @see PrintFooter
+	*
+	* @return Void Doesn't return anything, only prints out the form.
+	*/
+    public function ShowResetPasswordError($template=false, $msg=false)
+	{
+		$this->printLoginHeader();
+		
+		if ($template && $msg) {
+			switch (strtolower($template)) {
+				case 'login_error':
+					$GLOBALS['Error'] = $msg;
+				break;
+				case 'login_success':
+					$this->GlobalAreas['Success'] = $msg;
+				break;
+			}
+			$GLOBALS['Message'] = $this->ParseTemplate($template, true, false);
+		}
 
+		$this->ParseTemplate('resetpassword_error');
+
+		$this->PrintFooter(true);
+	}
+	
 	/**
 	* ShowForgotForm
 	* This shows the forgot password form and handles the multiple stages of actions. If the template and message are passed in, there will be a success/error message shown. If one is not present, nothing is shown.
