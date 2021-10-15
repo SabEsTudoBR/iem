@@ -34,6 +34,8 @@ class Login extends SendStudio_Functions
     public function Process()
 	{
 		$action = IEM::requestGetGET('Action', '', 'strtolower');
+		
+		$GLOBALS['ResetPassError'] = 'block';
 		switch ($action) {
 			case 'forgotpass':
 				$this->ShowForgotForm();
@@ -84,17 +86,8 @@ class Login extends SendStudio_Functions
 				$user = new User_API();
 				$username = IEM::requestGetPOST('ss_username', '');
 
-				/**
-				 * Fix vulnerabilities with MySQL
-				 * Documented here: http://www.suspekt.org/2008/08/18/mysql-and-sql-column-truncation-vulnerabilities/
-				 *
-				 * Basically MySQL is truncating values in a column
-				 */
-					$username = preg_replace('/\s+/', ' ', $username);
-					$username = trim($username);
-				/**
-				 * -----
-				 */
+				$username = preg_replace('/\s+/', ' ', $username);
+				$username = trim($username);
 
 				$founduser = $user->Find($username);
 				if (!$founduser) {
@@ -136,7 +129,64 @@ class Login extends SendStudio_Functions
 					$this->ShowForgotForm_Step2($username,'login_success', sprintf(GetLang('ChangePassword_Emailed'), $user->emailaddress));
 				}
 			break;
+			case 'updatepassword':
+			 
+				 
+				$user = IEM::requestGetGET('user', false, 'intval');
+				$code = IEM::requestGetPOST('code', false, 'trim');
+				  
+				$this->userid = $user ;
+				$userapi = new User_API();
+				$loaded = $userapi->Load($user);
+				if (!$loaded || $userapi->Get('forgotpasscode') != $code) {
+					$this->ShowForgotForm('login_error', GetLang('BadLogin_Link'));
+					break;
+				}  
+               
+				$password = IEM::requestGetPOST('ss_password', false);
+				$confirm = IEM::requestGetPOST('ss_password_confirm', false);
+				 
+				 
 
+				if ($password == false || ($password != $confirm)) {
+					$this->ShowForgotForm_Step2($userapi->Get('username'), 'resetpassword', GetLang('PasswordsDontMatch'));
+					break;
+				}
+				
+				$userapi->password =  $password ;
+				$userapi->Save();
+
+				$code = md5(uniqid(rand(), true));
+
+				$userapi->ResetForgotCode($code);
+
+				$this->ShowLoginForm('login_success', GetLang('PasswordUpdated'));
+			break;
+			 
+			case 'resetpassword':
+				$user = IEM::requestGetGET('user', false, 'intval');
+				$code = IEM::requestGetGET('code', false, 'trim');
+ 
+				if (empty($user) || empty($code)) {
+					$this->ShowResetPasswordError('login_error', GetLang('BadLogin_Link'));
+					break;
+				}
+
+				$userapi = new User_API();
+				$loaded = $userapi->Load($user, false);
+
+				if (!$loaded || $userapi->Get('forgotpasscode') != $code) { 
+					$GLOBALS['ResetPassError']= 'none'; 
+					$this->ShowResetPasswordError('login_error', GetLang('Something_wrong'));
+					break;
+				} 
+				
+				$GLOBALS['UpdatePassword']= "updatepassword&user=".$user;
+				IEM::sessionSet('ResetUser', $user);
+				$GLOBALS['CODE']= $code;
+				$this->ShowForgotForm_Step2($userapi->Get('username'),'resetpassword',true);
+			break;
+			 
 			case 'confirmcode':
 				$user = IEM::requestGetGET('user', false, 'intval');
 				$code = IEM::requestGetGET('code', false, 'trim');
@@ -155,7 +205,7 @@ class Login extends SendStudio_Functions
 				}
 
 				IEM::sessionSet('ForgotUser', $user);
-
+				
 				$this->ShowForgotForm_Step2($userapi->Get('username'));
 			break;
 
@@ -178,9 +228,87 @@ class Login extends SendStudio_Functions
 					$this->ShowLoginForm('login_error', GetLang($msg));
 					break;
 				}
+				 
+				if (!empty($result)) {
+					 
+					//send email					
+					$user_api = new User_API();
+					$username = IEM::requestGetPOST('ss_username', '');
+					
+					$username = preg_replace('/\s+/', ' ', $username);
+					$username = trim($username);
 
-				IEM::userLogin($result['userid']);
+					$founduser = $user_api->Find($username);
+					
+					if (!$founduser) {
+						$this->ShowForgotForm('login_error', GetLang('BadLogin_Forgot'));
+						break;
+					}  
 
+					$userid = $founduser;
+					
+					$user_api->Load($founduser, false);
+					
+					if(SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH == 1){
+						$code = rand(100000,999999);
+						$user_api->CheckOTPCol('otp');
+						$user_api->OTP($code,$founduser);
+						$OTP= sprintf(GetLang('EmailContent_OTP'), $code); 
+						$message = $OTP;
+						$email_api = $this->GetApi('Email');
+						$email_api->Set('CharSet', SENDSTUDIO_CHARSET);
+						$email_api->Set('Multipart', false);
+						$email_api->AddBody('text', $message);
+						$email_api->Set('Subject', GetLang('EmailSubject_OTP'));
+
+						$email_api->Set('FromAddress', SENDSTUDIO_EMAIL_ADDRESS);
+						$email_api->Set('ReplyTo', SENDSTUDIO_EMAIL_ADDRESS);
+						$email_api->Set('BounceAddress', SENDSTUDIO_EMAIL_ADDRESS);
+
+						$email_api->SetSmtp(SENDSTUDIO_SMTP_SERVER, SENDSTUDIO_SMTP_USERNAME, @base64_decode(SENDSTUDIO_SMTP_PASSWORD), SENDSTUDIO_SMTP_PORT);
+
+						$user_fullname = $user_api->Get('fullname');
+						$email_api->AddRecipient($user_api->emailaddress, $user_fullname, 't');
+						
+						$send_return = $email_api->Send();
+						
+						if($send_return['success'] === 0) {
+							$this->ShowOTPForm('otp_Error', $message=GetLang('EmailNotSent_OTP'), $userid);
+						}else{
+							$message = sprintf(GetLang('Help_OTP'), $this->mask_emailaddress($user_api->emailaddress));
+						
+							$this->ShowOTPForm('otp_Success', $message, $userid);
+						}
+						
+					}else{
+						IEM::userLogin($result['userid']);
+						$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
+
+						header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/' . $redirect);
+						exit();
+					}
+					break;
+				}
+				 
+			break;
+			case 'confirmotp':
+				$userid = IEM::requestGetGET('user', false, 'intval');
+				$otp = IEM::requestGetPost('otp', false, 'trim');
+				 
+				if (empty($userid) || empty($otp)) {
+					$this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$userid);
+					break;
+				}
+
+				$userapi = new User_API();
+				$loaded = $userapi->Load($userid, false);
+
+				if (!$loaded || $userapi->Get('otp') != $otp) {
+					 $this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$userid);
+					break;
+				}
+
+				IEM::userLogin($userid);
 				$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
 
 				header('Location: ' . SENDSTUDIO_APPLICATION_URL . '/admin/' . $redirect);
@@ -256,7 +384,41 @@ class Login extends SendStudio_Functions
 
 		$this->PrintFooter(true);
 	}
+	
+	/**
+	* ShowResetPasswordError
+	* This shows the send reset password error. If the template and message are passed in, there will be an error message shown. If one is not present, nothing is shown.
+	*
+	* @param String $template If there is a template (will either be success or error template) use that as a message.
+	* @param String $msg This also tells us what's going on (password has been reset and so on).
+	*
+	* @see PrintHeader
+	* @see ParseTemplate
+	* @see PrintFooter
+	*
+	* @return Void Doesn't return anything, only prints out the form.
+	*/
+    public function ShowResetPasswordError($template=false, $msg=false)
+	{
+		$this->printLoginHeader();
+		
+		if ($template && $msg) {
+			switch (strtolower($template)) {
+				case 'login_error':
+					$GLOBALS['Error'] = $msg;
+				break;
+				case 'login_success':
+					$this->GlobalAreas['Success'] = $msg;
+				break;
+			}
+			$GLOBALS['Message'] = $this->ParseTemplate($template, true, false);
+		}
 
+		$this->ParseTemplate('resetpassword_error');
+
+		$this->PrintFooter(true);
+	}
+	
 	/**
 	* ShowForgotForm
 	* This shows the forgot password form and handles the multiple stages of actions. If the template and message are passed in, there will be a success/error message shown. If one is not present, nothing is shown.
@@ -294,6 +456,67 @@ class Login extends SendStudio_Functions
 
 		$this->PrintFooter(true);
 	}
+	/**
+	* ShowOTPForm
+	* This shows the OTP form and handles the confirm OTP actions. If the template and message are passed in, there will be a success/error message shown. If one is not present, nothing is shown.
+	*
+	* @param String $template If there is a template (will either be success or error template) use that as a message.
+	* @param String $msg This also tells us what's going on (otp has been validated and so on).
+	* @param String $userid This is the current user ID passed in).
+	*
+	* @see PrintHeader
+	* @see ParseTemplate
+	* @see PrintFooter
+	*
+	* @return Void Doesn't return anything, only prints out the form.
+	*/
+	public function ShowOTPForm($template=false, $msg=false, $userid='')
+	{
+		
+		$this->printLoginHeader();
+		if ($template && $msg) {
+			switch (strtolower($template)) {
+				case 'otp_error':
+					$GLOBALS['Error'] = $msg;
+				break;
+				case 'otp_success':
+					
+					$GLOBALS['Success'] = $msg;
+				break;
+			}
+			$GLOBALS['Message'] = $this->ParseTemplate($template, true, false);
+		}
+		$GLOBALS['ss_takemeto'] = 'index.php';
+
+		$this->GlobalAreas['SubmitAction'] = 'ConfirmOtp&user='.$userid;
+		$GLOBALS['SubmitAction'] = 'ConfirmOtp&user='.$userid;
+		 $this->ParseTemplate('otp');
+
+		$this->PrintFooter(true);
+		 		
+	}
+	
+	/**
+	* mask_emailaddress
+	* This function will mask/partially hide email address i.e. It gives an idea about who the user might be, without revealing the actual email address.
+	*
+	* @param String $emailaddress This email address will be masked.
+	*
+	* @return it returns masked email address.
+	*/
+	function mask_emailaddress($email)
+	{
+		if(empty($email)) {
+			return false;
+		}
+		
+		$em   = explode("@",$email);
+		$name = implode('@', array_slice($em, 0, count($em)-1));
+		$len  = floor(strlen($name)/2);
+		$masked = substr($name,0, $len) . str_repeat('*', $len) . "@" . end($em);
+		
+		return $masked;
+	}
 
 	/**
 	* ShowForgotForm_Step2
@@ -326,13 +549,18 @@ class Login extends SendStudio_Functions
 					$template = false;
 					$template_page = 'ForgotPassword_Sendpass';
 				break;
+				case 'resetpassword':
+					$GLOBALS['Message'] = $msg;
+					$template = false;
+					$template_page = 'resetpassword';
+				break;
 			}
 			if ($template) {
 				$GLOBALS['Message'] = $this->ParseTemplate($template, true, false);
 			}
 		} else {
 			$template_page = 'ForgotPassword_Step2';
-			$GLOBALS['Message'] = GetLang('Help_ForgotPassword');
+			$GLOBALS['Message'] = GetLang('Help_Password_Confirm_Password');
 		}
 
 		$GLOBALS['SubmitAction'] = 'ChangePassword';

@@ -21,14 +21,14 @@ define('LNG_UserName', 'Username');
 define('LNG_EnterPassword', 'Password');
 define('LNG_NoUsername', 'Please enter your username.');
 define('LNG_NoPassword', 'Please enter a password.');
-
+define('LNG_Something_wrong', 'Something went wrong.');
 /**
 * Forgot password page.
 */
 define('LNG_ForgotPasswordDetails', 'Enter your details below.');
 define('LNG_NewPassword', 'New Password');
 define('LNG_BadLogin_Forgot', 'That username doesn\'t exist. Please try again.');
-define('LNG_ChangePasswordSubject', 'Please confirm your password change');
+define('LNG_ChangePasswordSubject', 'Change your password');
 define('LNG_ChangePasswordEmail', 'You have recently chosen to change your control panel password. To confirm this, please click on the following link: %s');
 define('LNG_PasswordUpdated', 'Your password has been updated successfully. Please login below.');
 define('LNG_BadLogin_Link', 'The link you received in the email is invalid. Please try again.');
@@ -46,9 +46,18 @@ define('LNG_ValidPassword_Help', 'Password should be at least 8 characters in le
 ***************************
 */
 define('LNG_SendPassword', 'Send Email');
+define('LNG_OTP', 'OTP');
+define('LNG_Bad_OTP', 'Wrong OTP, please enter correct OTP');
+define('LNG_EmailNotSent_OTP', 'OTP Not Sent. Please contact your administrator!');
+define('LNG_Help_OTP', 'Check your Email for OTP and enter the OTP which sent to your Email Address: %s');
+define('LNG_EmailSubject_OTP', 'Your One Time Password(OTP) request for Secure Login');
+define('LNG_EmailContent_OTP', 'Your One Time Password: %s');
+
 define('LNG_BadLogin', 'The username or password you provided are incorrect. Please check them and try again.');
 define('LNG_Help_ForgotPassword', 'Fill in the form to generate a new password. An email will be sent to you containing a link which you must click to confirm your password change.');
 define('LNG_Help_Login', 'Login with your username and password below.');
+define('LNG_Help_Password_Confirm_Password', 'Please enter new and confirm password.');    
+define('LNG_Help_Password_Reset_Email', 'Please enter new and confirm password.'); 
 define('LNG_ChangePassword_Emailed', 'Please check your inbox/junk mail folder. You\'ve just been sent an email that contains a link to change your password.');
 define('LNG_ForgotPasswordReminder', '<a href="index.php?Page=Login&Action=ForgotPass" style="font-size: 11px;">Forgot your password?</a>');
 

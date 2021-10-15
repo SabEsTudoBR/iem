@@ -91,10 +91,21 @@
 
 		$(document.settings.usesmtp).click(function() {
 			$('.SMTPOptions')[$('#usesmtp').attr('checked') ? 'show' : 'hide']();
-			$('.sectionSignuptoSMTP')[$('#signtosmtp').attr('checked') ? 'show' : 'hide']();
-			$('#sectionSMTPComOption').html($('#signtosmtp').attr('checked') ? '%%LNG_SMTPCOM_UseSMTPOption%% %%LNG_SMTPCOM_UseSMTPOptionSeeBelow%%' : '%%LNG_SMTPCOM_UseSMTPOption%%');
 		});
 
+		$(document.settings.force_own_smtp_server).click(function() {			 
+			 if($(document.settings.force_own_smtp_server).attr('checked')){
+					document.getElementById("usephpmail").disabled = true;					 
+					$('.SMTPOptions')[$('#usesmtp').attr('checked') ? 'show' : 'hide']();
+		 		 
+			 }else{
+				 
+				 document.getElementById("usephpmail").disabled = false;				 
+				 $('.SMTPOptions')[$('#usesmtp').attr('checked') ? 'show' : 'hide']();
+		 		 
+			 }
+				}
+			 );
 		$(document.settings.cmdTestSMTP).click(function() {
 			var f = document.forms[0];
 			if (f.smtp_server.value == '') {
@@ -340,7 +351,7 @@
 						</tr>
 						<tr>
 							<td class="FieldLabel" width="10%">
-								<img src="images/blank.gif" width="200" height="1" /><br />
+								<img src="images/blank.gif" width="160" height="1" /><br />
 								{template="Not_Required"}
 								%%LNG_EmailSize_Warning%%:
 							</td>
@@ -423,6 +434,24 @@
 						<tr>
 							<td class="FieldLabel">
 								{template="Not_Required"}
+									%%LNG_Self_Signed_Cert%%:
+								
+							</td>
+							<td><label for="force_self_signed_cert"><input type="checkbox" name="self_signed_cert" id="self_signed_cert" value="1"%%GLOBAL_SelfSignedCert%%>%%LNG_SelfSignedCert_explain%%</label> %%LNG_HLP_Self_Signed_Cert%%
+							</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
+						     %%LNG_ForceHideSMTP%%:
+								
+							</td>
+							<td><label for="force_own_smtp_server"><input type="checkbox" name="force_own_smtp_server" id="force_own_smtp_server" value="1"%%GLOBAL_ForceOwnSmtpServer%%>%%LNG_ForceHideSMTPExplain%%</label> %%LNG_HLP_ForceHideSMTP%%
+							</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
 								%%LNG_ForceUnsubLink%%:
 							</td>
 							<td>
@@ -496,14 +525,14 @@
 								&nbsp;&nbsp;%%LNG_SmtpServerIntro%%
 							</td>
 						</tr>
-						<tr>
+						<tr id="default_email_settings">
 							<td class="FieldLabel">
 								{template="Not_Required"}
 								%%LNG_UseSMTP%%:
 							</td>
 							<td>
 								<label for="usephpmail">
-									<input type="radio" name="usesmtp" id="usephpmail" value="0"%%GLOBAL_UseDefaultMail%%/>
+									<input type="radio" name="usesmtp" id="usephpmail" value="0"%%GLOBAL_UseDefaultMail%%  %%GLOBAL_DisplayDefaultMailSettings%%/>
 									%%LNG_SmtpDefaultSettings%%
 								</label>
 								%%LNG_HLP_UseDefaultMail%%
@@ -577,29 +606,6 @@
 								<img width="20" height="20" src="images/blank.gif"/>
 								<input type="button" name="cmdTestSMTP" value="%%LNG_TestSMTPSettings%%" class="FormButton" style="width: 120px;" />
 							</td>
-						</tr>
-						<tr style="display:%%GLOBAL_ShowSmtpComOptionShow%%;">
-							<td class="FieldLabel">&nbsp;</td>
-							<td>
-								<label for="signtosmtp">
-									<input type="radio" name="usesmtp" id="signtosmtp" value="2" />
-									<span id="sectionSMTPComOption">%%LNG_SMTPCOM_UseSMTPOption%%</span>
-								</label>
-								%%LNG_HLP_UseSMTPCOM%%
-							</td>
-						</tr>
-						<tr class="sectionSignuptoSMTP" style="display: none;">
-							<td colspan="2" class="EmptyRow">
-								&nbsp;
-							</td>
-						</tr>
-						<tr class="sectionSignuptoSMTP" style="display: none;">
-							<td colspan="2" class="Heading2">
-								&nbsp;&nbsp;%%LNG_SMTPCOM_Header%%
-							</td>
-						</tr>
-						<tr class="sectionSignuptoSMTP" style="display: none;">
-							<td colspan="2" style="padding-left: 20px;">%%LNG_SMTPCOM_Explain%%</td>
 						</tr>
 					</table>
 				</div>
@@ -762,6 +768,24 @@
 								<input type="number"  style="width:4%" name="security_session_time" min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" id="security_session_time" value="{$security_settings.Expire_Session}" />
 								</label>
 								{$lnghlp.SecuritySettings_Destroy_Session}
+							</td>
+						</tr>
+						<tr>
+						<td colspan="2" class="Heading2"> 
+							{template="Not_Required"}{$lang.SecuritySettings_OTP_Settings_Title}
+						</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
+								{$lang.SecuritySettings_OTP}						
+							</td>
+							<td>
+								<label for="security_two_factor_auth">
+								<input type="checkbox" name="security_two_factor_auth" id="security_two_factor_auth" value="1" {if $security_settings.two_factor_auth != 0}checked="checked"{/if} />
+								 {$lang.SecuritySettings_Two_Factor_Auth} 
+								 </label>
+								{$lnghlp.SecuritySettings_OTP}
 							</td>
 						</tr>
 						<tr><td colspan="2" class="EmptyRow">&nbsp;</td></tr>
@@ -970,19 +994,6 @@
 									{$lang.PrivateLabelSettings_YesUpdatesCheck}
 								</label>
 								{$lnghlp.PrivateLabelSettings_UpdatesCheck}
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel" >
-								{template="Not_Required"}
-								{$lang.PrivateLabelSettings_SmtpSending}
-							</td>
-							<td >
-								<input id="Id_Show_Smtp_Com_Option" type="checkbox" name="show_smtp_com_option" value="1" %%GLOBAL_ShowSmtpComOption%% />
-								<label for="Id_Show_Smtp_Com_Option" >
-									{$lang.PrivateLabelSettings_YesSmtpSending}
-								</label>
-								{$lnghlp.PrivateLabelSettings_SmtpSending}
 							</td>
 						</tr>
 						<tr>

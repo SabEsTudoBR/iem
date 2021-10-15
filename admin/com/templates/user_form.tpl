@@ -106,7 +106,7 @@
 									</select>&nbsp;&nbsp;&nbsp;%%LNG_HLP_TimeZone%%
 								</td>
 							</tr>
-                            {if $UserID != 0}
+                            {if $UserID != 0 && $UserID == $current_user && $loginuser_groupid == 1}
                             <tr>
                                 <td class="FieldLabel">
                                     {template="Required"}
@@ -123,6 +123,7 @@
                                     {$lang.Password}:
                                 </td>
                                 <td>
+								<input type="hidden" name="loginuser_groupid" value="{$loginuser_groupid}">
                                     <input type="password" name="ss_p" id="ss_p" value="" class="Field250" autocomplete="off" />&nbsp;%%LNG_HLP_Password%%
                                 </td>
                             </tr>
@@ -135,6 +136,17 @@
                                     <input type="password" name="ss_p_confirm" id="ss_p_confirm" value="" class="Field250" autocomplete="off" />
                                 </td>
                             </tr>
+							{if $ShowSendPassLink}
+							<tr>
+                                <td class="FieldLabel"> 
+                                </td>
+                                <td>
+                                 <br /><a href="%%GLOBAL_ResetPassword%%" name="SubmitButton"  class="FormButton" style="display:%%GLOBAL_OTP_Status%%">%%LNG_SendPasswordRestText%%</a><br>
+                                 <br> %%GLOBAL_Email_Message%%
+								</td>
+								<input type="hidden" name="loginuser_groupid" value="{$loginuser_groupid}">
+                            </tr>
+							{/if}
 						</table>
 					</div>
 					
@@ -259,16 +271,16 @@
 									{template="Not_Required"}
 									%%LNG_SmtpServer%%:
 								</td>
-								<td width="90%">
+								<td width="90%" >
 									<label for="usedefaultsmtp">
-										<input type="radio" name="smtptype" id="usedefaultsmtp" value="0" {if !$showSmtpInfo}checked="checked"{/if} />
+										<input type="radio" name="smtptype" id="usedefaultsmtp" value="0" {if $GLOBAL_DisplayDefaultMailSettings  == 'DISABLED'} {if !$showSmtpInfo}checked="checked"{/if}{/if}  %%GLOBAL_DisplayDefaultMailSettings%% />
 										%%LNG_SmtpDefault%%
 									</label>
 									%%LNG_HLP_UseDefaultMail%%
 								</td>
 							</tr>
 							<tr>
-								<td class="FieldLabel">&nbsp;</td>
+								<td class="FieldLabel"> </td>
 								<td>
 									<label for="usecustomsmtp">
 										<input type="radio" name="smtptype" id="usecustomsmtp" value="1" {if $showSmtpInfo}checked="checked"{/if} />
@@ -335,29 +347,6 @@
 									<img width="20" height="20" src="images/blank.gif"/>
 									<input type="button" name="cmdTestSMTP" value="%%LNG_TestSMTPSettings%%" class="FormButton" style="width: 120px;"/>
 								</td>
-							</tr>
-							<tr style="display:%%GLOBAL_ShowSMTPCOMOption%%">
-								<td class="FieldLabel">&nbsp;</td>
-								<td>
-									<label for="signtosmtp">
-										<input type="radio" name="smtptype" id="signtosmtp" value="2"/>
-										%%LNG_SMTPCOM_UseSMTPOption%%
-									</label>
-									%%LNG_HLP_UseSMTPCOM%%
-								</td>
-							</tr>
-							<tr class="sectionSignuptoSMTP" style="display: none;">
-								<td colspan="2" class="EmptyRow">&nbsp;
-									
-								</td>
-							</tr>
-							<tr class="sectionSignuptoSMTP" style="display: none;">
-								<td colspan="2" class="Heading2">
-									&nbsp;&nbsp;%%LNG_SMTPCOM_Header%%
-								</td>
-							</tr>
-							<tr class="sectionSignuptoSMTP" style="display: none;">
-								<td colspan="2" style="padding-left: 10px; padding-top:10px">%%LNG_SMTPCOM_Explain%%</td>
 							</tr>
 							
 							<tr>
@@ -626,7 +615,6 @@
 
 		$(document.users.smtptype).click(function() {
 			$('.SMTPOptions')[document.users.smtptype[1].checked? 'show' : 'hide']();
-			$('.sectionSignuptoSMTP')[document.users.smtptype[2].checked? 'show' : 'hide']();
 		});
 
 		$(document.users.cmdTestSMTP).click(function() {
@@ -648,8 +636,6 @@
 		});
 
 		$('.SMTPOptions')[document.users.smtptype[1].checked? 'show' : 'hide']();
-		$('.sectionSignuptoSMTP')[document.users.smtptype[2].checked? 'show' : 'hide']();
-
 	});
 
 	function getSMTPPreviewParameters() {

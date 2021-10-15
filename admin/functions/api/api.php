@@ -518,6 +518,24 @@ class API
 	}
 
 	/**
+	* getSettingValue
+	* get option setting value.
+	*
+	* @param String $option The option key .
+	*
+	* @return it returns option value.
+	*/
+	
+	public function getSettingValue($option='') {
+			if(empty($option)) {
+			return false;
+			} 
+			$query = "SELECT areavalue FROM [|PREFIX|]config_settings where area='".$option."'";
+					$result= $this->Db->FetchOne($query);	
+		return $result;	 
+	}  
+	
+	/**
 	* RemoveBannedEmails
 	* Checks a queue for banned email addresses and domain names. It checks the lists you pass in (listids) and the global list.
 	* For performance reasons, we break it down into a bunch of union queries to check each part.

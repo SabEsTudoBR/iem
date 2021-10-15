@@ -360,7 +360,9 @@ class Stats extends SendStudio_Functions
 										$bounces = $f['bouncecount_hard'] + $f['bouncecount_soft'];
 										$unique_clicks = (int)$statsapi->GetUniqueClickRecipients($statid);
 										$unique_forwards = (int)$statsapi->GetForwardsRecipients($statid);
-
+										$emailopens = (int)$statsapi->GetOpens($statid, $start=0, $perpage=10, $only_unique=false, $calendar_restrictions='', $count_only=true);    
+										$emailopens_unique = (int)$statsapi->GetOpens($statid, $start=0, $perpage=10, $only_unique=true, $calendar_restrictions='', $count_only=true);
+										
 										if ($duration == 0) {
 											$send_rate = $recipients;
 										} else {
@@ -371,7 +373,7 @@ class Stats extends SendStudio_Functions
 											$open_percent = $click_percent = $bounce_percent =
 											$unsub_percent = $forward_percent = 0;
 										} else {
-											$open_percent = round($f['emailopens_unique'] / $recipients * 100,2);
+											$open_percent = round($emailopens_unique / $recipients * 100,2);
 											$click_percent = round($unique_clicks / $recipients * 100,2);
 											$bounce_percent = round($bounces / $recipients * 100,2);
 											$unsub_percent = round($f['unsubscribecount'] / $recipients * 100,2);
@@ -385,8 +387,8 @@ class Stats extends SendStudio_Functions
 											round($duration / 60,2),
 											$recipients,
 											$send_rate,
-											$f['emailopens_unique'],
-											$f['emailopens'],
+											$emailopens_unique,
+											$emailopens,
 											$open_percent,
 											$unique_clicks,
 											$click_percent,

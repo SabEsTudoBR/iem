@@ -85,7 +85,6 @@ define('LNG_UsersGroups_Permission_statistics_newsletter', 'View Email Campaign 
 define('LNG_UsersGroups_Permission_statistics_autoresponder', 'View Autoresponder Statistics');
 define('LNG_UsersGroups_Permission_user', 'User Related Permissions');
 define('LNG_UsersGroups_Permission_user_smtp', 'Let user specify specify SMTP');
-define('LNG_UsersGroups_Permission_user_smtpcom', 'User able to see SMTP.com option');
 define('LNG_UsersGroups_Permission_segments', 'Segment Permissions');
 define('LNG_UsersGroups_Permission_segments_view', 'View Segments');
 define('LNG_UsersGroups_Permission_segments_create', 'Create Segments');

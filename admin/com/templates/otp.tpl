@@ -1,9 +1,4 @@
-<style type="text/css">
-	.popupContainer {
-		border: 0px;
-	}
-</style>
-<form action="index.php?Page=%%PAGE%%&Action=%%GLOBAL_SubmitAction%%" method="post" name="frmLogin" id="frmLogin">
+<form action="index.php?Page=%%PAGE%%&Action=%%GLOBAL_SubmitAction%%" method="post" name="frmLogin" id="frmLogin" autocomplete="off">
 	<div id="box" class="loginBox">
 		<table><tr><td style="border:solid 2px #DDD; padding:20px; background-color:#FFF; width:300px;">
 		<table>
@@ -11,23 +6,26 @@
 			<td class="Heading1">
 				<img src="%%WHITELABEL_ApplicationLogoImage%%" alt="{$lang.SendingSystem}" />
 			</td>
-		</tr>
-		<tr>
+			</tr>
+			<tr>
 			<td style="padding:10px 0px 5px 0px">%%GLOBAL_Message%%</td>
-		</tr>
-		<tr>
+			</tr>
+			<tr>
 			<td>
 				<table>
 				<tr>
-					<td nowrap="nowrap" style="padding:0px 10px 0px 10px">%%LNG_UserName%%:</td>
+					<td nowrap="nowrap" style="padding:0px 10px 0px 10px">%%LNG_OTP%%:</td>
 					<td>
-					<input type="text" name="ss_username" id="username" class="Field150" value="%%GLOBAL_ss_username%%">
+					<input type="text" name="otp" id="otp" class="Field150" autocomplete="off">
 					</td>
 				</tr>
+				 
+				 
 					<tr>
 					<td>&nbsp;</td>
 					<td>
-						<input type="submit" name="SubmitButton" value="%%LNG_SendPassword%%" class="FormButton">
+						<input type="submit" name="SubmitButton" value="%%LNG_Login%%" class="FormButton">
+						 
 					</td>
 					</tr>
 
@@ -37,6 +35,16 @@
 			</tr>
 		</table>
 		</td></tr>
+
+		<tr>
+			<td>
+
+				<div class="PageFooter" style="padding: 10px 10px 10px 0px; margin-bottom: 20px; text-align: center;">
+					%%LNG_Copyright%%
+				</div>
+			</td>
+		</tr>
+
 		</table>
 
 	</div>
@@ -46,17 +54,21 @@
 	<script>
 
 		$('#frmLogin').submit(function() {
-				var f = document.frmLogin;
+			var f = document.frmLogin;
 
-				if(f.ss_username.value == '')
-				{
-					alert('%%LNG_NoUsername%%');
-					f.ss_username.focus();
-					return false;
-				}
+			if(f.otp.value == '')
+			{
+				alert('Please enter your OTP.');
+				f.otp.focus();
+				
+				return false;
+			}
 
-				// Everything is OK
-				return true;
+			 
+
+			// Everything is OK
+			f.action = 'index.php?Page=Login&Action=%%GLOBAL_SubmitAction%%';
+			return true;
 		});
 
 		function sizeBox() {
@@ -69,12 +81,11 @@
 
 		$(document).ready(function() {
 			sizeBox();
-			$('#ss_username').focus();
-			$('#ss_username').select();
+			$('#username').focus();
 		});
 
 		$(window).resize(function() {
-			//sizeBox();
+			sizeBox();
 		});
 		createCookie("screenWidth", screen.availWidth, 1);
 

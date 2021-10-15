@@ -36,7 +36,7 @@ class Upgrade_API extends API
 	* Versions of the database (left) correspond to which sendstudio versions?
 	* @var array Version array
 	*/
-	var $versions = array (
+	var $versions = [
 		'20070701' => 'NX1.3.1',
 		'20071205' => 'NX1.3.3',
 		'20080201' => 'NX1.4.0',
@@ -73,14 +73,15 @@ class Upgrade_API extends API
 		'20210505' => '6.2.3',
 		'20210715' => '6.3.0',
 		'20210810' => '6.4.0',
-	);
+		'20211013' => '6.4.1'
+	];
 
 	/**
 	 * Update file list for each version
 	 * @var array file list
 	 */
-	var $upgrades_to_run = array (
-		'nx' => array (
+	var $upgrades_to_run = [
+		'nx' => [
 		#	'banned_emails_drop_status',
 			'banned_emails_add_banid',
 			'banned_emails_change_email',
@@ -438,10 +439,10 @@ class Upgrade_API extends API
 			'optimize_table_stats_links',
 			'optimize_table_stats_emailforwards',
 			'optimize_table_stats_autoresponders',
-			'optimize_table_links',
-		),
+			'optimize_table_links'
+		],
 
-		'20070701' => array(
+		'20070701' => [
 			'list_subscribers_add_domain',
 			'list_subscribers_update_domain',
 			'list_add_company_name',
@@ -482,16 +483,16 @@ class Upgrade_API extends API
 			'autoresponders_add_autorespondersize',
 			'settings_config_create',
 			'move_settings_to_database',
-			'update_db_version',
-		),
+			'update_db_version'
+		],
 
-		'20071205' => array(
+		'20071205' => [
 			'open_statid_subscriberid_index',
 			'stats_linkclicks_subscriberid_index',
-			'update_db_version',
-		),
+			'update_db_version'
+		],
 
-		'20080201' => array(
+		'20080201' => [
 			'users_add_xmlapi',
 			'users_add_xmltoken',
 			'stats_newsletters_add_jobid',
@@ -508,18 +509,18 @@ class Upgrade_API extends API
 			'stats_newsletters_testmode_update',
 			'stats_autoresponders_recipients_create',
 			'jobs_add_resendcount',
-			'update_db_version',
-		),
+			'update_db_version'
+		],
 
-		'20080312' => array(
+		'20080312' => [
 			'autoresponders_change_active',
 			'newsletters_change_active',
 			'templates_change_active',
 			'templates_change_isglobal',
-			'update_db_version',
-		),
+			'update_db_version'
+		],
 
-		'20080325' => array(
+		'20080325' => [
 			'lists_add_visiblefields',
 			'lists_update_visiblefields',
 			'users_add_gettingstarted',
@@ -527,36 +528,36 @@ class Upgrade_API extends API
 			'user_permission_update_subscriber_view',
 			'create_segments',
 			'queues_unsent_fk_check',
-			'update_db_version',
-		),
+			'update_db_version'
+		],
 
-		'20080610' => array(
+		'20080610' => [
 			'modify_segment_operatortype',
 			'update_db_version'
-		),
+		],
 
-		'20080710' => array(
+		'20080710' => [
 			'add_subscriber_listid_index',
 			'remove_list_subscribers_domain_idx',
 			'update_db_version'
-		),
+		],
 
-		'20080801' => array(
+		'20080801' => [
 			'add_user_unique_token',
 			'populate_user_unique_token',
 			'create_login_attempt',
 			'create_login_banned_ip',
 			'update_db_version'
-		),
+		],
 
-		'20080802' => array(
+		'20080802' => [
 			'index_stats_linkclicks_statid_clicktime',
 			'index_stats_emailopens_statid_opentime',
 			'index_links_url',
 			'update_db_version'
-		),
+		],
 
-		'20081215' => array(
+		'20081215' => [
 			'modify_user_table_type',
 			'add_user_eventactivitytype_column',
 			'create_list_subscriber_events',
@@ -576,54 +577,54 @@ class Upgrade_API extends API
 			'create_user_activitylog_userid_viewed_idx',
 			'add_event_listeners',
 			'add_global_customfields',
-			'update_db_version',
-		),
+			'update_db_version'
+		],
 
-		'20090107' => array(
+		'20090107' => [
 			'fix_3744_fix_absolute_path',
 			'update_db_version'
-		),
+		],
 
-		'20090112' => array(
+		'20090112' => [
 			'fix_3780_fix_some_event_not_triggered',
 			'reregister_listeners',
 			'fix_3784_index_user_permissions',
 			'update_db_version'
-		),
+		],
 
-		'20090126' => array(
+		'20090126' => [
 			'create_list_subscriber_events_subscriberid_index',
 			'create_triggeremails_data_idx',
 			'create_triggeremails_actions_data_idx',
 			'create_triggeremails_log_idx',
 			'update_db_version'
-		),
+		],
 
-		'20090310' => array(
+		'20090310' => [
 			'create_index_for_queues_unsent_queueid_idx',
 			'create_index_for_queues_unsent_recipient_idx',
 			'enable_or_reactivate_systemlog_addon',
 			'update_db_version'
-		),
+		],
 
-		'20090323' => array(
+		'20090323' => [
 			'create_login_attempt_2',
 			'create_login_banned_ip_2',
 			'update_db_version'
-		),
+		],
 
-		'20090331' => array(
+		'20090331' => [
 			'delete_cron_triggeremails_p_settings',
 			'update_db_version'
-		),
+		],
 
-		'20090415' => array(
+		'20090415' => [
 			'remove_duplicate_user_access',
 			'add_user_access_userid_area_id_idx',
 			'update_db_version'
-		),
+		],
 
-		'20090420' => array(
+		'20090420' => [
 			'add_user_forcedoubleoptin_column',
 			'add_user_forcespamcheck_column',
 			'install_addon_dbcheck',
@@ -633,22 +634,22 @@ class Upgrade_API extends API
 			'add_user_credit_summary_table',
 			'check_cron_schedule_time',
 			'update_db_version'
-		),
+		],
 
-		'20090609' => array(
+		'20090609' => [
 			'add_autoresponder_pause',
 			'fix_user_stats_emails_perhour_oldtimestamp',
 			'update_db_version'
-		),
+		],
 
-		'20090715' => array(
+		'20090715' => [
 			'user_add_trialuser',
 			'user_add_notification_email',
 			'create_whitelabel_settings',
 			'update_db_version'
-		),
+		],
 
-		'20090916' => array(
+		'20090916' => [
 			'create_usergroups',
 			'user_add_groupid_column',
             'user_update_groupid_column_constraint',
@@ -657,60 +658,63 @@ class Upgrade_API extends API
 			'install_addon_dynamiccontenttags',
 			'install_addon_surveys',
 			'update_db_version'
-		),
+		],
 
-        '20100731' => array(
+        '20100731' => [
 			'update_links_url',
             'update_db_version'
-		),
+		],
 
-		'20101204' => array(
+		'20101204' => [
 			'add_confirmed_index',
 			'add_list_permissions',
 			'update_db_version'
-		),
-		'20111011' => array(
+		],
+		'20111011' => [
 			'update_db_version'
-		),
-		'20120608' => array(
+		],
+		'20120608' => [
 			'update_db_version'
-		),
-        '20130816' => array(
+		],
+        '20130816' => [
 			'update_db_version'
-		),
-        '20140909' => array(
+		],
+        '20140909' => [
 			'update_db_version'
-		),
-        '20150825' => array(
+		],
+        '20150825' => [
 			'update_db_version'
-		),
-        '20161005' => array (
+		],
+        '20161005' => [
             'users_remove_googlecalendarusername',
             'users_remove_googlecalendarpassword',
-            'update_db_version',
-        ),
-        '20171011' => array (
-            'update_db_version',
-        ),
-		'20180817' => array (
-            'update_db_version',
-        ),
-		'20190626' => array (
-            'update_db_version',
-        ),
-		'20200907' => array (
-            'update_db_version',
-        ), 
-		'20210505' => array (
-            'update_db_version',
-        ),
-		'20210715' => array (
-            'update_db_version',
-        ),
-		'20210810' => array (
-            'update_db_version',
-        ),
-	);
+            'update_db_version'
+        ],
+        '20171011' => [
+            'update_db_version'
+        ],
+		'20180817' => [
+            'update_db_version'
+        ],
+		'20190626' => [
+            'update_db_version'
+        ],
+		'20200907' => [
+            'update_db_version'
+        ], 
+		'20210505' => [
+            'update_db_version'
+        ],
+		'20210715' => [
+            'update_db_version'
+        ],
+		'20210810' => [
+            'update_db_version'
+        ],
+		'20211013' => [
+            'update_db_version'
+        ]
+	];
 
 	/**
 	 * RunUpgrade
@@ -761,7 +765,7 @@ class Upgrade_API extends API
 		$versions = array_keys($upgrades_todo);
 
 		if (empty($versions)) {
-			IEM::sessionSet('UpgradesToRun', array());
+			IEM::sessionSet('UpgradesToRun', []);
 			return null;
 		}
 
@@ -778,7 +782,7 @@ class Upgrade_API extends API
 
 			// if there are no more versions, then we're finished.
 			if (empty($versions)) {
-				IEM::sessionSet('UpgradesToRun', array());
+				IEM::sessionSet('UpgradesToRun', []);
 				return null;
 			}
 
@@ -812,12 +816,12 @@ class Upgrade_API extends API
 	function GetUpgradesToRun($current_version=0, $latest=0)
 	{
 		if ($current_version == $latest) {
-			return array('upgrades' => array(), 'number_to_run' => 0);
+			return ['upgrades' => [], 'number_to_run' => 0];
 		}
 
 		$dirs = list_directories(IEM_PATH . '/upgrades');
 
-		$upgrades_to_run = array();
+		$upgrades_to_run = [];
 		$number_to_run = 0;
 
 		/**
@@ -861,7 +865,7 @@ class Upgrade_API extends API
 			}
 		}
 
-		return array('upgrades' => $upgrades_to_run, 'number_to_run' => $number_to_run);
+		return ['upgrades' => $upgrades_to_run, 'number_to_run' => $number_to_run];
 	}
 
 	/**
@@ -940,7 +944,7 @@ class Upgrade_API extends API
 	*/
 	function GetIndexInfo($table)
 	{
-		$indexes = array();
+		$indexes = [];
 
 		$query = 'SHOW INDEX FROM '. SENDSTUDIO_TABLEPREFIX . $table;
 		$result = $this->Db->Query($query);
@@ -961,7 +965,7 @@ class Upgrade_API extends API
 
 				if (!isset($indexes[$row['Key_name']]['columns'])
 				|| !is_array($indexes[$row['Key_name']]['columns'])) {
-					$indexes[$row['Key_name']]['columns'] = array();
+					$indexes[$row['Key_name']]['columns'] = [];
 				}
 			}
 
@@ -1015,7 +1019,7 @@ class Upgrade_API extends API
 	*
 	* @return Boolean Returns true if adding the constraint worked. Also returns true if any of the database tables are not innodb tables.
 	*/
-	function AddForeignKey($constraint, $tables=array())
+	function AddForeignKey($constraint, $tables=[])
 	{
 		if (empty($tables)) {
 			return false;
@@ -1066,10 +1070,10 @@ class Upgrade_API extends API
 		}
 
 		if (!is_array($columns)) {
-			$columns = array($columns);
+			$columns = [$columns];
 		}
 
-		if (!in_array($type, array('BTREE', 'FULLTEXT', 'UNDEFINED'))) {
+		if (!in_array($type, ['BTREE', 'FULLTEXT', 'UNDEFINED'])) {
 			return false;
 		}
 

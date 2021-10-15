@@ -4,6 +4,11 @@ define('LNG_NoValidPassword', 'Password should be at least 8 characters in lengt
 define('LNG_HLP_Password', 'Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.');
 
 define('LNG_UserDetails', 'User Details');
+
+define('LNG_SendPasswordRestText', 'Send Password Reset Email');
+define('LNG_ChangePasswordRequestSubject', 'Change your password');
+define('LNG_ChangePasswordEmailRequest', 'To reset your password, please click on the following link : %s');
+
 define('LNG_UserAdd', 'Create a User Account...');
 define('LNG_UserName', 'Username');
 define('LNG_FullName', 'Full Name');
@@ -180,7 +185,6 @@ define('LNG_HLP_ListAdministrator', 'A List Administrator is able to perform cer
 define('LNG_HLP_SystemAdministrator', 'A System Administrator can access the settings page as well as all Lists and all users.');
 define('LNG_HLP_TemplateAdministrator', 'A Template Administrator can perform certain functions for <i><u>all</u></i> templates, including editing and deleting.');
 define('LNG_HLP_UserAdministrator', 'A User Administrator can add, delete and edit user accounts in ' . LNG_ApplicationTitle . '.');
-define('LNG_HLP_SettingsShowSMTPCOM', 'Tick this option if you would like users to be able to choose SMTP.com as an option when sending emails. SMTP.com provides mail servers for those who want to send a large amount of emails. Click the \\\'Email Settings\\\' tab above for more information on SMTP.com.');
 
 
 

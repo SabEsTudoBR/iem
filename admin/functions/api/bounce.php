@@ -962,7 +962,7 @@ class Bounce_API extends Jobs_API
 		// ------------------------------------------------------------------------------------
 			// ----- Getting subject from header
 			$subject = $this->GetBounceSubject($header);
-			$this->msgInfo['subject'] = $subject;
+			$this->msgInfo['subject'] = utf8_decode(imap_utf8($subject));
 
 			if ($this->Debug) {
 				error_log('Line ' . __LINE__ . '; Subject: ' . $subject . "\n", 3, $this->LogFile);

@@ -1,5 +1,43 @@
 # Interspire Email Marketer Changelog
 
+Version: 6.4.1
+Released: 13th Oct, 2021
+- Added two factor authentication feature
+- Added admin can force users to select and configure their own SMTP server
+- Added self signed certificate setting option
+- Fixed export statistics count issue
+- Removed deprecated php methods causing notices/errors
+
+Files Changed:
+-------------
+	admin/com/ext/interspire_email/email.php
+	admin/com/language/default/login.php
+	admin/com/language/default/settings.php
+	admin/com/language/default/users.php
+	admin/com/language/default/usersgroups.php
+	admin/com/language/default/whitelabel.php
+	admin/com/templates/settings.tpl
+	admin/com/templates/user_edit_own.tpl
+	admin/com/templates/user_form.tpl
+	admin/functions/api/api.php
+	admin/functions/api/settings.php
+	admin/functions/api/stats.php
+	admin/functions/api/user.php
+	admin/functions/login.php
+	admin/functions/settings.php
+	admin/functions/stats.php
+	admin/functions/users.php
+	changelog.txt
+	version.txt
+
+Files Added:
+-------------
+	admin/com/templates/otp.tpl
+	admin/com/templates/otp_error.tpl
+	admin/com/templates/otp_success.tpl
+	admin/com/templates/resetpassword.tpl
+	
+	
 Version: 6.4.0
 Released: 10th August, 2021
 - Updated TinyMCE to 5.8.2
