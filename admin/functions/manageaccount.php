@@ -149,9 +149,40 @@ class ManageAccount extends SendStudio_Functions
 
 				$error = false;
 				$template = false;
-
+				$thisuser    = IEM::getCurrentUser();
+				$UserID = IEM::requestGetGET('UserID', 0, 'intval');
+				 
 				if (!$error) {
 					if ($_POST['ss_p'] != '') {
+						
+						if ($thisuser->userid == $UserID) {
+							
+							$auth_system = new AuthenticationSystem();
+                            $username = $thisuser->username;
+                            $password = IEM::requestGetPOST('ss_p_current', '');
+                            $result = $auth_system->Authenticate($username, $password);
+                            if ($result === -1) {
+                                $error = GetLang('CurrentPasswordError');
+                            } elseif ($result === -2) {
+                                $error = GetLang('CurrentPasswordError');
+                            } elseif (!$result) {
+                                $error = GetLang('CurrentPasswordError');
+                            } elseif ($result && defined('IEM_SYSTEM_ACTIVE') && !IEM_SYSTEM_ACTIVE) {
+                                $error = GetLang('CurrentPasswordError');
+                            }
+                             
+                        } else {
+								$username = IEM::requestGetPOST('username', '');
+                            	$password = IEM::requestGetPOST('ss_p', '');						 
+                        }
+						 
+						$auth_pass = new AuthenticationSystem();
+						$result_auth_pass= $auth_pass->AuthenticatePassword($_POST['ss_p']);
+						
+						if ($result_auth_pass === -1) {
+							$error = GetLang('NoValidPassword');
+						}
+						
 						if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
 							$user->Set('password', $_POST['ss_p']);
 						} else {
@@ -296,7 +327,11 @@ class ManageAccount extends SendStudio_Functions
 		}
 
 		if ($thisuser->EditOwnSettings()) {
-			$this->ParseTemplate('User_Edit_Own');
+			$template = GetTemplateSystem();
+   			
+			$template->Assign('UserID', $userid);
+			$template->Assign('current_user', $thisuser->userid);
+			$template->ParseTemplate('User_Edit_Own');
 		} else {
 			$this->ParseTemplate('User_Display_Own');
 		}
