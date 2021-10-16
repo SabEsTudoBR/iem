@@ -10,6 +10,18 @@
 					this.ss_p_confirm.focus();
 					return false;
 				}
+				if ($('#ss_p').val().trim().length < 8) {					 
+					alert("%%LNG_NoValidPassword%%");
+					$('#ss_p').focus().select();
+					return false;
+				} 
+				var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/; 
+				if(!re.test($('#ss_p').val())){   
+					alert("%%LNG_NoValidPassword%%");
+					$('#ss_p').focus().select();
+					return false;
+				}   
+  
 				if (this.ss_p.value != this.ss_p_confirm.value) {
 					alert("%%LNG_PasswordsDontMatch%%");
 					this.ss_p_confirm.select();
@@ -99,13 +111,24 @@
 							%%GLOBAL_UserName%%
 						</td>
 					</tr>
+					{if $UserID != 0 && $UserID == $current_user}
+                            <tr>
+                                <td class="FieldLabel">
+                                    {template="Required"}
+                                    {$lang.PasswordCurrent}:
+                                </td>
+                                <td>
+								<input type="password" name="ss_p_current" id="ss_p_current" value="" class="Field250" autocomplete="off" />
+                                </td>
+                            </tr>
+					{/if}
 					<tr>
 						<td class="FieldLabel">
 							{template="Required"}
 							%%LNG_Password%%:
 						</td>
 						<td>
-							<input type="password" name="ss_p" value="" class="Field250" autocomplete="off" />
+							<input type="password" id="ss_p"  name="ss_p" value="" class="Field250" autocomplete="off" />
 						</td>
 					</tr>
 					<tr>
