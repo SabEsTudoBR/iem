@@ -73,7 +73,7 @@ class Upgrade_API extends API
 		'20210505' => '6.2.3',
 		'20210715' => '6.3.0',
 		'20210810' => '6.4.0',
-		'20211013' => '6.4.1'
+		'20211022' => '6.4.1'
 	];
 
 	/**
@@ -711,7 +711,8 @@ class Upgrade_API extends API
 		'20210810' => [
             'update_db_version'
         ],
-		'20211013' => [
+		'20211022' => [
+			'user_add_otp_column',
             'update_db_version'
         ]
 	];

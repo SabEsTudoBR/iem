@@ -321,14 +321,14 @@ class Users extends SendStudio_Functions
                             }
                              
                         } else {
-				$username = IEM::requestGetPOST('username', '');
+								$username = IEM::requestGetPOST('username', '');
                             	$password = IEM::requestGetPOST('ss_p', '');						 
                         }
 						  	
 							$auth_pass = new AuthenticationSystem();
 							$result_auth_pass= $auth_pass->AuthenticatePassword($_POST['ss_p']);
 							if ($result_auth_pass === -1) {
-								 $error = GetLang('NewPassword_Errors');
+								 $error = GetLang('NoValidPassword');
 							}
 						//for super admin
 						if ($thisuser ->userid == $UserID && $_POST['loginuser_groupid'] == 1){

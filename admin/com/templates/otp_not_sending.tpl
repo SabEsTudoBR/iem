@@ -1,5 +1,4 @@
- 
- <form action="index.php?Page=%%PAGE%%&Action=%%GLOBAL_SubmitAction%%" method="post" name="frmLogin" id="frmLogin" autocomplete="off">
+<form action="index.php?Page=%%PAGE%%&Action=%%GLOBAL_SubmitAction%%" method="post" name="frmLogin" id="frmLogin" autocomplete="off">
 	<div id="box" class="loginBox">
 		<table><tr><td style="border:solid 2px #DDD; padding:20px; background-color:#FFF; width:300px;">
 		<table>
@@ -15,26 +14,9 @@
 			<td>
 				<table>
 				<tr>
-					<td nowrap="nowrap" style="padding:0px 10px 0px 10px">%%LNG_OTP%%:</td>
-					<td>
-				<input type="text" name="otp" id="otp" class="Field150" autocomplete="off">
-					</td>
-				</tr>
-				 
-				<tr>
-					<td></td>
-					<td>
-				 </td>
-				</tr>
-				 
-				<tr>
 					<td>&nbsp;</td>
 					<td> 
-				 
-						<input type="submit" name="SubmitButton" value="%%LNG_Login%%" class="FormButton" required>
 						 <a href="index.php?Page=Page=Login&Action=resendotp&userid=%%GLOBAL_USERID%%" name="SubmitButton"  class="FormButton" style="display:%%GLOBAL_OTP_Status%%">Resend OTP</a>
-				
-						 
 					</td>
 					</tr>
 

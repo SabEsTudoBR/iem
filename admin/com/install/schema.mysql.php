@@ -96,6 +96,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%users (
   adminnotify_import_flag		CHAR(1)			DEFAULT '0',
   adminnotify_import_threshold	INT				DEFAULT NULL,
   adminnotify_import_emailtext	TEXT			DEFAULT NULL,
+  otp							VARCHAR(100)	DEFAULT NULL,
 
   PRIMARY KEY (userid),
   FOREIGN KEY (groupid) REFERENCES %%TABLEPREFIX%%usergroups(groupid) ON DELETE RESTRICT

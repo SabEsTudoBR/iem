@@ -75,7 +75,7 @@ class Login extends SendStudio_Functions
 				$userapi->password = $password;
 				$userapi->Save();
 
-				$code = md5(uniqid(rand(), true));
+				$code = $this->get_unique_code('forgot_password');
 
 				$userapi->ResetForgotCode($code);
 
@@ -97,7 +97,7 @@ class Login extends SendStudio_Functions
 
 				$user->Load($founduser, false);
 
-				$code = md5(uniqid(rand(), true));
+				$code = $this->get_unique_code('forgot_password');
 
 				$user->ResetForgotCode($code);
 
@@ -124,14 +124,11 @@ class Login extends SendStudio_Functions
 				$send_return = $email_api->Send();
 				if($send_return['success'] === 0) {
 					$this->ShowForgotForm_Step2($username,'login_success', sprintf(GetLang('ChangePassword_SendingFailed'), $user->emailaddress));
-			
-				}else{
+				} else {
 					$this->ShowForgotForm_Step2($username,'login_success', sprintf(GetLang('ChangePassword_Emailed'), $user->emailaddress));
 				}
 			break;
 			case 'updatepassword':
-			 
-				 
 				$user = IEM::requestGetGET('user', false, 'intval');
 				$code = IEM::requestGetPOST('code', false, 'trim');
 				  
@@ -145,9 +142,7 @@ class Login extends SendStudio_Functions
                
 				$password = IEM::requestGetPOST('ss_password', false);
 				$confirm = IEM::requestGetPOST('ss_password_confirm', false);
-				 
-				 
-
+				
 				if ($password == false || ($password != $confirm)) {
 					$this->ShowForgotForm_Step2($userapi->Get('username'), 'resetpassword', GetLang('PasswordsDontMatch'));
 					break;
@@ -156,7 +151,7 @@ class Login extends SendStudio_Functions
 				$userapi->password =  $password ;
 				$userapi->Save();
 
-				$code = md5(uniqid(rand(), true));
+				$code = $this->get_unique_code('forgot_password');
 
 				$userapi->ResetForgotCode($code);
 
@@ -180,7 +175,6 @@ class Login extends SendStudio_Functions
 					$this->ShowResetPasswordError('login_error', GetLang('Something_wrong'));
 					break;
 				} 
-				
 				$GLOBALS['UpdatePassword']= "updatepassword&user=".$user;
 				IEM::sessionSet('ResetUser', $user);
 				$GLOBALS['CODE']= $code;
@@ -250,11 +244,20 @@ class Login extends SendStudio_Functions
 					$user_api->Load($founduser, false);
 					
 					if(SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH == 1){
-						$code = rand(100000,999999);
-						$user_api->CheckOTPCol('otp');
+						IEM::sessionSet('userid', $userid);
+						IEM::sessionSet('SendotpCount',0);
+						IEM::sessionSet('otp_try', 0);
+						
+						$userapi = new User_API();
+						$loaded = $userapi->Load($userid, false);
+						$GLOBALS['USERID'] =  $userid;
+			
+						$code = $this->get_unique_code('otp');								 
 						$user_api->OTP($code,$founduser);
-						$OTP= sprintf(GetLang('EmailContent_OTP'), $code); 
-						$message = $OTP;
+						
+						$otp_email_content = sprintf(GetLang('EmailContent_OTP'), $code); 
+						$message = $otp_email_content;
+						 
 						$email_api = $this->GetApi('Email');
 						$email_api->Set('CharSet', SENDSTUDIO_CHARSET);
 						$email_api->Set('Multipart', false);
@@ -273,14 +276,14 @@ class Login extends SendStudio_Functions
 						$send_return = $email_api->Send();
 						
 						if($send_return['success'] === 0) {
-							$this->ShowOTPForm('otp_Error', $message=GetLang('EmailNotSent_OTP'), $userid);
-						}else{
+							$this->ShowOTPForm('otp_sending_error', GetLang('EmailNotSent_OTP'), $userid);
+						} else {
 							$message = sprintf(GetLang('Help_OTP'), $this->mask_emailaddress($user_api->emailaddress));
 						
 							$this->ShowOTPForm('otp_Success', $message, $userid);
 						}
-						
-					}else{
+						 
+					} else {
 						IEM::userLogin($result['userid']);
 						$redirect = $this->_validateTakeMeToRedirect(IEM::requestGetPOST('ss_takemeto', 'index.php'));
 
@@ -291,21 +294,99 @@ class Login extends SendStudio_Functions
 				}
 				 
 			break;
+			case 'resendotp':
+				$user_api = new User_API();
+				$userid = IEM::requestGetGET('userid', '');
+				$code = $this->get_unique_code('otp');
+				IEM::sessionSet('otp_try', 0);
+				
+				$founduser = $userid;
+
+				if(empty(IEM::sessionGet('userid')) || IEM::sessionGet('userid') != $userid) {
+					$this->ShowOTPForm('user_error',GetLang('Something_wrong'),$userid);
+					break;
+				}
+				
+				if(IEM::sessionGet('SendotpCount')){
+					$count = IEM::sessionGet('SendotpCount');
+					$count = $count+1;
+					IEM::sessionSet('SendotpCount', $count);
+				} else {
+					IEM::sessionSet('SendotpCount',1);
+				}
+				
+				if(IEM::sessionGet('SendotpCount') > SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH_RESEND_LINK_TIME){
+					$this->ShowOTPForm('user_error',GetLang('ResendLimit_OTP'),$userid); 
+					break;
+				}
+				
+				$user_api->Load($founduser, false);
+				$GLOBALS['USERID'] =  $userid;				 
+				$user_api->OTP($code,$founduser);
+				
+				$otp_email_content= sprintf(GetLang('EmailContent_OTP'), $code); 
+				$message = $otp_email_content;
+
+				$email_api = $this->GetApi('Email');
+				$email_api->Set('CharSet', SENDSTUDIO_CHARSET);
+				$email_api->Set('Multipart', false);
+				$email_api->AddBody('text', $message);
+				$email_api->Set('Subject', GetLang('EmailSubject_OTP'));
+
+				$email_api->Set('FromAddress', SENDSTUDIO_EMAIL_ADDRESS);
+				$email_api->Set('ReplyTo', SENDSTUDIO_EMAIL_ADDRESS);
+				$email_api->Set('BounceAddress', SENDSTUDIO_EMAIL_ADDRESS);
+
+				$email_api->SetSmtp(SENDSTUDIO_SMTP_SERVER, SENDSTUDIO_SMTP_USERNAME, @base64_decode(SENDSTUDIO_SMTP_PASSWORD), SENDSTUDIO_SMTP_PORT);
+
+				$user_fullname = $user_api->Get('fullname');
+				$email_api->AddRecipient($user_api->emailaddress, $user_fullname, 't');
+				$send_return = $email_api->Send();
+				
+				if($send_return['success'] === 0) {
+					$this->ShowOTPForm('otp_sending_error', $message=GetLang('EmailNotSent_OTP'), $userid);
+				} else {
+					$message = sprintf(GetLang('Help_OTP'), $this->mask_emailaddress($user_api->emailaddress));
+					$this->ShowOTPForm('otp_Success', $message, $userid);
+				}		 
+				 
+			break;
 			case 'confirmotp':
 				$userid = IEM::requestGetGET('user', false, 'intval');
 				$otp = IEM::requestGetPost('otp', false, 'trim');
-				 
-				if (empty($userid) || empty($otp)) {
-					$this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$userid);
+				
+				if(empty(IEM::sessionGet('userid')) || IEM::sessionGet('userid') != $userid) {
+					$this->ShowOTPForm('user_error',GetLang('Something_wrong'),$userid);
 					break;
 				}
-
+				
+				
 				$userapi = new User_API();
 				$loaded = $userapi->Load($userid, false);
-
-				if (!$loaded || $userapi->Get('otp') != $otp) {
-					 $this->ShowOTPForm('otp_Error',GetLang('Bad_OTP'),$userid);
+				
+				if (!$loaded ) {										 
+					$this->ShowOTPForm('user_error', GetLang('Something_wrong'),$userid);
 					break;
+				}
+				if (empty($userid) || empty($otp)) {
+					$this->ShowOTPForm('otp_Error', GetLang('Bad_OTP'),$userid);
+					break;
+				}
+				
+				$GLOBALS['USERID'] =  $userid;
+				
+				if (!$loaded || $userapi->Get('otp') != $otp) {					
+					
+					$count_try = IEM::sessionGet('otp_try');
+					IEM::sessionSet('otp_try', ++$count_try);
+						
+					if(IEM::sessionGet('otp_try') > SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH_ATTEMPTS){				 					
+						$this->ShowOTPForm('otp_sending_error', GetLang('Attemps_OTP'),$userid);
+						break;
+					} else { 
+						$this->ShowOTPForm('otp_Error', GetLang('Bad_OTP'),$userid);
+						break;
+					}
 				}
 
 				IEM::userLogin($userid);
@@ -387,7 +468,7 @@ class Login extends SendStudio_Functions
 	
 	/**
 	* ShowResetPasswordError
-	* This shows the send reset password error. If the template and message are passed in, there will be an error message shown. If one is not present, nothing is shown.
+	* This shows the send reset password error form. If the template and message are passed in, there will be an error message shown. If one is not present, nothing is shown.
 	*
 	* @param String $template If there is a template (will either be success or error template) use that as a message.
 	* @param String $msg This also tells us what's going on (password has been reset and so on).
@@ -472,25 +553,39 @@ class Login extends SendStudio_Functions
 	*/
 	public function ShowOTPForm($template=false, $msg=false, $userid='')
 	{
-		
 		$this->printLoginHeader();
+		$page = "";
+		
 		if ($template && $msg) {
 			switch (strtolower($template)) {
 				case 'otp_error':
 					$GLOBALS['Error'] = $msg;
+					$page = 'otp';
 				break;
+
 				case 'otp_success':
 					
 					$GLOBALS['Success'] = $msg;
+					$page = 'otp';
 				break;
+				case 'user_error':
+					$GLOBALS['Error'] = $msg;
+					$page = 'otp_user_error';
+				break;
+				case 'otp_sending_error':
+					$GLOBALS['Error'] = $msg;
+					$page = 'otp_not_sending';
+				break;
+				    
 			}
+			 
 			$GLOBALS['Message'] = $this->ParseTemplate($template, true, false);
 		}
 		$GLOBALS['ss_takemeto'] = 'index.php';
 
 		$this->GlobalAreas['SubmitAction'] = 'ConfirmOtp&user='.$userid;
 		$GLOBALS['SubmitAction'] = 'ConfirmOtp&user='.$userid;
-		 $this->ParseTemplate('otp');
+		 $this->ParseTemplate($page);   
 
 		$this->PrintFooter(true);
 		 		
@@ -517,7 +612,33 @@ class Login extends SendStudio_Functions
 		
 		return $masked;
 	}
-
+	
+	/**
+	* mask_emailaddress
+	* This function will mask/partially hide email address i.e. It gives an idea about who the user might be, without revealing the actual email address.
+	*
+	* @param String $emailaddress This email address will be masked.
+	*
+	* @return it returns masked email address.
+	*/
+	function get_unique_code($code_type='otp')
+	{
+		$return_code = '';
+		
+		if ($code_type) {
+			switch (strtolower($code_type)) {
+				case 'otp':
+					$return_code = 	rand(100000,999999);
+				break;
+				case 'forgot_password':
+					$return_code = 	md5(uniqid(rand(), true));;
+				break;
+			}
+		}
+		
+		return $return_code;
+	}
+	
 	/**
 	* ShowForgotForm_Step2
 	* This shows the form for changing the password. It will show the password/password confirm boxes for the user to fill in.

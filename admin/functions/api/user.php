@@ -553,6 +553,10 @@ class User_API extends API
         $this->createdate = (int) $user['createdate'];
         $this->forgotpasscode = $user['forgotpasscode'];
 		$this->otp = isset($user['otp'])? $user['otp'] : '';
+		/* $this->otp = isset($user['otp'])? $user['otp'] : '';
+		$this->otp_data = isset($user['otp_data'])? $user['otp_data'] : ''; */
+		//$this->otp_try = isset($user['otp_try'])? $user['otp_try'] : '';
+		 
 
         if (isset($user['usewysiwyg'])) {
             $wysiwyg = intval($user['usewysiwyg']);
@@ -1078,26 +1082,7 @@ class User_API extends API
         return $this->Db->Query($query);
     }
     
-    /**
-     * CheckOTPCol
-     * Checking the otp column in users table.
-     *
-     * @param String $columnName this is a column in users table where otp is saved in.
-     *
-     * @return the query execution.
-    */
-    public function CheckOTPCol($columnName ='otp') {    
-          
-        $query =  "SHOW COLUMNS FROM " . SENDSTUDIO_TABLEPREFIX."users LIKE '".$columnName."'";
-		$result = $this->Db->Query($query);
-		 
-		$exists = ($this->Db->CountResult($result))?TRUE:FALSE; 
-	 
-		if(!$exists) { 
-			$query =  "ALTER TABLE  " . SENDSTUDIO_TABLEPREFIX."users  ADD  COLUMN  ".$columnName." varchar(100) DEFAULT NULL";	  
-			return $this->Db->Query($query);
-		}	  
-    }
+     
 	
     /**
      * UpdateLoginTime
