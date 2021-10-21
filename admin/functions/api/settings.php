@@ -143,7 +143,10 @@ class Settings_API extends API
 		'SECURITY_SESSION_TIME',
 		'SELF_SIGNED_CERT',
 		'SECURITY_TWO_FACTOR_AUTH',
+		'SECURITY_TWO_FACTOR_AUTH_ATTEMPTS',
+		'SECURITY_TWO_FACTOR_AUTH_RESEND_LINK_TIME',
 		'FORCE_OWN_SMTP_SERVER'
+		
     ];
 
 	/**
@@ -152,7 +155,7 @@ class Settings_API extends API
 	*
 	* @var array
 	*/
-	var $send_options = array(
+	var $send_options = [
 		'0'		=> 'disabled',
 		'1'		=> '1_minute',
 		'2'		=> '2_minutes',
@@ -161,7 +164,7 @@ class Settings_API extends API
 		'15'	=> '15_minutes',
 		'20'	=> '20_minutes',
 		'30'	=> '30_minutes',
-	);
+	];
 
 	/**
 	* autoresponder_options
@@ -169,7 +172,7 @@ class Settings_API extends API
 	*
 	* @var array
 	*/
-	var $autoresponder_options = array(
+	var $autoresponder_options = [
 		'0'		=> 'disabled',
 		'1'		=> '1_minute',
 		'2'		=> '2_minutes',
@@ -182,7 +185,7 @@ class Settings_API extends API
 		'120'	=> '2_hours',
 		'720'	=> '12_hours',
 		'1440'	=> '1_day'
-	);
+	];
 
 	/**
 	* bounce_options
@@ -190,7 +193,7 @@ class Settings_API extends API
 	*
 	* @var array
 	*/
-	var $bounce_options = array(
+	var $bounce_options = [
 		'0'			=> 'disabled',
 		'60'		=> '1_hour',
 		'120'		=> '2_hours',
@@ -198,7 +201,7 @@ class Settings_API extends API
 		'360'		=> '6_hours',
 		'720'		=> '12_hours',
 		'1440'		=> '1_day',
-	);
+	];
 
 	/**
 	 * triggeremails_s_options
@@ -206,7 +209,7 @@ class Settings_API extends API
 	 *
 	 * @var array
 	 */
-	var $triggeremails_s_options = array(
+	var $triggeremails_s_options = [
 		'0'		=> 'disabled',
 		'1'		=> '1_minute',
 		'2'		=> '2_minutes',
@@ -215,7 +218,7 @@ class Settings_API extends API
 		'15'	=> '15_minutes',
 		'20'	=> '20_minutes',
 		'30'	=> '30_minutes',
-	);
+	];
 
 	/**
 	 * triggeremails_p_options
@@ -223,10 +226,10 @@ class Settings_API extends API
 	 *
 	 * @var array
 	 */
-	var $triggeremails_p_options = array(
+	var $triggeremails_p_options = [
 		'0'		=> 'disabled',
 		'1440'	=> '1_day'
-	);
+	];
 
 
 	/**
@@ -235,13 +238,13 @@ class Settings_API extends API
 	 *
 	 * @var array
 	 */
-	var $maintenance_options = array(
+	var $maintenance_options = [
 		'0'			=> 'disabled',
 		'180'		=> '3_hours',
 		'360'		=> '6_hours',
 		'540'		=> '9_hours',
 		'1440'		=> '1_day',
-	);
+	];
 
 	/**
 	* If cron is enabled, this setting is checked to make sure it's working ok. This allows the settings page to show a warning about it being set up properly or not.
@@ -282,26 +285,26 @@ class Settings_API extends API
 	*
 	* @see CheckCron
 	*/
-	var $Schedule = array (
-		'autoresponder' => array (
+	var $Schedule = [
+		'autoresponder' => [
 			'lastrun' => -1,
-		),
-		'bounce' => array (
+		],
+		'bounce' => [
 			'lastrun' => -1,
-		),
-		'send' => array (
+		],
+		'send' => [
 			'lastrun' => -1,
-		),
-		'triggeremails_s' => array (
+		],
+		'triggeremails_s' => [
 			'lastrun' => -1
-		),
-		'triggeremails_p' => array (
+		],
+		'triggeremails_p' => [
 			'lastrun' => -1
-		),
-		'maintenance' => array (
+		],
+		'maintenance' => [
 			'lastrun' => -1
-		)
-	);
+		]
+	];
 
 	/**
 	* The database version number.
@@ -419,7 +422,7 @@ class Settings_API extends API
 				// ------------------------------------------------------------------------
 					$result = $this->Db->Query("SELECT * FROM " . SENDSTUDIO_TABLEPREFIX . "config_settings");
 
-					$settings = array();
+					$settings = [];
 					while ($row = $this->Db->Fetch($result)) {
 						$area = $row['area'];
 						// eh? How did a config setting get in the db without it being in the settings api??
@@ -623,7 +626,7 @@ class Settings_API extends API
 			if (!isset($this->Schedule[$schedule_name])) {
 				continue;
 			}
-			$this->Schedule[$schedule_name] = array('lastrun' => $row['lastrun']);
+			$this->Schedule[$schedule_name] = ['lastrun' => $row['lastrun']];
 		}
 
 		return $cronok;
@@ -645,7 +648,7 @@ class Settings_API extends API
 		if (!$this->CheckCron()) {
 			return true;
 		}
-		$expectedIntervalPool = array(SENDSTUDIO_CRON_SEND, SENDSTUDIO_CRON_AUTORESPONDER, SENDSTUDIO_CRON_BOUNCE, SENDSTUDIO_CRON_TRIGGEREMAILS_S, SENDSTUDIO_CRON_TRIGGEREMAILS_P);
+		$expectedIntervalPool = [SENDSTUDIO_CRON_SEND, SENDSTUDIO_CRON_AUTORESPONDER, SENDSTUDIO_CRON_BOUNCE, SENDSTUDIO_CRON_TRIGGEREMAILS_S, SENDSTUDIO_CRON_TRIGGEREMAILS_P];
 		$expectedInterval = -1;
 		$actualInterval = floor((time() - $this->cronrun2) / 60);
 
@@ -1011,7 +1014,7 @@ class Settings_API extends API
 				return false;
 			}
 
-			$rows = array();
+			$rows = [];
 			while ($row = $db->Fetch($result)) {
 				$rows[] = $row;
 			}
@@ -1051,8 +1054,8 @@ class Settings_API extends API
 			return false;
 		}
 
-		$levelSpecified = array();
-		$sqlValues = array();
+		$levelSpecified = [];
+		$sqlValues = [];
 		foreach ($warnings as $warning) {
 			$tempEnabled = ((array_key_exists('enabled', $warning) && $warning['enabled'] == 1) ? '1' : '0'); // Default to 0
 			$tempCreditLevel = intval(array_key_exists('creditlevel', $warning) ? $warning['creditlevel'] : '0'); // Default to 0
@@ -1108,7 +1111,7 @@ class Settings_API extends API
 	* @uses IEM_InterspireStash
 	*/
 	function LoadWhiteLabelSettings() {
-		$tempWhiteLabelCache = array();
+		$tempWhiteLabelCache = [];
 
 		// Load the customizable white label settings.
 		if (!$this->WhiteLabelCache->exists('IEM_SETTINGS_WHITELABEL')) {

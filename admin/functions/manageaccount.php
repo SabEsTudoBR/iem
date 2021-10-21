@@ -155,7 +155,7 @@ class ManageAccount extends SendStudio_Functions
 				if (!$error) {
 					if ($_POST['ss_p'] != '') {
 						
-						if ($thisuser->userid == $UserID) {
+						if ($thisuser ->userid == $UserID) {
 							
 							$auth_system = new AuthenticationSystem();
                             $username = $thisuser->username;
@@ -175,14 +175,11 @@ class ManageAccount extends SendStudio_Functions
 								$username = IEM::requestGetPOST('username', '');
                             	$password = IEM::requestGetPOST('ss_p', '');						 
                         }
-						 
-						$auth_pass = new AuthenticationSystem();
-						$result_auth_pass= $auth_pass->AuthenticatePassword($_POST['ss_p']);
-						
-						if ($result_auth_pass === -1) {
-							$error = GetLang('NoValidPassword');
-						}
-						
+						 $auth_pass = new AuthenticationSystem();
+							$result_auth_pass= $auth_pass->AuthenticatePassword($_POST['ss_p']);
+							if ($result_auth_pass === -1) {
+								 $error = GetLang('NoValidPassword');
+							}
 						if ($_POST['ss_p_confirm'] != '' && $_POST['ss_p_confirm'] == $_POST['ss_p']) {
 							$user->Set('password', $_POST['ss_p']);
 						} else {
@@ -219,6 +216,7 @@ class ManageAccount extends SendStudio_Functions
 			break;
 
 			default:
+			
 				$userid = $user->userid;
 				$this->PrintEditForm($userid);
 			break;
@@ -260,7 +258,8 @@ class ManageAccount extends SendStudio_Functions
 			$activity = array();
 		}
 		$GLOBALS['EventActivityType'] = implode("\n", $activity);
-
+		
+		
 		$GLOBALS['UserID'] = $user->userid;
 		$GLOBALS['UserName'] = $user->username;
 		$GLOBALS['FullName'] = $user->fullname;

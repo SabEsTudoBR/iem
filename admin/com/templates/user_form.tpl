@@ -106,7 +106,7 @@
 									</select>&nbsp;&nbsp;&nbsp;%%LNG_HLP_TimeZone%%
 								</td>
 							</tr>
-                            {if $UserID != 0 && $UserID == $current_user && $loginuser_groupid == 1}
+                            {if $UserID != 0 && $UserID == $current_user}
                             <tr>
                                 <td class="FieldLabel">
                                     {template="Required"}

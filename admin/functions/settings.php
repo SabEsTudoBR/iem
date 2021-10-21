@@ -31,7 +31,7 @@ class Settings extends SendStudio_Functions
 	*
 	* @var Array
 	*/
-	var $PopupWindows = array('sendpreviewdisplay', 'sendsmtppreviewdisplay', 'testbouncedisplay', 'showinfo', 'testbouncesettings');
+	var $PopupWindows = ['sendpreviewdisplay', 'sendsmtppreviewdisplay', 'testbouncedisplay', 'showinfo', 'testbouncesettings'];
 
 	/**
 	* Suppress Header and Footer for these actions
@@ -40,7 +40,7 @@ class Settings extends SendStudio_Functions
 	*
 	* @var Array
 	*/
-	var $SuppressHeaderFooter = array('sendpreview', 'testbouncesettings');
+	var $SuppressHeaderFooter = ['sendpreview', 'testbouncesettings'];
 
 	/**
 	* Constructor
@@ -108,13 +108,13 @@ class Settings extends SendStudio_Functions
 
 				require_once(SENDSTUDIO_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . 'interspire_addons.php');
 
-				$post = array();
+				$post = [];
 				if (!empty($_POST)) {
 					$post = $_POST;
 				}
 
 				try {
-					$allowed_sub_action = array('install', 'uninstall', 'enable', 'disable', 'upgrade', 'configure', 'savesettings');
+					$allowed_sub_action = ['install', 'uninstall', 'enable', 'disable', 'upgrade', 'configure', 'savesettings'];
 					$subaction = $this->_getGETRequest('SubAction', '');
 
 					if (!in_array(strtolower($subaction), $allowed_sub_action)) {
@@ -451,7 +451,23 @@ class Settings extends SendStudio_Functions
 							if (isset($_POST['security_two_factor_auth'])) { 
 							 $settings['SECURITY_TWO_FACTOR_AUTH'] = intval($_POST['security_two_factor_auth']);
 							}
-							
+							if (isset($_POST['security_two_factor_auth_attemps'])) { 
+							 $settings['SECURITY_TWO_FACTOR_AUTH_ATTEMPTS'] = intval($_POST['security_two_factor_auth_attemps']);
+								 
+								if($settings['SECURITY_TWO_FACTOR_AUTH'] < 1){
+									$settings['SECURITY_TWO_FACTOR_AUTH_ATTEMPTS'] = 0;							 
+								}
+							 
+							}
+							  
+							if (isset($_POST['two_factor_auth_resend_link_time'])) { 
+							 $settings['SECURITY_TWO_FACTOR_AUTH_RESEND_LINK_TIME'] = intval($_POST['two_factor_auth_resend_link_time']);
+								 
+								if($settings['SECURITY_TWO_FACTOR_AUTH'] < 1){
+									$settings['SECURITY_TWO_FACTOR_AUTH_RESEND_LINK_TIME'] = 0;							 
+								}
+							 
+							}
 							if (!isset($_POST['security_wrong_login_wait_enable'])) {
 								$settings['SECURITY_WRONG_LOGIN_WAIT'] = 0;
 							}
@@ -466,26 +482,26 @@ class Settings extends SendStudio_Functions
 
 						// Save warnings
 						if ($result) {
-							$tempRequestWarningsEnabled = IEM::requestGetPOST('credit_percentage_warnings_enable', array());
-							$tempRequestWarningLevels = IEM::requestGetPOST('credit_percentage_warnings_level', array());
-							$tempRequestWarnigSubjects = IEM::requestGetPOST('credit_percentage_warnings_subject', array());
-							$tempRequestWarningEmails = IEM::requestGetPOST('credit_percentage_warnings_text', array());
+							$tempRequestWarningsEnabled = IEM::requestGetPOST('credit_percentage_warnings_enable', []);
+							$tempRequestWarningLevels = IEM::requestGetPOST('credit_percentage_warnings_level', []);
+							$tempRequestWarnigSubjects = IEM::requestGetPOST('credit_percentage_warnings_subject', []);
+							$tempRequestWarningEmails = IEM::requestGetPOST('credit_percentage_warnings_text', []);
 
 							if (!empty($tempRequestWarningsEnabled) && !empty($tempRequestWarningLevels) && !empty($tempRequestWarningEmails)) {
-								$tempRecords = array();
+								$tempRecords =[];
 								foreach ($tempRequestWarningLevels as $index => $level) {
-									$tempRecords[] = array(
+									$tempRecords[] = [
 										'enabled' => in_array($index, $tempRequestWarningsEnabled),
 										'creditlevel' => $level,
 										'aspercentage' => '1', // FIXME at this stage, only monthly credits warnings are available
 										'emailsubject' => (isset($tempRequestWarnigSubjects[$index]) ? $tempRequestWarnigSubjects[$index] : ''),
 										'emailcontents' => (isset($tempRequestWarningEmails[$index]) ? $tempRequestWarningEmails[$index] : '')
-									);
+									];
 								}
 
 								$result = $api->SaveCreditWarnings($tempRecords);
 							} else {
-								$result = $api->SaveCreditWarnings(array());
+								$result = $api->SaveCreditWarnings([]);
 							}
 
 							unset($tempRequestWarningsEnabled);
@@ -968,7 +984,7 @@ class Settings extends SendStudio_Functions
 		$attachments_report = '';
 
 		if (!$allow_attachments) {
-			$autos_to_disable = array();
+			$autos_to_disable = [];
 
 			$auto_files = list_files(TEMP_DIRECTORY . DIRECTORY_SEPARATOR . 'autoresponders', null, true);
 			if (!empty($auto_files)) {
@@ -1019,17 +1035,17 @@ class Settings extends SendStudio_Functions
 				}
 			}
 			
-			$newsletters_to_disable = array();
+			$newsletters_to_disable = [];
             $db = IEM::getDatabase();
             $result = $db->Query("SELECT newsletterid FROM ".SENDSTUDIO_TABLEPREFIX."newsletters WHERE active != 0");
-            $newsletter_ids = array();
+            $newsletter_ids = [];
             while($row = $db->Fetch($result)){
                 $newsletter_ids[] = $row['newsletterid'];
             }
             foreach ($newsletter_ids as $value) {
                 $dir = TEMP_DIRECTORY . DIRECTORY_SEPARATOR . 'newsletters'. DIRECTORY_SEPARATOR . $value . DIRECTORY_SEPARATOR . 'attachments';
                 if(is_dir($dir)){
-                    $files = array();
+                    $files = [];
                     $files = scandir($dir);
                     for($i = 0; $i <= count($files); $i++){
                         if($files[$i] == "." || $files[$i] == ".."){
@@ -1071,23 +1087,23 @@ class Settings extends SendStudio_Functions
 		$GLOBALS['Settings_AddonsDisplay'] = $this->PrintAddonsList();
 
 		// ----- Credit settings
-			$tempPercentageWarnings = array();
-			$tempFixedWarnings = array(); // TODO fixed credit warnings aren't implemented yet
+			$tempPercentageWarnings = [];
+			$tempFixedWarnings = []; // TODO fixed credit warnings aren't implemented yet
 			$tempWarnings = $api->GetCreditWarningsSettings();
 
 			// If warnings can't be found, create default.
 			if (empty($tempWarnings)) {
-				$tempDefaultLevel = array('0', '15', '25');
-				$tempWarnings = array();
+				$tempDefaultLevel = ['0', '15', '25'];
+				$tempWarnings = [];
 
 				foreach ($tempDefaultLevel as $each) {
-					$tempPercentageWarnings[] = array(
+					$tempPercentageWarnings[] = [
 						'enabled' => '0',
 						'creditlevel' => $each,
 						'aspercentage' => '1',
 						'emailsubject' => GetLang('CreditWarnings_Warnings_EmailSubjectDefaultText'),
 						'emailcontents' => str_replace('%s', "{$each}%", GetLang('CreditSettings_Warnings_PercentageDefaultText'))
-					);
+					];
 				}
 
 				unset($tempDefaultLevel);
@@ -1105,34 +1121,39 @@ class Settings extends SendStudio_Functions
 
 			unset($tempWarnings);
 
-			$tpl->Assign('credit_settings', array(
+			$tpl->Assign('credit_settings', [
 				'autoresponders_take_credit' => (bool)SENDSTUDIO_CREDIT_INCLUDE_AUTORESPONDERS,
 				'triggers_take_credit' => (bool)SENDSTUDIO_CREDIT_INCLUDE_TRIGGERS,
 				'enable_credit_level_warnings' => (bool)SENDSTUDIO_CREDIT_WARNINGS,
 				'warnings_percentage_level' => $tempPercentageWarnings,
-				'warnings_percentage_level_choices' => array(
+				'warnings_percentage_level_choices' => [
 					'0', '5', '10', '15', '20', '25',
 					'30', '35', '40', '45', '50'
-				)
-			));
+				]
+			]);
 		// -----
          
 		// ----- Login Security settings
-			$security_settings = array(
+			$security_settings = [
 				'login_wait' => SENDSTUDIO_SECURITY_WRONG_LOGIN_WAIT,
 				'Expire_Session' => SENDSTUDIO_SECURITY_SESSION_TIME,
 				'two_factor_auth' => SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH,
+				'two_factor_auth_resend_link_time' => SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH_RESEND_LINK_TIME,				
+				'two_factor_auth_attempts' => SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH_ATTEMPTS,
 				'threshold_login_count' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_COUNT,
 				'threshold_login_duration' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_DURATION / 60,
 				'ip_login_ban_duration' => SENDSTUDIO_SECURITY_BAN_DURATION / 60
-			);
+			];
       
-			$security_settings_options = array(
-				'login_wait' => array(1, 2, 3, 4, 5),
-				'threshold_login_count' => array(3, 4, 5, 10, 15),
-				'threshold_login_duration' => array(1, 5, 10, 15),
-				'ip_login_ban_duration' => array(1, 5, 10, 15)
-			);
+			$security_settings_options = [
+				'login_wait' => [1, 2, 3, 4, 5],
+				'threshold_login_count' => [3, 4, 5, 10, 15],
+				'threshold_login_duration' =>[1, 5, 10, 15],
+				'ip_login_ban_duration' => [1, 5, 10, 15],      
+				'otp_threshold' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				'otp_resend_link' => [1, 2, 3, 4, 5,3,4,5,6,7,8,9,10],	
+			];
+
 
 			$tpl->Assign('security_settings', $security_settings);
 			$tpl->Assign('security_settings_options', $security_settings_options);
@@ -1180,7 +1201,7 @@ class Settings extends SendStudio_Functions
 		$s = preg_replace('/<th[^>]*>([^<]+)<\/th>/',"<info>\\1</info>",$s);
 		$s = preg_replace('/<td[^>]*>([^<]+)<\/td>/',"<info>\\1</info>",$s);
 		$vTmp = preg_split('/(<h2[^>]*>[^<]+<\/h2>)/',$s,-1,PREG_SPLIT_DELIM_CAPTURE);
-		$vModules = array();
+		$vModules = [];
 		for ($i=1;$i<count($vTmp);$i++) {
 			if (preg_match('/<h2[^>]*>([^<]+)<\/h2>/',$vTmp[$i],$vMat)) {
 				$vName = trim($vMat[1]);
@@ -1190,7 +1211,7 @@ class Settings extends SendStudio_Functions
 					$vPat3 = "/".$vPat."\s*".$vPat."\s*".$vPat."/";
 					$vPat2 = "/".$vPat."\s*".$vPat."/";
 					if (preg_match($vPat3,$vOne,$vMat)) { // 3cols
-						$vModules[$vName][trim($vMat[1])] = array(trim($vMat[2]),trim($vMat[3]));
+						$vModules[$vName][trim($vMat[1])] = [trim($vMat[2]),trim($vMat[3])];
 					} elseif (preg_match($vPat2,$vOne,$vMat)) { // 2cols
 						$vModules[$vName][trim($vMat[1])] = trim($vMat[2]);
 					}
@@ -1230,7 +1251,7 @@ class Settings extends SendStudio_Functions
 		}
 
 		//apache2handler
-		return array();
+		return [];
 	}
 
 	/**
@@ -1244,13 +1265,13 @@ class Settings extends SendStudio_Functions
 	 */
 	function TestBounceSettingsDisplay()
 	{
-		$test_bounce_details = array (
+		$test_bounce_details = [
 			'server' => $_GET['Bounce_Server'],
 			'username' => $_GET['Bounce_Username'],
 			'password' => base64_encode($_GET['Bounce_Password']),
 			'extra_settings' => $_GET['Bounce_ExtraSettings'],
 			'imap' => (isset($_GET['bounce_imap']) && $_GET['bounce_imap'] == 1) ? 1 : 0,
-		);
+		];
 		IEM::sessionSet('TestBounceDetails', $test_bounce_details);
 
 		$GLOBALS['Page'] = 'Settings';
@@ -1416,9 +1437,9 @@ class Settings extends SendStudio_Functions
 
 		$addons_list = '';
 
-		$page = array(
+		$page = [
 			'message' => $GLOBALS['Message']
-		);
+		];
 
 		foreach ($addons as $addon_name => $details) {
 			$addons[$addon_name]['name'] = htmlspecialchars($details['name'], ENT_QUOTES, SENDSTUDIO_CHARSET);

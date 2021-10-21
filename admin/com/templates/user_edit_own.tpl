@@ -118,7 +118,7 @@
                                     {$lang.PasswordCurrent}:
                                 </td>
                                 <td>
-								<input type="password" name="ss_p_current" id="ss_p_current" value="" class="Field250" autocomplete="off" />
+								<input type="password" name="ss_p_current" id="ss_p_current" value="" class="Field250" autocomplete="off" required/>
                                 </td>
                             </tr>
 					{/if}

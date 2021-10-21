@@ -128,6 +128,7 @@
 
 		$(document.settings.security_wrong_login_wait_enable).click(function() { $('tr.security_wrong_login_wait_options').toggle(); });
 		$(document.settings.security_wrong_login_threshold_enable).click(function() { $('tr.security_wrong_login_threshold_options').toggle(); });
+		$(document.settings.security_two_factor_auth).click(function() { $('tr.security_wrong_otp_wait_options').toggle(); });
 
 		$(document.settings.credit_warnings).click(function() { $('div#credit_percentage_warnings_options', document.settings)[this.checked? 'show' : 'hide'](); });
 		$('input.percentage_credit_warning', document.settings).click(function() {
@@ -446,7 +447,8 @@
 						     %%LNG_ForceHideSMTP%%:
 								
 							</td>
-							<td><label for="force_own_smtp_server"><input type="checkbox" name="force_own_smtp_server" id="force_own_smtp_server" value="1"%%GLOBAL_ForceOwnSmtpServer%%>%%LNG_ForceHideSMTPExplain%%</label> %%LNG_HLP_ForceHideSMTP%%
+							<td><label for="force_own_smtp_server"><input type="checkbox" name="force_own_smtp_server" id="force_own_smtp_server" value="1"%%GLOBAL_ForceOwnSmtpServer%%>
+								%%LNG_ForceHideSMTPExplain%%</label> %%LNG_HLP_ForceHideSMTP%%
 							</td>
 						</tr>
 						<tr>
@@ -786,6 +788,41 @@
 								 {$lang.SecuritySettings_Two_Factor_Auth} 
 								 </label>
 								{$lnghlp.SecuritySettings_OTP}
+							</td>
+						</tr>
+						<tr class="security_wrong_otp_wait_options" {if $security_settings.two_factor_auth_attempts == 0}style="display:none;"{/if}>
+							<td class="FieldLabel">
+								{template="Required"}
+								{$lang.SecuritySettings_OtpSecurity_otp_attempts}
+							</td>
+							<td>
+								<img width="20" height="20" src="images/nodejoin.gif"/>
+								<label for="security_wrong_otp_wait">
+									<select name="security_two_factor_auth_attemps" id="security_wrong_otp_wait" style="width: 50px;">
+										{foreach from=$security_settings_options.otp_threshold item=item}
+											<option value="{$item}" {if $security_settings.two_factor_auth_attempts == $item}selected="selected"{/if}>{$item}</option>
+										{/foreach}
+									</select>
+									{$lang.Max_Otp_Attempts}
+								</label>
+							</td>
+						</tr>
+						 
+						<tr class="security_wrong_otp_wait_options" {if $security_settings.two_factor_auth_resend_link_time == 0}style="display:none;"{/if}>
+							<td class="FieldLabel">
+								{template="Required"}
+								{$lang.SecuritySettings_OtpSecurity_Resend_otp}
+							</td>
+							<td>
+								<img width="20" height="20" src="images/nodejoin.gif"/>
+								<label for="two_factor_auth_resend_link_time">
+									<select name="two_factor_auth_resend_link_time" id="two_factor_auth_resend_link_time" style="width: 50px;">
+										{foreach from=$security_settings_options.otp_resend_link item=item}
+											<option value="{$item}" {if $security_settings.two_factor_auth_resend_link_time == $item}selected="selected"{/if}>{$item}</option>
+										{/foreach}
+									</select>
+									{$lang.Max_Otp_Resend}
+								</label>
 							</td>
 						</tr>
 						<tr><td colspan="2" class="EmptyRow">&nbsp;</td></tr>
