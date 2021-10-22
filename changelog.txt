@@ -1,10 +1,11 @@
 # Interspire Email Marketer Changelog
 
 Version: 6.4.1
-Released: 13th Oct, 2021
+Released: 22nd Oct, 2021
 - Added two factor authentication feature
 - Added admin can force users to select and configure their own SMTP server
 - Added self signed certificate setting option
+- Process UTF-8 encoded subject lines in bounced messages
 - Fixed export statistics count issue
 - Removed deprecated php methods causing notices/errors
 
