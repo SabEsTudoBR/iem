@@ -447,8 +447,7 @@
 						     %%LNG_ForceHideSMTP%%:
 								
 							</td>
-							<td><label for="force_own_smtp_server"><input type="checkbox" name="force_own_smtp_server" id="force_own_smtp_server" value="1"%%GLOBAL_ForceOwnSmtpServer%%>
-								%%LNG_ForceHideSMTPExplain%%</label> %%LNG_HLP_ForceHideSMTP%%
+							<td><label for="force_own_smtp_server"><input type="checkbox" name="force_own_smtp_server" id="force_own_smtp_server" value="1"%%GLOBAL_ForceOwnSmtpServer%%>%%LNG_ForceHideSMTPExplain%%</label>%%LNG_HLP_ForceHideSMTP%%
 							</td>
 						</tr>
 						<tr>
