@@ -66,6 +66,15 @@
 				<tr>
 					<td class="FieldLabel">
 						{template="Not_Required"}
+						Other parameters
+					</td>
+					<td>
+						%%LNG_InterspireDemo%%
+					</td>
+				</tr>
+				<!--tr>
+					<td class="FieldLabel">
+						{template="Not_Required"}
 						%%LNG_PHPVersion%%:
 					</td>
 					<td>
@@ -143,7 +152,7 @@
 					<td>
 						%%GLOBAL_DatabaseVersion%%
 					</td>
-				</tr>
+				</tr-->
 			</table>
 		</td>
 	</tr>

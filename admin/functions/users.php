@@ -160,6 +160,9 @@ class Users extends SendStudio_Functions
 			break;
 
 			case 'save':
+					$this->DenyAccess();
+				exit;
+				
                 $userid = (isset($_GET['UserID'])) ? $_GET['UserID'] : 0;
 
 				if (empty($_POST)) {
@@ -386,6 +389,9 @@ class Users extends SendStudio_Functions
 			break;
 
 			case 'delete':
+				$this->DenyAccess();
+				exit;	
+				
 				$users = IEM::requestGetPOST('users', [], 'intval');
 				$deleteData = (IEM::requestGetPOST('deleteData', 0, 'intval') == 1);
 
@@ -393,6 +399,9 @@ class Users extends SendStudio_Functions
 			break;
 
 			case 'create':
+				$this->DenyAccess();
+				exit;
+				
 				$user     = New User_API();
 				$warnings = [];
 				$fields   = [

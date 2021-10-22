@@ -221,7 +221,8 @@ class Settings extends SendStudio_Functions
 
 			case 'showinfo':
 				$this->PrintHeader(true);
-				phpinfo();
+				//phpinfo();
+				echo GetLang('InterspireDemo');
 				$this->PrintFooter(true);
 			break;
 
@@ -252,6 +253,10 @@ class Settings extends SendStudio_Functions
 			break;
 
 			case 'save':
+				$this->PrintHeader();
+				$this->DenyAccess();
+					exit;
+					
 				if (empty($_POST)) {
 					$this->ShowSettingsPage();
 					break;

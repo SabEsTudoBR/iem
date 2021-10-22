@@ -316,7 +316,7 @@
 								%%LNG_LicenseKey%%:
 							</td>
 							<td>
-								<input type="text" name="licensekey" id="licensekey" value="%%GLOBAL_LicenseKey%%" class="Field250"> %%LNG_HLP_LicenseKey%%
+								<input type="text" name="licensekey" id="licensekey" value="IEM-DEMO" class="Field250"> %%LNG_HLP_LicenseKey%%
 							</td>
 						</tr>
 						<tr>
