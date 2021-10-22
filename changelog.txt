@@ -12,6 +12,7 @@ Released: 22nd Oct, 2021
 Files Changed:
 -------------
 	admin/com/ext/interspire_email/email.php
+	admin/com/install/schema.mysql.php
 	admin/com/language/default/login.php
 	admin/com/language/default/settings.php
 	admin/com/language/default/users.php
@@ -21,10 +22,12 @@ Files Changed:
 	admin/com/templates/user_edit_own.tpl
 	admin/com/templates/user_form.tpl
 	admin/functions/api/api.php
+	admin/functions/api/bounce.php
 	admin/functions/api/settings.php
 	admin/functions/api/stats.php
 	admin/functions/api/user.php
 	admin/functions/login.php
+	admin/functions/manageaccount.php
 	admin/functions/settings.php
 	admin/functions/stats.php
 	admin/functions/users.php
@@ -35,8 +38,15 @@ Files Added:
 -------------
 	admin/com/templates/otp.tpl
 	admin/com/templates/otp_error.tpl
+	admin/com/templates/otp_not_sending.tpl
+	admin/com/templates/otp_not_sending.tpl
+	admin/com/templates/otp_sending_error.tpl
 	admin/com/templates/otp_success.tpl
+	admin/com/templates/otp_user_error.tpl
 	admin/com/templates/resetpassword.tpl
+	admin/com/templates/resetpassword_error.tpl
+	admin/com/templates/user_error.tpl
+	
 	
 	
 Version: 6.4.0
