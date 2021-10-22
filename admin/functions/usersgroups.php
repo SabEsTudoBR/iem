@@ -153,9 +153,6 @@ class UsersGroups extends SendStudio_Functions
 	 */
 	public function page_deleteGroups()
 	{
-		$this->PrintHeader();
-		$this->DenyAccess();
-		exit;	
 		$groupIds = IEM_Request::getParam('groups', array());
 
 		// No IDs specified
@@ -196,11 +193,6 @@ class UsersGroups extends SendStudio_Functions
 	 */
 	public function page_editGroup()
 	{
-		
-		$this->PrintHeader();
-		$this->DenyAccess();
-		exit;	
-		
 		$id = IEM::requestGetGET('GroupID', 0, 'intval');
 
 		$record = array();
@@ -222,10 +214,6 @@ class UsersGroups extends SendStudio_Functions
 	// TODO docs
 	public function page_saveRecord()
 	{
-		$this->PrintHeader();
-		$this->DenyAccess();
-		exit;	
-		
 		$record = IEM::requestGetPOST('record', array());
 
         $record['groupname'] = htmlspecialchars($record['groupname']);

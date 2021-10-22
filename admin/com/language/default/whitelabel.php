@@ -12,7 +12,6 @@
  * Please backup before you start.
  */
 
-define('LNG_InterspireDemo', '<div style="font-size:16px; font-family: verdana; font-weight:bold; padding:6px;">This section is disabled in DEMO</div>');
 defined('LNG_ApplicationTitle') or define('LNG_ApplicationTitle', 'Interspire Email Marketer');
 define('LNG_HLP_UseSMTP', 'Choose this option to specify the details of your own external SMTP server, which will be used to send your email campaigns and autoresponders.');
 define('LNG_NoMoreLists_LK', 'Your license key does not allow you to create any more mailing lists. Please upgrade');
