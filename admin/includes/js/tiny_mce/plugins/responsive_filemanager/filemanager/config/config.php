@@ -60,26 +60,47 @@ $config_file = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)
 if (is_file($config_file)) { 
 	require_once($config_file);
 }
-$ieminfo  = @$_REQUEST['userID'];
-$userArr  = @explode('_',$ieminfo);
-if( isset($userArr[0]) && $userArr[0] !== '')
-$_SESSION['tinyUser'] = @$userArr[0];  
-$userid       = @$_SESSION['tinyUser'];
+
+//print_r($_REQUEST);
+
+$ieminfo  = @$_REQUEST['did'];
+$dirArr  = @explode('_',$ieminfo);
+if( isset($dirArr[0]) && $dirArr[0] !== '')
+$_SESSION['dirID'] = @$dirArr[0];  
+$dir_id       = @$_SESSION['dirID'];
+
+$iemtype  = @$_REQUEST['dtype'];
+$iemArr  = @explode('_',$iemtype);
+if( isset($iemArr[0]) && $iemArr[0] !== '')
+$_SESSION['tinyDir'] = @$iemArr[0];  
+$dir_type     = @$_SESSION['tinyDir'];
+
+if (isset($_REQUEST['imagegallery']) and $_REQUEST['imagegallery'] == 'yes') { 
+	$iemuser  = @$_REQUEST['uid'];
+	$userArr  = @explode('_',$iemuser);
+	if( isset($userArr[0]) && $userArr[0] !== '')
+	$_SESSION['tinyUser'] = @$userArr[0];  
+	
+	$dir_id = @$_SESSION['tinyUser'];
+	$dir_type = 'user';	
+}
+
+//echo $dir_id."-".$dir_type;
 $base_url     = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http"). "://". @$_SERVER['HTTP_HOST'];
 $upload_dir   = '/source/';
 $current_path = '/source/';
 $newsletterID = 0;
-if( (int)$userid > 0 && (int)$newsletterID == 0 ) {
+if( (int)$dir_id > 0 && (int)$newsletterID == 0 ) {
         $base_path = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))))).'/temp';
 	if(!is_dir($base_path))
 		mkdir($base_path);
-	if(!is_dir($base_path.'/user'))
-		mkdir($base_path.'/user');
+	if(!is_dir($base_path.'/'.$dir_type))
+		mkdir($base_path.'/'.$dir_type);
 	
-	$root         = $base_path.'/user';
-	$base_url     = SENDSTUDIO_APPLICATION_URL.'/admin/temp/user'; // url base of site if you want only relative url leave empty
-	$upload_dir   = '/'.$userid.'/'; // path from base_url to upload base dir
-	$current_path = '../../../../../../temp/user/'.$userid.'/'; //'../../../../source/'; // relative path from filemanager folder to upload files folder
+	$root         = $base_path.'/'.$dir_type;
+	$base_url     = SENDSTUDIO_APPLICATION_URL.'/admin/temp/'.$dir_type; // url base of site if you want only relative url leave empty
+	$upload_dir   = '/'.$dir_id.'/'; // path from base_url to upload base dir
+	$current_path = '../../../../../../temp/'.$dir_type.'/'.$dir_id.'/'; //'../../../../source/'; // relative path from filemanager folder to upload files folder
 	if(!is_dir($current_path))
 	{
 		mkdir($current_path);
@@ -92,14 +113,14 @@ if( (int)$userid > 0 && (int)$newsletterID == 0 ) {
 		mkdir($thumbs_main_path);
 	}
      
-	$thumbs_upload_dir= $base_url.'thumbs/';
+	$thumbs_upload_dir= $base_url.'/thumbs/';
 	
-	$thumbs_root=  $root.'/thumbs/'.$userid;
+	$thumbs_root=  $root.'/thumbs/'.$dir_id;
 	if(!is_dir($thumbs_root))
 	{
 		mkdir($thumbs_root);
 	}
-	$thumbs_base_path= '../../../../../../temp/user/thumbs/'.$userid.'/';
+	$thumbs_base_path= '../../../../../../temp/'.$dir_type.'/thumbs/'.$dir_id.'/';
   }
 //echo "<PRE>";print_r($base_path); echo "</PRE>";
 
@@ -600,6 +621,8 @@ $config   = array(
     'remember_text_filter'                    => false,
 
 );
+
+//echo "<PRE>";print_r($config); echo "</PRE>";
 
 return array_merge(
     $config,
