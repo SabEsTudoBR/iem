@@ -116,7 +116,7 @@ $parent = $rfm_subfolder . $subdir;
 if ($ftp) {
     $cur_dir = $config['ftp_base_folder'] . $cur_dir;
     $cur_dir_thumb = $config['ftp_base_folder'] . $cur_dir_thumb;
-    $thumbs_path = str_replace(array('/..', '..'), '', $cur_dir_thumb);
+    $thumbs_path = str_replace(['/..', '..'], '', $cur_dir_thumb);
     $parent = $config['ftp_base_folder'] . $parent;
 }
 
@@ -430,7 +430,7 @@ $get_params = http_build_query($get_params);
     <input type="hidden" id="file_number_limit_js" value="<?php echo $config['file_number_limit_js'];?>" />
     <input type="hidden" id="sort_by" value="<?php echo $sort_by;?>" />
     <input type="hidden" id="descending" value="<?php echo $descending?1:0;?>" />
-    <input type="hidden" id="current_url" value="<?php echo str_replace(array('&filter='.$filter,'&sort_by='.$sort_by,'&descending='.intval($descending)),array(''),$config['base_url'].htmlspecialchars($_SERVER['REQUEST_URI']));?>" />
+    <input type="hidden" id="current_url" value="<?php echo str_replace(['&filter='.$filter,'&sort_by='.$sort_by,'&descending='.intval($descending)],[''],$config['base_url'].htmlspecialchars($_SERVER['REQUEST_URI']));?>" />
     <input type="hidden" id="lang_show_url" value="<?php echo trans('Show_url');?>" />
     <input type="hidden" id="copy_cut_files_allowed" value="<?php if($config['copy_cut_files']) echo 1; else echo 0;?>" />
     <input type="hidden" id="copy_cut_dirs_allowed" value="<?php if($config['copy_cut_dirs']) echo 1; else echo 0;?>" />
@@ -647,8 +647,8 @@ $get_params = http_build_query($get_params);
 
     //php sorting
     $sorted = [];
-    //$current_folder=array();
-    //$prev_folder=array();
+    //$current_folder=[];
+    //$prev_folder=[];
     $current_files_number = 0;
     $current_folders_number = 0;
 
@@ -702,7 +702,7 @@ $get_params = http_build_query($get_params);
                         $size = 0;
                     }
                     $file_ext = trans('Type_dir');
-                    $sorted[$k] = array(
+                    $sorted[$k] = [
                         'is_dir' => true,
                         'file' => $file,
                         'file_lcase' => strtolower($file),
@@ -710,7 +710,7 @@ $get_params = http_build_query($get_params);
                         'size' => $size,
                         'permissions' => '',
                         'extension' => fix_strtolower($file_ext)
-                    );
+                    ];
 
                     if ($config['show_folder_size']) {
                         $sorted[$k]['nfiles'] = $nfiles;
