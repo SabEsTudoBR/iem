@@ -1144,6 +1144,9 @@ class Settings extends SendStudio_Functions
 				'threshold_login_duration' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_DURATION / 60,
 				'ip_login_ban_duration' => SENDSTUDIO_SECURITY_BAN_DURATION / 60
 			];
+
+			// If security session timeout value is NULL in db, then the default value will be 60 minutes.
+			$security_settings['Expire_Session'] = ($api->getSettingValue('SECURITY_TWO_FACTOR_AUTH') == NULL ) ? '60' : SENDSTUDIO_SECURITY_SESSION_TIME;
       
 			$security_settings_options = [
 				'login_wait' => [1, 2, 3, 4, 5],

@@ -189,6 +189,7 @@ class IEM_Installer
 		$settings['CREDIT_INCLUDE_TRIGGERS']       = '1';
 		$settings['CREDIT_WARNINGS']               = '0';
 		$settings['SECURITY_BAN_DURATION']         = '0';
+		$settings['SECURITY_SESSION_TIME']         = '60';
 		$settings['SECURITY_WRONG_LOGIN_THRESHOLD_DURATION'] = '0';		
 		$settings_api->Set('Settings', $settings);
 
