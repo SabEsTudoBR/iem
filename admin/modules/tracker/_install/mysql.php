@@ -9,5 +9,5 @@
 					  datastring TEXT,
 					  PRIMARY KEY(statid, stattype, trackername)
 					  #, FOREIGN KEY(newsletterid) REFERENCES " . SENDSTUDIO_TABLEPREFIX . "newsletters(newsletterid)
-					) Engine=innoDB CharSet=UTF8;";
+					) Engine=innoDB CharSet=utf8mb4;";
 ?>
