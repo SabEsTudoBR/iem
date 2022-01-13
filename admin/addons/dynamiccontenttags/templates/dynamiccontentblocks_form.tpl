@@ -8,6 +8,11 @@
 <script>
 	%%GLOBAL_CustomDatepickerUI%%
 </script>
+<style>
+.tox-tinymce-aux{
+	z-index:50000 !important;  
+}
+</style>
 <script>
 	var PAGE = {
 		_counterRowIndexes:				0,
@@ -201,13 +206,16 @@
 				DefaultSetBit = 1;
 			}
 			
+			var BlockNameFiltered = $.trim(frm.dynamiccontenttags_block_name.value).replace(/\"/g, '`').replace(/\'/g, '`');
+			var blockContentFiltered = blockContent.replace(/\"/g, '`').replace(/\'/g, '`');
+			
 			var data = {
 				BlockID: frm.id_blockid.value,
 				BlockDefaultSet: DefaultSetBit,
 				BlockSortOrder: maxSortOrder,
-				BlockName: $.trim(frm.dynamiccontenttags_block_name.value).replace(/\"/g, '&quot;'),
+				BlockName: BlockNameFiltered,
 				Rules: this.ruleGetAll(),
-				Content: blockContent.replace(/'/g, "&#39;")
+				Content: blockContentFiltered
 			};
 
 			if(data.BlockName == '') {
