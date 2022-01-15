@@ -210,8 +210,8 @@ class IEM_Installer
 		$query  = 'UPDATE [|PREFIX|]users SET ';
 		$query .= " usertimezone='" . $this->_db->Quote($settings['SERVERTIMEZONE'])           . "', ";
 		$query .= " emailaddress='" . $this->_db->Quote($settings['EMAIL_ADDRESS'])            . "', ";
-		$query .= " textfooter='"   . $this->_db->Quote($default_global_html_footer) . "', ";
-		$query .= " htmlfooter='"   . $this->_db->Quote(GetLang('Default_Global_HTML_Footer')) . "', ";
+		$query .= " textfooter='"   . $this->_db->Quote(GetLang('Default_Global_Text_Footer')) . "', ";
+		$query .= " htmlfooter='"   . $this->_db->Quote($default_global_html_footer) . "', ";
 		$query .= " unique_token='" . $this->_db->Quote($usernameToken)                        . "', ";
 		$query .= " username='"     . $this->_db->Quote($username)                             . "', ";
 		$query .= " password='"     . $this->_db->Quote($password)                             . "'  ";
