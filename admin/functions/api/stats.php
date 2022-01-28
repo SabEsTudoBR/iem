@@ -1007,7 +1007,7 @@ class Stats_API extends API
 			$query .= " AND ml.linkid='" . $linkid . "'";
 		}
 		
-		$query .= " group by l.emailaddress, clicktime";
+		$query .= " group by l.emailaddress, clicktime, clickip, url";
 		
 		$query .= " ORDER BY $order_by $order_dir ";
 
@@ -1359,7 +1359,7 @@ class Stats_API extends API
 				return $this->Db->FetchOne($result, 'count');
 			}
 
-			$query = "SELECT l.emailaddress, opentime, openip, opentype FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE l.subscriberid=o.subscriberid AND o.statid IN(" . implode(',', $statids) . ") ". $calendar_restrictions . "  group by l.emailaddress, opentime ORDER BY $order_by $order_dir ";
+			$query = "SELECT l.emailaddress, opentime, openip, opentype FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE l.subscriberid=o.subscriberid AND o.statid IN(" . implode(',', $statids) . ") ". $calendar_restrictions . "  group by l.emailaddress, opentime, openip, opentype  ORDER BY $order_by $order_dir ";
 		} else {
 			if ($count_only) {
 				/**
@@ -1371,7 +1371,7 @@ class Stats_API extends API
 				return $this->Db->FetchOne($result, 'count');
 			}
 
-				$query = "SELECT l.emailaddress, opentime, openip, opentype FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE l.subscriberid=o.subscriberid AND o.statid IN(" . implode(',', $statids) . ") " . $calendar_restrictions . " GROUP BY l.emailaddress ORDER BY $order_by $order_dir ";
+				$query = "SELECT l.emailaddress, opentime, openip, opentype FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers l, " . SENDSTUDIO_TABLEPREFIX . "stats_emailopens o WHERE l.subscriberid=o.subscriberid AND o.statid IN(" . implode(',', $statids) . ") " . $calendar_restrictions . " GROUP BY l.emailaddress, opentime, openip, opentype ORDER BY $order_by $order_dir ";
 		}
 		if ($perpage != 'all' && ($start || $perpage)) {
 			$query .= $this->Db->AddLimit($start, $perpage);
