@@ -114,7 +114,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Duplicates_Intro');
 						$email_list = '';
 						foreach ($importresults['duplicateemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
@@ -124,7 +124,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Unsubscribed_Intro');
 						$email_list = '';
 						foreach ($importresults['unsubscribedemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
@@ -134,7 +134,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Banned_Intro');
 						$email_list = '';
 						foreach ($importresults['bannedemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
@@ -144,7 +144,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Failures_Intro');
 						$email_list = '';
 						foreach ($importresults['failedemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
