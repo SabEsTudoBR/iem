@@ -944,7 +944,8 @@ class Subscribers_Import extends Subscribers
 		foreach ($linkfields as $pos => $type) {
 			switch ($type) {
 				case 'E':
-					$email = $subscriberinfo[$pos];
+					$email =  htmlspecialchars(utf8_encode($subscriberinfo[$pos]), ENT_SUBSTITUTE , SENDSTUDIO_CHARSET, false);
+					$email =  trim($email, "\xC2\xA0"); // Removing NBSP (Non-breaking Space)
 				break;
 				case 'C':
 					$subscriberconfirmed = strtolower($subscriberinfo[$pos]);
