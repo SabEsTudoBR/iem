@@ -14,7 +14,7 @@
 * DO NOT CHANGE BELOW THIS LINE.
 */
 
-$queries = array();
+$queries = [];
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%usergroups (
     groupid                 INT             NOT NULL AUTO_INCREMENT,
@@ -35,14 +35,14 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%usergroups (
     templateadmin           CHAR(1)         DEFAULT '0',
 
     PRIMARY KEY (groupid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%usergroups_permissions (
     groupid         INT             NOT NULL,
     area            VARCHAR(255)    NOT NULL,
     subarea         VARCHAR(255)    DEFAULT NULL,
     FOREIGN KEY (groupid) REFERENCES %%TABLEPREFIX%%usergroups(groupid) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%usergroups_access (
     groupid         INT             NOT NULL,
@@ -50,7 +50,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%usergroups_access (
     resourceid      INT             NOT NULL,
 
     FOREIGN KEY (groupid) REFERENCES %%TABLEPREFIX%%usergroups(groupid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%users (
   userid						INT				AUTO_INCREMENT NOT NULL,
@@ -100,7 +100,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%users (
 
   PRIMARY KEY (userid),
   FOREIGN KEY (groupid) REFERENCES %%TABLEPREFIX%%usergroups(groupid) ON DELETE RESTRICT
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%autoresponders (
   autoresponderid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -129,20 +129,20 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%autoresponders (
   to_firstname int default 0 references %%TABLEPREFIX%%customfields(fieldid),
   to_lastname int default 0 references %%TABLEPREFIX%%customfields(fieldid),
   autorespondersize int default 0
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%banned_emails (
   banid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   emailaddress varchar(255) default NULL,
   list varchar(10) default NULL,
   bandate int(11) default NULL
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%customfield_lists (
   cflid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   fieldid int(11) NOT NULL default '0' references %%TABLEPREFIX%%customfields(fieldid),
   listid int(11) NOT NULL default '0' references %%TABLEPREFIX%%lists(listid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%customfields (
@@ -155,19 +155,19 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%customfields (
   createdate int(11) default 0,
   ownerid int(11) default 0 references %%TABLEPREFIX%%users(userid),
   isglobal char(1) default '0'
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%form_customfields (
   formid int(11) default 0 references %%TABLEPREFIX%%forms(formid),
   fieldid varchar(10) default 0 references %%TABLEPREFIX%%customfields(fieldid),
   fieldorder int default 0
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%form_lists (
   formid int(11) default 0 references %%TABLEPREFIX%%forms(formid),
   listid int(11) default 0 references %%TABLEPREFIX%%lists(listid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%form_pages (
   pageid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -182,7 +182,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%form_pages (
   emailsubject varchar(255) default NULL,
   emailhtml longtext,
   emailtext longtext
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%forms (
   formid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -198,7 +198,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%forms (
   createdate int(11) default 0,
   contactform varchar(1) default 0,
   usecaptcha varchar(1) default 0
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%jobs (
   jobid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -214,12 +214,12 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%jobs (
   approved int default 0 references %%TABLEPREFIX%%users(userid),
   authorisedtosend int default 0 references %%TABLEPREFIX%%users(userid),
   resendcount int default 0
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%jobs_lists (
   jobid int(11) default 0 references %%TABLEPREFIX%%jobs(jobid),
   listid int(11) default 0 references %%TABLEPREFIX%%lists(listid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscribers (
   subscriberid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -238,7 +238,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscribers (
   unsubscribed int(11) default '0',
   unsubscribeconfirmed char(1) default 0,
   formid int(11) default '0'
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscribers_unsubscribe (
   subscriberid int(11) NOT NULL default '0' references %%TABLEPREFIX%%list_subscribers(subscriberid),
@@ -249,7 +249,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscribers_unsubscribe (
   listid int(11) NOT NULL default '0' references %%TABLEPREFIX%%lists(listid),
   statid int(11) default '0',
   unsubscribearea varchar(20) default NULL
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%lists (
   listid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -277,7 +277,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%lists (
   agreedeleteall char(1) default '0',
   visiblefields text not null,
   ownerid int(11) default 0 references %%TABLEPREFIX%%users(userid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%newsletters (
   newsletterid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -290,7 +290,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%newsletters (
   active int default 0 references %%TABLEPREFIX%%users(userid),
   archive int default 0 references %%TABLEPREFIX%%users(userid),
   ownerid int(11) NOT NULL default '0' references %%TABLEPREFIX%%users(userid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%queues (
   queueid int(11) default '0',
@@ -300,11 +300,11 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%queues (
   processed char(1) default '0',
   sent char(1) default '0',
   processtime datetime
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%queues_sequence (
   id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 $queries[] = "INSERT INTO %%TABLEPREFIX%%queues_sequence(id) VALUES (0)";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%settings (
@@ -312,15 +312,15 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%settings (
   cronrun1 int(11) default '0',
   cronrun2 int(11) default '0',
   database_version int default '0'
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 $queries[] = "INSERT INTO %%TABLEPREFIX%%settings(cronok, cronrun1, cronrun2, database_version) VALUES (0, 0, 0, " . SENDSTUDIO_DATABASE_VERSION . ")";
 
-$queries[] = "CREATE TABLE %%TABLEPREFIX%%config_settings(area varchar(255), areavalue text) character set utf8 engine=innodb";
+$queries[] = "CREATE TABLE %%TABLEPREFIX%%config_settings(area varchar(255), areavalue text) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%settings_cron_schedule (
   jobtype VARCHAR(20),
   lastrun INT default '0'
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 $queries[] = "INSERT INTO %%TABLEPREFIX%%settings_cron_schedule (jobtype, lastrun) VALUES ('send', '-1')";
 $queries[] = "INSERT INTO %%TABLEPREFIX%%settings_cron_schedule (jobtype, lastrun) VALUES ('bounce', '-1')";
 $queries[] = "INSERT INTO %%TABLEPREFIX%%settings_cron_schedule (jobtype, lastrun) VALUES ('autoresponder', '-1')";
@@ -334,7 +334,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscriber_bounces (
   bouncetype varchar(255) default NULL,
   bouncerule varchar(255) default NULL,
   bouncemessage longtext
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_autoresponders (
   statid int(11) NOT NULL default '0',
@@ -356,7 +356,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_autoresponders (
   textopens_unique int default 0,
   hiddenby int default 0 references %%TABLEPREFIX%%users(userid),
   PRIMARY KEY(statid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_emailopens (
   openid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -366,7 +366,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_emailopens (
   openip varchar(20) default NULL,
   fromlink CHAR(1) DEFAULT 0,
   opentype char(1) DEFAULT 'u'
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_linkclicks (
   clickid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -375,22 +375,22 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_linkclicks (
   subscriberid int(11) default 0 references %%TABLEPREFIX%%list_subscribers(subscriberid),
   statid int(11) default 0,
   linkid int(11) default 0 references %%TABLEPREFIX%%links(linkid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_links (
   statid int(11) default 0,
   linkid int(11) default 0 references %%TABLEPREFIX%%links(linkid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%links (
   linkid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   url varchar(255) default NULL
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_newsletter_lists (
   statid int(11) default NULL,
   listid int(11) default 0 references %%TABLEPREFIX%%lists(listid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_newsletters (
   statid int(11) NOT NULL default '0',
@@ -429,12 +429,12 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_newsletters (
   sendtestmode int default 0,
   sendtype varchar(100) default 'newsletter',
   PRIMARY KEY (statid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_sequence (
   id int(11) NOT NULL auto_increment,
   PRIMARY KEY (id)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 $queries[] = "INSERT INTO %%TABLEPREFIX%%stats_sequence(id) VALUES (0)";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_users (
@@ -443,13 +443,13 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_users (
   jobid int(11) default 0 references %%TABLEPREFIX%%jobs(jobid),
   queuesize int(11) default 0,
   queuetime int(11) default 0
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%subscribers_data (
   subscriberid int(11) NOT NULL default '0' references %%TABLEPREFIX%%list_subscribers(subscriberid),
   fieldid int(11) NOT NULL default '0' references %%TABLEPREFIX%%customfields(fieldid),
   data text
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%templates (
   templateid int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -461,7 +461,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%templates (
   active int default 0 references %%TABLEPREFIX%%users(userid),
   isglobal int default 0 references %%TABLEPREFIX%%users(userid),
   ownerid int(11) NOT NULL default '0' references %%TABLEPREFIX%%users(userid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "
 	INSERT INTO %%TABLEPREFIX%%usergroups(
@@ -495,7 +495,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_emailforwards (
   subscribed INT default 0,
   listid INT references %%TABLEPREFIX%%lists(listid),
   emailaddress VARCHAR(255)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%user_stats_emailsperhour (
 	summaryid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -503,20 +503,20 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%user_stats_emailsperhour (
 	sendtime INT DEFAULT '0',
 	emailssent INT DEFAULT '0',
 	userid INT DEFAULT '0' references %%TABLEPREFIX%%users(userid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%queues_unsent (
 	recipient int default 0 references %%TABLEPREFIX%%list_subscribers(subscriberid) ON DELETE CASCADE,
 	queueid int default 0,
 	reasoncode int default 0,
 	reason text
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "	CREATE TABLE %%TABLEPREFIX%%modules (
 				  modulename VARCHAR(50) NOT NULL,
 				  moduleversion INT DEFAULT 0,
 				  PRIMARY KEY(modulename)
-				) Engine=innoDB CharSet=UTF8";
+				) Engine=innoDB CharSet=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%log_system_administrator (
   logid int not null primary key auto_increment,
@@ -525,7 +525,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%log_system_administrator (
   logdate int NOT NULL default '0',
   logtodo varchar(100) NOT NULL default '',
   logdata text NOT NULL
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%log_system_system (
   logid int not null primary key auto_increment,
@@ -535,7 +535,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%log_system_system (
   logsummary varchar(250) NOT NULL,
   logmsg text NOT NULL,
   logdate int NOT NULL default '0'
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_autoresponders_recipients (
   statid INT DEFAULT 0,
@@ -544,7 +544,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%stats_autoresponders_recipients (
   recipient INT DEFAULT 0,
   reason VARCHAR(20),
   sendtime INT
-  ) character set utf8 engine=innodb";
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%segments (
   segmentid INT AUTO_INCREMENT NOT NULL,
@@ -553,7 +553,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%segments (
   ownerid INT(11) NOT NULL,
   searchinfo TEXT NOT NULL,
   PRIMARY KEY (segmentid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscriber_events (
 	eventid int(11) NOT NULL auto_increment,
@@ -566,16 +566,16 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscriber_events (
 	eventownerid int(11) NOT NULL,
 	eventnotes text NOT NULL,
 	PRIMARY KEY  (eventid)
-) character set utf8 engine=innodb;";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;";
 
 $queries[] = "create table %%TABLEPREFIX%%addons (
-	addon_id varchar(200) not null primary key,
+	addon_id varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL primary key,
 	installed int default 0,
 	configured int default 0,
 	enabled int default 0,
-	addon_version VARCHAR(10) default '0',
+	addon_version VARCHAR(10) varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL default '0',
 	settings text
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%folders (
 	folderid INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -583,13 +583,13 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%folders (
 	type CHAR(1),
 	createdate INT(11) DEFAULT 0,
 	ownerid INT(11)
-) CHARACTER SET UTF8 ENGINE=INNODB";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%folder_item (
 	folderid INT(11) NOT NULL REFERENCES %%TABLEPREFIX%%folders(folderid) ON DELETE CASCADE,
 	itemid INT(11) NOT NULL,
 	PRIMARY KEY (folderid, itemid)
-) CHARACTER SET UTF8 ENGINE=INNODB";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%folder_user (
 	folderid INT(11) NOT NULL REFERENCES %%TABLEPREFIX%%folders(folderid) ON DELETE CASCADE,
@@ -597,7 +597,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%folder_user (
 	expanded CHAR(1) NOT NULL DEFAULT '1',
 	ordering INT(11),
 	PRIMARY KEY  (folderid, userid)
-) CHARACTER SET UTF8 ENGINE=INNODB";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails (
 	triggeremailsid         INT             AUTO_INCREMENT NOT NULL,
@@ -616,7 +616,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails (
 	PRIMARY KEY (triggeremailsid),
 	UNIQUE (queueid),
 	UNIQUE (statid)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_data (
 	triggeremailsid         INT             NOT NULL,
@@ -625,7 +625,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_data (
 	datavalueinteger        INT             DEFAULT NULL,
 
 	FOREIGN KEY (triggeremailsid) REFERENCES %%TABLEPREFIX%%triggeremails (triggeremailsid) ON DELETE CASCADE
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_actions (
 	triggeremailsactionid	INT             AUTO_INCREMENT NOT NULL,
@@ -636,7 +636,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_actions (
 	FOREIGN KEY (triggeremailsid) REFERENCES %%TABLEPREFIX%%triggeremails (triggeremailsid) ON DELETE CASCADE,
 
 	UNIQUE (triggeremailsid, action)
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_actions_data (
 	triggeremailsactionid   INT             NOT NULL,
@@ -647,7 +647,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_actions_data (
 
 	FOREIGN KEY (triggeremailsactionid) REFERENCES %%TABLEPREFIX%%triggeremails_actions (triggeremailsactionid) ON DELETE CASCADE,
 	FOREIGN KEY (triggeremailsid) REFERENCES %%TABLEPREFIX%%triggeremails (triggeremailsid) ON DELETE CASCADE
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_log (
 	triggeremailsid         INT             NOT NULL,
@@ -657,7 +657,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_log (
 	note                    VARCHAR(255)    DEFAULT NULL,
 
 	FOREIGN KEY (triggeremailsid) REFERENCES %%TABLEPREFIX%%triggeremails (triggeremailsid) ON DELETE CASCADE
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_log_summary (
 	triggeremailsid         INT             NOT NULL,
@@ -667,7 +667,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%triggeremails_log_summary (
 
 	PRIMARY KEY (triggeremailsid, subscriberid),
 	FOREIGN KEY (triggeremailsid) REFERENCES %%TABLEPREFIX%%triggeremails (triggeremailsid) ON DELETE CASCADE
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%user_activitylog (
 	lastviewid              INT             AUTO_INCREMENT NOT NULL,
@@ -679,7 +679,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%user_activitylog (
 
 	PRIMARY KEY (lastviewid),
 	FOREIGN KEY (userid) REFERENCES %%TABLEPREFIX%%users (userid) ON DELETE CASCADE
-) character set utf8 engine=innodb";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 $queries[] = "
 	CREATE TABLE %%TABLEPREFIX%%user_credit (
@@ -693,7 +693,7 @@ $queries[] = "
 	    expiry                  INT             DEFAULT NULL,
 	    PRIMARY KEY (usercreditid),
 	    FOREIGN KEY (userid) REFERENCES %%TABLEPREFIX%%users (userid) ON DELETE CASCADE
-	) CHARACTER SET UTF8 ENGINE=INNODB
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
 
 $queries[] = "
@@ -705,7 +705,7 @@ $queries[] = "
 	    PRIMARY KEY (usagesummaryid),
 	    FOREIGN KEY (userid) REFERENCES %%TABLEPREFIX%%users (userid) ON DELETE CASCADE,
 	    UNIQUE KEY (userid, startperiod)
-	) CHARACTER SET UTF8 ENGINE=INNODB
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
 
 $queries[] = "
@@ -717,14 +717,14 @@ $queries[] = "
 	    emailsubject			VARCHAR(255)	NOT NULL,
 	    emailcontents			MEDIUMTEXT		NOT NULL,
 	    PRIMARY KEY (creditwarningid)
-	) CHARACTER SET UTF8 ENGINE=INNODB
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
 
 $queries[] = "
 	CREATE TABLE %%TABLEPREFIX%%login_attempt (
 		timestamp INTEGER NOT NULL,
 		ipaddress VARCHAR(15) NOT NULL
-	) CHARACTER SET UTF8 ENGINE=INNODB
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
 
 $queries[] = "
@@ -732,7 +732,7 @@ $queries[] = "
 			ipaddress VARCHAR(15) NOT NULL,
 			bantime INTEGER NOT NULL,
 			PRIMARY KEY(ipaddress)
-	) CHARACTER SET UTF8 ENGINE=INNODB
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
 
 $queries[] = "
@@ -740,7 +740,7 @@ $queries[] = "
 			name VARCHAR(100) NOT NULL,
 			value TEXT,
 			PRIMARY KEY (name)
-	) CHARACTER SET UTF8 ENGINE=INNODB
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
 
 require(dirname(__FILE__) . '/schema.indexes.php');
