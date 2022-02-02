@@ -2153,6 +2153,7 @@ class SendStudio_Functions
 		$editor['Width']          = $width;
 		$editor['ImageDirType']   = $type;
 		$editor['ImageDirTypeId'] = $id;
+		$editor['LoggedInUserId'] = $user->userid;
 		$editor['Height']         = $height;
 		$editor['FullUrl']        = SENDSTUDIO_APPLICATION_URL . '/admin/includes/js/tiny_mce/';
 		$editor['ElementId']      = $elementId;

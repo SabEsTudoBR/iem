@@ -119,11 +119,11 @@ class Schedule extends SendStudio_Functions
 				}
 
 				$method = ucwords($action) . 'Job';
-				call_user_func(array($this, $method), $jobid);
+				call_user_func([$this, $method], $jobid);
 			break;
 
 			case 'delete':
-				$jobids = array();
+				$jobids = [];
 
 				if (isset($_POST['jobs'])) {
 					$jobids = $_POST['jobs'];
@@ -286,7 +286,7 @@ class Schedule extends SendStudio_Functions
 			 *
 			 * This allows addons to have their own "status" and still show a countdown for when it will send.
 			 */
-			if (!in_array($details['jobstatus'], array ('p', 'c', 'i'))) {
+			if (!in_array($details['jobstatus'], ['p', 'c', 'i'])) {
 				if ($details['jobstatus'] == 'w' && ($user->Admin() && $details['approved'] <= 0)) {
 					$GLOBALS['TipName'] = $this->GetRandomId();
 					$GLOBALS['ScheduleTip'] = GetLang('WaitingForApproval_Description');
@@ -451,7 +451,7 @@ class Schedule extends SendStudio_Functions
 
 		$GLOBALS['JobID'] = $jobid;
 
-		$listdetails = array();
+		$listdetails = [];
 		foreach ($job['jobdetails']['Lists'] as $l => $listid) {
 			$listdetails[] = htmlspecialchars($user_lists[$listid]['name'], ENT_QUOTES, SENDSTUDIO_CHARSET);
 		}
@@ -714,7 +714,7 @@ class Schedule extends SendStudio_Functions
 	 *
 	 * @uses EventData_IEM_SCHEDULE_DELETEJOBS
 	 */
-	function DeleteJobs($jobids=array())
+	function DeleteJobs($jobids=[])
 	{
 		$jobapi = $this->GetApi('Jobs');
 
@@ -932,7 +932,7 @@ class Schedule extends SendStudio_Functions
 			$hr = $hr % 24;
 		}
 
-		$scheduletime = AdjustTime(array($hr, $minute, 0, (int)$_POST['datetime']['month'], (int)$_POST['datetime']['day'], (int)$_POST['datetime']['year']), true);
+		$scheduletime = AdjustTime([$hr, $minute, 0, (int)$_POST['datetime']['month'], (int)$_POST['datetime']['day'], (int)$_POST['datetime']['year']], true);
 
 		// see if they haev changed the send time. If they have, then we need to check stats again to make sure it's ok to do that.
 		if ($jobinfo['jobtime'] != $scheduletime) {
@@ -954,9 +954,9 @@ class Schedule extends SendStudio_Functions
 				return;
 			}
 
-			$schedulemonth = AdjustTime(array(0, 0, 1, date('m', $scheduletime), 1, date('Y', $scheduletime)), true);
+			$schedulemonth = AdjustTime([0, 0, 1, date('m', $scheduletime), 1, date('Y', $scheduletime)], true);
 
-			$original_schedulemonth = AdjustTime(array(0, 0, 1, date('m', $jobinfo['jobtime']), 1, date('Y', $jobinfo['jobtime'])), true);
+			$original_schedulemonth = AdjustTime([0, 0, 1, date('m', $jobinfo['jobtime']), 1, date('Y', $jobinfo['jobtime'])], true);
 
 			if ($schedulemonth != $original_schedulemonth) {
 
@@ -1013,7 +1013,7 @@ class Schedule extends SendStudio_Functions
 		}
 
 		if (!is_array($jobids)) {
-			$jobids = array($jobids);
+			$jobids = [$jobids];
 		}
 
 		$jobids = array_map('intval', $jobids);

@@ -1,5 +1,31 @@
 # Interspire Email Marketer Changelog
 
+Version: 6.4.2
+Released: 23rd Nov, 2021
+- Fixed TinyMCE Image Manager directory issue
+- Added Session timeout default value
+- Removed deprecated php methods causing notices/errors
+
+Files Changed:
+-------------
+	admin/com/lib/IEM/Installer.class.php
+	admin/com/lib/Maintenance.class.php
+	admin/com/templates/editor.tpl
+	admin/functions/login.php
+	admin/functions/schedule.php
+	admin/functions/sendstudio_functions.php
+	admin/functions/settings.php
+	admin/includes/js/tiny_mce/plugins/responsive_filemanager/filemanager/UploadHandler.php
+	admin/includes/js/tiny_mce/plugins/responsive_filemanager/filemanager/ajax_calls.php
+	admin/includes/js/tiny_mce/plugins/responsive_filemanager/filemanager/config/config.php
+	admin/includes/js/tiny_mce/plugins/responsive_filemanager/filemanager/dialog.php
+	admin/includes/js/tiny_mce/plugins/responsive_filemanager/filemanager/execute.php
+	admin/includes/js/tiny_mce/plugins/responsive_filemanager/filemanager/lang/en_EN.php
+	admin/includes/js/tiny_mce/plugins/responsive_filemanager/filemanager/plugin.min.js
+	changelog.txt
+	version.txt
+	
+	
 Version: 6.4.1
 Released: 22nd Oct, 2021
 - Added two factor authentication feature

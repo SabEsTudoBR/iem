@@ -116,7 +116,7 @@ $parent = $rfm_subfolder . $subdir;
 if ($ftp) {
     $cur_dir = $config['ftp_base_folder'] . $cur_dir;
     $cur_dir_thumb = $config['ftp_base_folder'] . $cur_dir_thumb;
-    $thumbs_path = str_replace(array('/..', '..'), '', $cur_dir_thumb);
+    $thumbs_path = str_replace(['/..', '..'], '', $cur_dir_thumb);
     $parent = $config['ftp_base_folder'] . $parent;
 }
 
@@ -225,7 +225,7 @@ if (isset($_GET["descending"])) {
     $descending = $_SESSION['RF']['descending'];
 }
 
-$boolarray = array(false => 'false', true => 'true');
+$boolarray = [false => 'false', true => 'true'];
 
 $return_relative_url = isset($_GET['relative_url']) && $_GET['relative_url'] == "1" ? true : false;
 
@@ -236,7 +236,7 @@ if (!isset($_GET['type'])) {
 $extensions = null;
 if (isset($_GET['extensions'])) {
     $extensions = json_decode(urldecode($_GET['extensions']));
-    $ext_tmp = array();
+    $ext_tmp = [];
     foreach ($extensions as $extension) {
         $extension = fix_strtolower($extension);
         if (check_file_extension($extension, $config)) {
@@ -280,8 +280,12 @@ if (!$apply) {
     $apply = $apply_type;
 }
 
-$get_params = array(
+$get_params = [
     'editor' => $editor,
+	'imagegallery' => $_REQUEST['imagegallery'],
+	'uid' => $_REQUEST['uid'],
+	'dtype' => $_REQUEST['dtype'],
+	'did' => $_REQUEST['did'],
     'type' => $type_param,
     'lang' => $lang,
     'popup' => $popup,
@@ -291,7 +295,7 @@ $get_params = array(
     'multiple' => $multiple,
     'relative_url' => $return_relative_url,
     'akey' => (isset($_GET['akey']) && $_GET['akey'] != '' ? $_GET['akey'] : 'key')
-);
+];
 if (isset($_GET['CKEditorFuncNum'])) {
     $get_params['CKEditorFuncNum'] = $_GET['CKEditorFuncNum'];
     $get_params['CKEditor'] = (isset($_GET['CKEditor']) ? $_GET['CKEditor'] : '');
@@ -394,6 +398,10 @@ $get_params = http_build_query($get_params);
 <script src="js/jquery.fileupload-ui.js"></script>
 
     <input type="hidden" id="ftp" value="<?php echo !!$ftp; ?>" />
+	<input type="hidden" id="imagegallery" value="<?php echo $_REQUEST['imagegallery']; ?>" />
+	<input type="hidden" id="uid" value="<?php echo $_REQUEST['uid']; ?>" />
+	<input type="hidden" id="dtype" value="<?php echo $_REQUEST['dtype']; ?>" />
+	<input type="hidden" id="did" value="<?php echo $_REQUEST['did']; ?>" />
     <input type="hidden" id="popup" value="<?php echo $popup;?>" />
     <input type="hidden" id="callback" value="<?php echo $callback; ?>" />
     <input type="hidden" id="crossdomain" value="<?php echo $crossdomain;?>" />
@@ -422,7 +430,7 @@ $get_params = http_build_query($get_params);
     <input type="hidden" id="file_number_limit_js" value="<?php echo $config['file_number_limit_js'];?>" />
     <input type="hidden" id="sort_by" value="<?php echo $sort_by;?>" />
     <input type="hidden" id="descending" value="<?php echo $descending?1:0;?>" />
-    <input type="hidden" id="current_url" value="<?php echo str_replace(array('&filter='.$filter,'&sort_by='.$sort_by,'&descending='.intval($descending)),array(''),$config['base_url'].htmlspecialchars($_SERVER['REQUEST_URI']));?>" />
+    <input type="hidden" id="current_url" value="<?php echo str_replace(['&filter='.$filter,'&sort_by='.$sort_by,'&descending='.intval($descending)],[''],$config['base_url'].htmlspecialchars($_SERVER['REQUEST_URI']));?>" />
     <input type="hidden" id="lang_show_url" value="<?php echo trans('Show_url');?>" />
     <input type="hidden" id="copy_cut_files_allowed" value="<?php if($config['copy_cut_files']) echo 1; else echo 0;?>" />
     <input type="hidden" id="copy_cut_dirs_allowed" value="<?php if($config['copy_cut_dirs']) echo 1; else echo 0;?>" />
@@ -638,9 +646,9 @@ $get_params = http_build_query($get_params);
     $n_files = count($files);
 
     //php sorting
-    $sorted = array();
-    //$current_folder=array();
-    //$prev_folder=array();
+    $sorted = [];
+    //$current_folder=[];
+    //$prev_folder=[];
     $current_files_number = 0;
     $current_folders_number = 0;
 
@@ -657,7 +665,7 @@ $get_params = http_build_query($get_params);
                 $file_ext = trans('Type_dir');
                 $is_dir = true;
             }
-            $sorted[$k] = array(
+            $sorted[$k] = [
                 'is_dir' => $is_dir,
                 'file' => $file['name'],
                 'file_lcase' => strtolower($file['name']),
@@ -665,7 +673,7 @@ $get_params = http_build_query($get_params);
                 'size' => $size,
                 'permissions' => $file['permissions'],
                 'extension' => fix_strtolower($file_ext)
-            );
+            ];
         } else {
             if ($file != "." && $file != "..") {
                 if (is_dir($config['current_path'] . $rfm_subfolder . $subdir . $file)) {
@@ -694,7 +702,7 @@ $get_params = http_build_query($get_params);
                         $size = 0;
                     }
                     $file_ext = trans('Type_dir');
-                    $sorted[$k] = array(
+                    $sorted[$k] = [
                         'is_dir' => true,
                         'file' => $file,
                         'file_lcase' => strtolower($file),
@@ -702,7 +710,7 @@ $get_params = http_build_query($get_params);
                         'size' => $size,
                         'permissions' => '',
                         'extension' => fix_strtolower($file_ext)
-                    );
+                    ];
 
                     if ($config['show_folder_size']) {
                         $sorted[$k]['nfiles'] = $nfiles;
@@ -714,7 +722,7 @@ $get_params = http_build_query($get_params);
                     $date = filemtime($file_path);
                     $size = filesize($file_path);
                     $file_ext = substr(strrchr($file, '.'), 1);
-                    $sorted[$k] = array(
+                    $sorted[$k] = [
                         'is_dir' => false,
                         'file' => $file,
                         'file_lcase' => strtolower($file),
@@ -722,7 +730,7 @@ $get_params = http_build_query($get_params);
                         'size' => $size,
                         'permissions' => '',
                         'extension' => strtolower($file_ext)
-                    );
+                    ];
                 }
             }
         }
@@ -801,7 +809,7 @@ $get_params = http_build_query($get_params);
     }
 
     if ($subdir != "") {
-        $sorted = array_merge(array(array('file' => '..')), $sorted);
+        $sorted = array_merge([['file' => '..']], $sorted);
     }
 
     $files = $sorted;
@@ -821,12 +829,27 @@ $get_params = http_build_query($get_params);
                     <div class="filters">
                         <div class="row-fluid">
                             <div class="span4 half">
-                                <?php
+								<?php
+								if (empty($_REQUEST['imagegallery']) || $_REQUEST['imagegallery'] == 'no') {
+									$get_button_params = str_replace('imagegallery=no','imagegallery=yes', $get_params);
+								?>
+									<button class="tip btn upload-btn" title="<?php echo trans('Image_Gallery'); ?>" onclick='window.location="dialog.php?<?php
+									echo $get_button_params . $subdir . "&" . uniqid() ?>"; this.value="Newsletter"'><i class=""></i><?php echo trans('Image_Gallery'); ?></button>
+							  <?php
                                 if ($config['upload_files']) { ?>
                                     <button class="tip btn upload-btn" title="<?php
-                                    echo trans('Upload_file'); ?>"><i class="icon-upload icon-black"></i> <?php echo trans('Upload_file'); ?></button>
+                                    echo trans('Upload_file'); ?>"><i class="icon-upload icon-black"></i> <?php echo rtrim(ucfirst($_REQUEST['dtype']), 's')." > ".trans('Upload_file'); ?></button>
                                 <?php
                                 } ?>
+							<?php } else { 
+						
+									$get_button_params = str_replace('imagegallery=yes','imagegallery=no', $get_params);
+									$dirType = sprintf(trans('Show_Gallery'), rtrim(ucfirst($_REQUEST['dtype']), 's'));
+							?>
+									<button class="tip btn upload-btn" title="<?php echo $dirType;?>" onclick='window.location="dialog.php?<?php
+									echo $get_button_params . $subdir . "&" . uniqid() ?>"; this.value="Newsletter"'><i class=""></i>
+									<?php echo $dirType; ?></button>
+								<?php }  ?>
                                 <?php
                                 if ($config['create_text_files']) { ?>
                                     <button class="tip btn create-file-btn" title="<?php
@@ -1238,7 +1261,7 @@ $get_params = http_build_query($get_params);
                 }
 
 
-                $files_prevent_duplicate = array();
+                $files_prevent_duplicate = [];
                 foreach ($files
 
                 as $nu => $file_array) {

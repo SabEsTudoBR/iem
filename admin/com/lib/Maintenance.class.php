@@ -92,7 +92,7 @@ class Maintenance
 		$cutoff_time = time() - self::IMPORT_EXPIRY_TIME;
 
 		while (false !== ($file = @readdir($handle))) {
-			if ($file{0} == '.') {
+			if ($file[0] == '.') {
 				continue;
 			}
 
@@ -159,9 +159,9 @@ class Maintenance
 	 */
 	public function pruneExportQueries()
 	{
-		$stalljobs = array();
-		$stalljobsId = array();
-		$stallqueuesId = array();
+		$stalljobs = [];
+		$stalljobsId = [];
+		$stallqueuesId = [];
 
 		$cutoff_time = time() - self::EXPORT_STALL_TIME;
 

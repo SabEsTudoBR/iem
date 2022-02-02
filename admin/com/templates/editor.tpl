@@ -34,6 +34,7 @@ tinymce.init({
 		  force_br_newlines : true,
 		  imgPathType : '{$editor.ImageDirType}',
 		  imgPathTypeId : '{$editor.ImageDirTypeId}',
+		  loggedInUserID : '{$editor.LoggedInUserId}',
 		  relative_urls: false,
 	      document_base_url : "{$editor.AppUrl}",
 		  plugins: [

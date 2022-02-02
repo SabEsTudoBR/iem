@@ -60,26 +60,46 @@ $config_file = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)
 if (is_file($config_file)) { 
 	require_once($config_file);
 }
-$ieminfo  = @$_REQUEST['userID'];
-$userArr  = @explode('_',$ieminfo);
-if( isset($userArr[0]) && $userArr[0] !== '')
-$_SESSION['tinyUser'] = @$userArr[0];  
-$userid       = @$_SESSION['tinyUser'];
+
+//print_r($_REQUEST);
+
+$ieminfo  = @$_REQUEST['did'];
+$dirArr  = @explode('_',$ieminfo);
+if( isset($dirArr[0]) && $dirArr[0] !== '')
+$_SESSION['dirID'] = @$dirArr[0];  
+$dir_id       = @$_SESSION['dirID'];
+
+$iemtype  = @$_REQUEST['dtype'];
+$iemArr  = @explode('_',$iemtype);
+if( isset($iemArr[0]) && $iemArr[0] !== '')
+$_SESSION['tinyDir'] = @$iemArr[0];  
+$dir_type     = @$_SESSION['tinyDir'];
+
+if (isset($_REQUEST['imagegallery']) and $_REQUEST['imagegallery'] == 'yes') { 
+	$iemuser  = @$_REQUEST['uid'];
+	$userArr  = @explode('_',$iemuser);
+	if( isset($userArr[0]) && $userArr[0] !== '')
+	$_SESSION['tinyUser'] = @$userArr[0];  
+	
+	$dir_id = @$_SESSION['tinyUser'];
+	$dir_type = 'user';	
+}
+
 $base_url     = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http"). "://". @$_SERVER['HTTP_HOST'];
 $upload_dir   = '/source/';
 $current_path = '/source/';
 $newsletterID = 0;
-if( (int)$userid > 0 && (int)$newsletterID == 0 ) {
+if( (int)$dir_id > 0 && (int)$newsletterID == 0 ) {
         $base_path = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))))).'/temp';
 	if(!is_dir($base_path))
 		mkdir($base_path);
-	if(!is_dir($base_path.'/user'))
-		mkdir($base_path.'/user');
+	if(!is_dir($base_path.'/'.$dir_type))
+		mkdir($base_path.'/'.$dir_type);
 	
-	$root         = $base_path.'/user';
-	$base_url     = SENDSTUDIO_APPLICATION_URL.'/admin/temp/user'; // url base of site if you want only relative url leave empty
-	$upload_dir   = '/'.$userid.'/'; // path from base_url to upload base dir
-	$current_path = '../../../../../../temp/user/'.$userid.'/'; //'../../../../source/'; // relative path from filemanager folder to upload files folder
+	$root         = $base_path.'/'.$dir_type;
+	$base_url     = SENDSTUDIO_APPLICATION_URL.'/admin/temp/'.$dir_type; // url base of site if you want only relative url leave empty
+	$upload_dir   = '/'.$dir_id.'/'; // path from base_url to upload base dir
+	$current_path = '../../../../../../temp/'.$dir_type.'/'.$dir_id.'/'; //'../../../../source/'; // relative path from filemanager folder to upload files folder
 	if(!is_dir($current_path))
 	{
 		mkdir($current_path);
@@ -92,18 +112,18 @@ if( (int)$userid > 0 && (int)$newsletterID == 0 ) {
 		mkdir($thumbs_main_path);
 	}
      
-	$thumbs_upload_dir= $base_url.'thumbs/';
+	$thumbs_upload_dir= $base_url.'/thumbs/';
 	
-	$thumbs_root=  $root.'/thumbs/'.$userid;
+	$thumbs_root=  $root.'/thumbs/'.$dir_id;
 	if(!is_dir($thumbs_root))
 	{
 		mkdir($thumbs_root);
 	}
-	$thumbs_base_path= '../../../../../../temp/user/thumbs/'.$userid.'/';
+	$thumbs_base_path= '../../../../../../temp/'.$dir_type.'/thumbs/'.$dir_id.'/';
   }
 //echo "<PRE>";print_r($base_path); echo "</PRE>";
 
-$config   = array(
+$config   = [
 
     /*
     |--------------------------------------------------------------------------
@@ -222,7 +242,7 @@ $config   = array(
     | Access keys
     |--------------------------------------------------------------------------
     |
-    | add access keys eg: array('myPrivateKey', 'someoneElseKey');
+    | add access keys eg: ['myPrivateKey', 'someoneElseKey'];
     | keys should only containt (a-z A-Z 0-9 \ . _ -) characters
     | if you are integrating lets say to a cms for admins, i recommend making keys randomized something like this:
     | $username = 'Admin';
@@ -233,7 +253,7 @@ $config   = array(
     |
     */
 
-    'access_keys' => array(),
+    'access_keys' => [],
 
     //--------------------------------------------------------------------------------------------------------
     // YOU CAN COPY AND CHANGE THESE VARIABLES INTO FOLDERS config.php FILES TO CUSTOMIZE EACH FOLDER OPTIONS
@@ -400,21 +420,21 @@ $config   = array(
     'download_files'			  => true, // allow download files or just preview
 
     // you can preview these type of files if $preview_text_files is true
-    'previewable_text_file_exts'              => array( "bsh", "c","css", "cc", "cpp", "cs", "csh", "cyc", "cv", "htm", "html", "java", "js", "m", "mxml", "perl", "pl", "pm", "py", "rb", "sh", "xhtml", "xml","xsl",'txt', 'log','' ),
+    'previewable_text_file_exts'              => [ "bsh", "c","css", "cc", "cpp", "cs", "csh", "cyc", "cv", "htm", "html", "java", "js", "m", "mxml", "perl", "pl", "pm", "py", "rb", "sh", "xhtml", "xml","xsl",'txt', 'log','' ],
 
     // you can edit these type of files if $edit_text_files is true (only text based files)
     // you can create these type of files if $config['create_text_files'] is true (only text based files)
     // if you want you can add html,css etc.
     // but for security reasons it's NOT RECOMMENDED!
-    'editable_text_file_exts'                 => array( 'txt', 'log', 'xml', 'html', 'css', 'htm', 'js','' ),
+    'editable_text_file_exts'                 => [ 'txt', 'log', 'xml', 'html', 'css', 'htm', 'js','' ],
 
-    'jplayer_exts'                            => array("mp4","flv","webmv","webma","webm","m4a","m4v","ogv","oga","mp3","midi","mid","ogg","wav"),
+    'jplayer_exts'                            => ["mp4","flv","webmv","webma","webm","m4a","m4v","ogv","oga","mp3","midi","mid","ogg","wav"],
 
-    'cad_exts'                                => array('dwg', 'dxf', 'hpgl', 'plt', 'spl', 'step', 'stp', 'iges', 'igs', 'sat', 'cgm', 'svg'),
+    'cad_exts'                                => ['dwg', 'dxf', 'hpgl', 'plt', 'spl', 'step', 'stp', 'iges', 'igs', 'sat', 'cgm', 'svg'],
 
     // Preview with Google Documents
     'googledoc_enabled'                       => true,
-    'googledoc_file_exts'                     => array( 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx' , 'pdf', 'odt', 'odp', 'ods'),
+    'googledoc_file_exts'                     => [ 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx' , 'pdf', 'odt', 'odp', 'ods'],
 
     // defines size limit for paste in MB / operation
     // set 'FALSE' for no limit
@@ -427,11 +447,11 @@ $config   = array(
     //**********************
     //Allowed extensions (lowercase insert)
     //**********************
-    'ext_img'                                 => array( 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'ico' ), //Images
-    'ext_file'                                => array( 'doc', 'docx', 'rtf', 'pdf', 'xls', 'xlsx', 'txt', 'csv', 'html', 'xhtml', 'psd', 'sql', 'log', 'fla', 'xml', 'ade', 'adp', 'mdb', 'accdb', 'ppt', 'pptx', 'odt', 'ots', 'ott', 'odb', 'odg', 'otp', 'otg', 'odf', 'ods', 'odp', 'css', 'ai', 'kmz','dwg', 'dxf', 'hpgl', 'plt', 'spl', 'step', 'stp', 'iges', 'igs', 'sat', 'cgm', 'tiff',''), //Files
-    'ext_video'                               => array( 'mov', 'mpeg', 'm4v', 'mp4', 'avi', 'mpg', 'wma', "flv", "webm" ), //Video
-    'ext_music'                               => array( 'mp3', 'mpga', 'm4a', 'ac3', 'aiff', 'mid', 'ogg', 'wav' ), //Audio
-    'ext_misc'                                => array( 'zip', 'rar', 'gz', 'tar', 'iso', 'dmg' ), //Archives
+    'ext_img'                                 => [ 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'ico' ], //Images
+    'ext_file'                                => [ 'doc', 'docx', 'rtf', 'pdf', 'xls', 'xlsx', 'txt', 'csv', 'html', 'xhtml', 'psd', 'sql', 'log', 'fla', 'xml', 'ade', 'adp', 'mdb', 'accdb', 'ppt', 'pptx', 'odt', 'ots', 'ott', 'odb', 'odg', 'otp', 'otg', 'odf', 'ods', 'odp', 'css', 'ai', 'kmz','dwg', 'dxf', 'hpgl', 'plt', 'spl', 'step', 'stp', 'iges', 'igs', 'sat', 'cgm', 'tiff',''], //Files
+    'ext_video'                               => [ 'mov', 'mpeg', 'm4v', 'mp4', 'avi', 'mpg', 'wma', "flv", "webm" ], //Video
+    'ext_music'                               => [ 'mp3', 'mpga', 'm4a', 'ac3', 'aiff', 'mid', 'ogg', 'wav' ], //Audio
+    'ext_misc'                                => [ 'zip', 'rar', 'gz', 'tar', 'iso', 'dmg' ], //Archives
 
 
     //*********************
@@ -537,9 +557,9 @@ $config   = array(
     // Hidden files and folders
     //**********************
     // set the names of any folders you want hidden (eg "hidden_folder1", "hidden_folder2" ) Remember all folders with these names will be hidden (you can set any exceptions in config.php files on folders)
-    'hidden_folders'                          => array(),
+    'hidden_folders'                          => [],
     // set the names of any files you want hidden. Remember these names will be hidden in all folders (eg "this_document.pdf", "that_image.jpg" )
-    'hidden_files'                            => array( 'config.php' ),
+    'hidden_files'                            => [ 'config.php' ],
 
     /*******************
     * URL upload
@@ -560,11 +580,11 @@ $config   = array(
     // PS if there isn't write permission in your destination folder you must set it
     //
     'fixed_image_creation'                    => false, //activate or not the creation of one or more image resized with fixed path from filemanager folder
-    'fixed_path_from_filemanager'             => array( '../test/', '../test1/' ), //fixed path of the image folder from the current position on upload folder
-    'fixed_image_creation_name_to_prepend'    => array( '', 'test_' ), //name to prepend on filename
-    'fixed_image_creation_to_append'          => array( '_test', '' ), //name to appendon filename
-    'fixed_image_creation_width'              => array( 300, 400 ), //width of image
-    'fixed_image_creation_height'             => array( 200, 300 ), //height of image
+    'fixed_path_from_filemanager'             => [ '../test/', '../test1/' ], //fixed path of the image folder from the current position on upload folder
+    'fixed_image_creation_name_to_prepend'    => [ '', 'test_' ], //name to prepend on filename
+    'fixed_image_creation_to_append'          => [ '_test', '' ], //name to appendon filename
+    'fixed_image_creation_width'              => [ 300, 400 ], //width of image
+    'fixed_image_creation_height'             => [ 200, 300 ], //height of image
     /*
     #             $option:     0 / exact = defined size;
     #                          1 / portrait = keep aspect set height;
@@ -572,7 +592,7 @@ $config   = array(
     #                          3 / auto = auto;
     #                          4 / crop= resize and crop;
     */
-    'fixed_image_creation_option'             => array( 'crop', 'auto' ), //set the type of the crop
+    'fixed_image_creation_option'             => [ 'crop', 'auto' ], //set the type of the crop
 
 
     // New image resized creation with relative path inside to upload folder after uploading (thumbnails in relative mode)
@@ -581,11 +601,11 @@ $config   = array(
     // The image creation path is always relative so if i'm inside source/test/test1 and I upload an image, the path start from here
     //
     'relative_image_creation'                 => false, //activate or not the creation of one or more image resized with relative path from upload folder
-    'relative_path_from_current_pos'          => array( './', './' ), //relative path of the image folder from the current position on upload folder
-    'relative_image_creation_name_to_prepend' => array( '', '' ), //name to prepend on filename
-    'relative_image_creation_name_to_append'  => array( '_thumb', '_thumb1' ), //name to append on filename
-    'relative_image_creation_width'           => array( 300, 400 ), //width of image
-    'relative_image_creation_height'          => array( 200, 300 ), //height of image
+    'relative_path_from_current_pos'          => [ './', './' ], //relative path of the image folder from the current position on upload folder
+    'relative_image_creation_name_to_prepend' => [ '', '' ], //name to prepend on filename
+    'relative_image_creation_name_to_append'  => [ '_thumb', '_thumb1' ], //name to append on filename
+    'relative_image_creation_width'           => [ 300, 400 ], //width of image
+    'relative_image_creation_height'          => [ 200, 300 ], //height of image
     /*
      * $option:     0 / exact = defined size;
      *              1 / portrait = keep aspect set height;
@@ -593,17 +613,19 @@ $config   = array(
      *              3 / auto = auto;
      *              4 / crop= resize and crop;
      */
-    'relative_image_creation_option'          => array( 'crop', 'crop' ), //set the type of the crop
+    'relative_image_creation_option'          => [ 'crop', 'crop' ], //set the type of the crop
 
 
     // Remember text filter after close filemanager for future session
     'remember_text_filter'                    => false,
 
-);
+];
+
+//echo "<PRE>";print_r($config); echo "</PRE>";
 
 return array_merge(
     $config,
-    array(
+		[
         'ext' => array_merge(
             $config['ext_img'],
             $config['ext_file'],
@@ -611,7 +633,7 @@ return array_merge(
             $config['ext_video'],
             $config['ext_music']
         ),
-        'tui_defaults_config' => array(
+        'tui_defaults_config' => [
             //'common.bi.image'                   => $config['common.bi.image'],
             //'common.bisize.width'               => $config['common.bisize.width'],
             //'common.bisize.height'              => $config['common.bisize.height'], 
@@ -660,6 +682,6 @@ return array_merge(
             'range.title.fontWeight'            => $config['range.title.fontWeight'],
             'colorpicker.button.border'         => $config['colorpicker.button.border'],
             'colorpicker.title.color'           => $config['colorpicker.title.color']
-        ),
-    )
+        ],
+    ]
 );

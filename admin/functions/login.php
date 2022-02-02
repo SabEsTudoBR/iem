@@ -243,7 +243,7 @@ class Login extends SendStudio_Functions
 					
 					$user_api->Load($founduser, false);
 					
-					if(SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH == 1){
+					if($user_api->getSettingValue('SECURITY_TWO_FACTOR_AUTH') == 1){
 						IEM::sessionSet('userid', $userid);
 						IEM::sessionSet('SendotpCount',0);
 						IEM::sessionSet('otp_try', 0);
