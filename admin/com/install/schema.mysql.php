@@ -16,8 +16,6 @@
 
 $queries = [];
 
-$queries[] = "SET GLOBAL foreign_key_checks=OFF;";
-
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%usergroups (
     groupid                 INT             NOT NULL AUTO_INCREMENT,
     groupname               VARCHAR(255)    NOT NULL,
@@ -744,7 +742,5 @@ $queries[] = "
 			PRIMARY KEY (name)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
-
-$queries[] = "SET GLOBAL foreign_key_checks=ON;";
 
 require(dirname(__FILE__) . '/schema.indexes.php');
