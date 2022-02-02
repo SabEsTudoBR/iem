@@ -17,13 +17,13 @@ $queries[] = 'CREATE TABLE %%TABLEPREFIX%%splittests (
 		jobid INT DEFAULT 0,
 		jobstatus CHAR(1) DEFAULT NULL,
 		lastsent INT DEFAULT 0
-	) CHARACTER SET=utf8mb4 ENGINE=INNODB
+	) CHARACTER SET=UTF8 ENGINE=INNODB
 	';
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%splittest_campaigns (
 		splitid INT DEFAULT 0 REFERENCES %%TABLEPREFIX%%splittests(splitid),
 		campaignid INT DEFAULT 0 REFERENCES %%TABLEPREFIX%%newsletters(newsletterid)
-	) CHARACTER SET=utf8mb4 ENGINE=INNODB
+	) CHARACTER SET=UTF8 ENGINE=INNODB
 	';
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%splittest_statistics (
@@ -33,13 +33,13 @@ $queries[] = 'CREATE TABLE %%TABLEPREFIX%%splittest_statistics (
 		starttime INT NOT NULL DEFAULT 0,
 		finishtime INT NOT NULL DEFAULT 0,
 		hiddenby INT NOT NULL DEFAULT 0
-	) CHARACTER SET=utf8mb4 ENGINE=INNODB
+	) CHARACTER SET=UTF8 ENGINE=INNODB
 	';
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%splittest_statistics_newsletters (
 		split_statid INT NOT NULL DEFAULT 0 REFERENCES %%TABLEPREFIX%%splittest_statistics(split_statid),
 		newsletter_statid INT NOT NULL DEFAULT 0 REFERENCES %%TABLEPREFIX%%stats_newsletters(statid)
-	) CHARACTER SET=utf8mb4 ENGINE=INNODB
+	) CHARACTER SET=UTF8 ENGINE=INNODB
 	';
 
 $queries[] = 'CREATE UNIQUE INDEX %%TABLEPREFIX%%split_campaigns_split_campaign ON %%TABLEPREFIX%%splittest_campaigns(splitid, campaignid)';
