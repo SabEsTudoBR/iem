@@ -205,11 +205,13 @@ class IEM_Installer
 		$password      = API_USERS::generatePasswordHash($_POST['admin_password'], $usernameToken);
 
 		// Set the admin user's settings
+		$default_global_html_footer = str_replace('%%APPLICATION_URL%%', $settings['APPLICATION_URL'], GetLang('Default_Global_HTML_Footer'));
+		
 		$query  = 'UPDATE [|PREFIX|]users SET ';
 		$query .= " usertimezone='" . $this->_db->Quote($settings['SERVERTIMEZONE'])           . "', ";
 		$query .= " emailaddress='" . $this->_db->Quote($settings['EMAIL_ADDRESS'])            . "', ";
 		$query .= " textfooter='"   . $this->_db->Quote(GetLang('Default_Global_Text_Footer')) . "', ";
-		$query .= " htmlfooter='"   . $this->_db->Quote(GetLang('Default_Global_HTML_Footer')) . "', ";
+		$query .= " htmlfooter='"   . $this->_db->Quote($default_global_html_footer) . "', ";
 		$query .= " unique_token='" . $this->_db->Quote($usernameToken)                        . "', ";
 		$query .= " username='"     . $this->_db->Quote($username)                             . "', ";
 		$query .= " password='"     . $this->_db->Quote($password)                             . "'  ";

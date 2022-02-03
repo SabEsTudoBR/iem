@@ -82,7 +82,7 @@ or define('LNG_Default_Global_HTML_Footer', '
 					<tr>
 						<td>
 							<a href="https://www.interspire.com/">
-								<img border="0" src="' . SENDSTUDIO_APPLICATION_URL . '/admin/images/poweredby.gif" alt="Powered by Interspire" />
+								<img border="0" src="%%APPLICATION_URL%%/admin/images/poweredby.gif" alt="Powered by Interspire" />
 							</a>
 						</td>
 					</tr>
