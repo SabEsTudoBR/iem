@@ -531,7 +531,7 @@ class Splittest_Stats_API extends API
 
 			            WHERE	ss.jobid IN (" . implode(',', $results_jobs) . ")
 
-			            GROUP BY l.name
+			            GROUP BY l.name, ss.jobid
 
 			            ORDER BY l.name ASC LIMIT 1
 					";

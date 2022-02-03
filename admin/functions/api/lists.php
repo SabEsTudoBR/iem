@@ -1145,7 +1145,7 @@ class Lists_API extends API
 			$pgsql = "DISTINCT ON (emailaddress) ";
 		}
 		if (SENDSTUDIO_DATABASE_TYPE == 'mysql') {
-			$mysql = " GROUP BY emailaddress";
+			$mysql = " GROUP BY emailaddress,domainname,format,confirmed,confirmcode";
 		}
 
 		$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "list_subscribers(listid, emailaddress, domainname, format, confirmed, confirmcode, subscribedate, bounced, unsubscribed) SELECT " . $pgsql . $newid . ", emailaddress, domainname, format, confirmed, confirmcode, " . $timenow . ", 0, 0 FROM " . SENDSTUDIO_TABLEPREFIX . "list_subscribers WHERE listid IN (" . implode(',', $lists_to_merge) . ")" . $mysql;
@@ -1154,7 +1154,7 @@ class Lists_API extends API
 		// now we copy the custom field data.
 		// since the subscribers_data table doesn't have a listid, we match the email addresses up from the old lists and new list(s).
 		$pgsql = $mysql = '';
-		$group = "s2.subscriberid, sd.fieldid";
+		$group = "s2.subscriberid, sd.fieldid,sd.data";
 		if (SENDSTUDIO_DATABASE_TYPE == 'pgsql') {
 			$pgsql = "DISTINCT ON ({$group})";
 		} else {
