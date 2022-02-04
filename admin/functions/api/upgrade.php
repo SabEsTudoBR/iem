@@ -720,6 +720,10 @@ class Upgrade_API extends API
 		'20211123' => [
 			'update_db_version'
         ]
+		,
+		'20220207' => [
+			'update_db_version'
+        ]
 	];
 
 	/**
