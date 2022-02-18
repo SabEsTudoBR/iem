@@ -372,6 +372,13 @@ class Templates_API extends API
 	function GetTemplates($templates=null, $sortinfo=array(), $countonly=false, $start=0, $perpage=0)
 	{
 		$start = (int)$start;
+		
+		if(isset($GLOBALS['userid'])){
+			$userid = $GLOBALS['userid'];
+			$user = new User_API($userid);
+			$all_templates = $user->GetTemplates();
+			$templates = array_keys($all_templates);
+		}
 
 		if (is_array($templates)) {
 			$templates = $this->CheckIntVars($templates);
