@@ -1064,7 +1064,7 @@ class Subscribers_Manage extends Subscribers
 							}
 
 							foreach ($subscriber_customfields[$subid] as $cf_p => $cf_details) {
-								if ($cf_details['fieldid'] != $fieldname) {
+								if ($cf_details['fieldid'] == $fieldname) {
 									$GLOBALS['FieldValue'] = htmlspecialchars($subfield->GetRealValue($cf_details['data'],','), ENT_QUOTES, SENDSTUDIO_CHARSET);
 								}
 							}
