@@ -1021,7 +1021,7 @@ class Subscribers_Import extends Subscribers
 		$valid_subscribedate = false;
 		$subscribedate = 0;
 
-		if ($found_subscribedate &&  is_numeric($sd_y) && $sd_y >= 0 && $sd_m >= 0 &&  is_numeric($sd_m) && $sd_d >= 0 &&  is_numeric($sd_d)) {
+		if ($found_subscribedate &&  is_numeric($sd_y) && $sd_y > 0 && $sd_m > 0 &&  is_numeric($sd_m) && $sd_d > 0 &&  is_numeric($sd_d)) {
 			$valid_subscribedate = checkdate($sd_m, $sd_d, $sd_y);
 
 			if ($valid_subscribedate) {
@@ -1100,7 +1100,7 @@ class Subscribers_Import extends Subscribers
 
 			if ($fieldtype == 'date') {
 				$curr_custom_date = '';
-				if ($fielddata['yyyy'] >= 0 && $fielddata['mm'] >= 0 && $fielddata['dd'] >= 0) {
+					if ($fielddata['yyyy'] > 0 && $fielddata['mm'] > 0 && $fielddata['dd'] > 0) {
 					$valid_subscribedate = checkdate($fielddata['mm'], $fielddata['dd'], $fielddata['yyyy']);
 		
 					if ($valid_subscribedate) {
