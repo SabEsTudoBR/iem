@@ -1,5 +1,32 @@
 # Interspire Email Marketer Changelog
 
+Version: 6.4.3
+Released: 3rd March, 2022
+- Fixed default email footer doesn't display gif image
+- Fixed the NBSP code issue in importing contacts via CSV 
+- Fixed Contacts not imported and diverted to suppression, not display in pop up
+- Fixed values of visible custom fields are not appearing in contacts listing.
+- Fixed Dynamic Content Tags, the TinyMCE tools(Hyperlink, Image etc.) opening in popup don't work.
+- Fixed Single and double quotes issue in Dynamic Content Tags 'Content Block.
+- Fixed MySQL group by clause contains nonaggregated columns issue
+
+Files Changed:
+-------------
+	admin/addons/dynamiccontenttags/templates/dynamiccontentblocks_form.tpl
+	admin/addons/splittest/api/splittest_stats.php
+	admin/com/init.php
+	admin/com/language/default/whitelabel.php
+	admin/com/lib/IEM.class.php
+	admin/com/lib/IEM/Installer.class.php
+	admin/functions/api/lists.php
+	admin/functions/api/stats.php
+	admin/functions/api/upgrade.php
+	admin/functions/subscribers_import.php
+	admin/functions/subscribers_manage.php
+	changelog.txt
+	version.txt
+
+
 Version: 6.4.2
 Released: 23rd Nov, 2021
 - Fixed TinyMCE Image Manager directory issue

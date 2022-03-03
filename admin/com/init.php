@@ -124,6 +124,9 @@ if (in_array('ini_set', $disabled_functions)) {
 	die(nl2br($turn_off_message));
 }
 
+// Avoid iframe loading. It prevents IEM app embedded into other sites.
+header("X-Frame-Options: SAMEORIGIN");
+
 // Set up PHP environment
 error_reporting(E_ALL);
 

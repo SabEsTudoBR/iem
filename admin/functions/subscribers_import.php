@@ -114,7 +114,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Duplicates_Intro');
 						$email_list = '';
 						foreach ($importresults['duplicateemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
@@ -124,7 +124,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Unsubscribed_Intro');
 						$email_list = '';
 						foreach ($importresults['unsubscribedemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
@@ -134,7 +134,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Banned_Intro');
 						$email_list = '';
 						foreach ($importresults['bannedemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
@@ -144,7 +144,7 @@ class Subscribers_Import extends Subscribers
 						$GLOBALS['Intro'] = GetLang('ImportResults_Report_Failures_Intro');
 						$email_list = '';
 						foreach ($importresults['failedemails'] as $p => $email) {
-							$email_list .= htmlspecialchars(trim($email), ENT_QUOTES, SENDSTUDIO_CHARSET) . "\n";
+							$email_list .= htmlspecialchars(utf8_encode($email), ENT_SUBSTITUTE, SENDSTUDIO_CHARSET, true) . "\n";
 						}
 						$GLOBALS['EmailList'] = $email_list;
 					break;
@@ -944,7 +944,8 @@ class Subscribers_Import extends Subscribers
 		foreach ($linkfields as $pos => $type) {
 			switch ($type) {
 				case 'E':
-					$email = $subscriberinfo[$pos];
+					$email =  htmlspecialchars(utf8_encode($subscriberinfo[$pos]), ENT_SUBSTITUTE , SENDSTUDIO_CHARSET, false);
+					$email =  trim($email, "\xC2\xA0"); // Removing NBSP (Non-breaking Space)
 				break;
 				case 'C':
 					$subscriberconfirmed = strtolower($subscriberinfo[$pos]);
@@ -1020,7 +1021,7 @@ class Subscribers_Import extends Subscribers
 		$valid_subscribedate = false;
 		$subscribedate = 0;
 
-		if ($found_subscribedate &&  is_numeric($sd_y) && $sd_y >= 0 && $sd_m >= 0 &&  is_numeric($sd_m) && $sd_d >= 0 &&  is_numeric($sd_d)) {
+		if ($found_subscribedate &&  is_numeric($sd_y) && $sd_y > 0 && $sd_m > 0 &&  is_numeric($sd_m) && $sd_d > 0 &&  is_numeric($sd_d)) {
 			$valid_subscribedate = checkdate($sd_m, $sd_d, $sd_y);
 
 			if ($valid_subscribedate) {
@@ -1099,7 +1100,7 @@ class Subscribers_Import extends Subscribers
 
 			if ($fieldtype == 'date') {
 				$curr_custom_date = '';
-				if ($fielddata['yyyy'] >= 0 && $fielddata['mm'] >= 0 && $fielddata['dd'] >= 0) {
+					if ($fielddata['yyyy'] > 0 && $fielddata['mm'] > 0 && $fielddata['dd'] > 0) {
 					$valid_subscribedate = checkdate($fielddata['mm'], $fielddata['dd'], $fielddata['yyyy']);
 		
 					if ($valid_subscribedate) {
