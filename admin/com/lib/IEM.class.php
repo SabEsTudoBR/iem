@@ -31,7 +31,7 @@ class IEM
 	 * @todo deprecate this... find a way to organize the upgrades based on versions instead
 	 */
 
-	const DATABASE_VERSION = '20220207';
+	const DATABASE_VERSION = '20220303';
 
 	/**
 	 * Session name that is used by IEM framework
