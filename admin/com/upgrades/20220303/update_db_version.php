@@ -34,7 +34,7 @@ class update_db_version extends Upgrade_API
 	 */
 	function RunUpgrade()
 	{
-		$new_version = '20220207';
+		$new_version = '20220303';
 
 		$errors = IEM::sessionGet('DatabaseUpgradesFailed');
 
