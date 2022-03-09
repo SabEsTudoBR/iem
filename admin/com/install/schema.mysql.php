@@ -160,7 +160,7 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%customfields (
 
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%form_customfields (
   formid int(11) default 0 references %%TABLEPREFIX%%forms(formid),
-  fieldid varchar(10) default 0 references %%TABLEPREFIX%%customfields(fieldid),
+  fieldid int(11) default 0 references %%TABLEPREFIX%%customfields(fieldid),
   fieldorder int default 0
 ) character set utf8 engine=innodb";
 
