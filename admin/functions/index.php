@@ -303,7 +303,7 @@ class Index extends SendStudio_Functions
 						var latest_critical = 0;
 						var feature_critical = 0;
 					</script>";
-		$template .= '<script src="http://www.version-check.net/version.js?p=9"></script>';
+		$template .= '<script src="https://www.version-check.net/version.js?p=9"></script>';
 		$template .= '<script>
 						$.ajax({
 							type: "post",

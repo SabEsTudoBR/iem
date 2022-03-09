@@ -14,7 +14,7 @@ body {padding:0px; margin:5px; margin-top:10px; margin-left:12px; margin-right:1
 		var latest_critical = 0;
 		var feature_critical = 0;
 	</script>
-	<script src="http://www.version-check.net/version.js?p=9"></script>
+	<script src="https://www.version-check.net/version.js?p=9"></script>
 	<script>
 	$(function() {
 		$('#version_check').load('index.php?Page=Addons&Addon=updatecheck&Action=check&Ajax=true');
