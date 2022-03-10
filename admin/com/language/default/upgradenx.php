@@ -13,4 +13,4 @@ define('LNG_UpgradePopup_ProgressTitle', 'Upgrade in Progress...');
 define('LNG_Upgrade_Running_StepXofY', 'Running upgrade %s of %s');
 define('LNG_UpgradePopup_ProgressMessage', 'Your copy of Interspire Email Marketer is currently being updated from %s to %s. Please do not navigate away from this page.');
 define('LNG_Upgrade_Errors_Heading', 'Oops, something went wrong ...');
-define('LNG_Upgrade_Errors_Message', 'Something went wrong during the upgrade process. Please copy &amp; paste the text in the box below and create a support ticket from our <a href="http://www.interspire.com/clientarea/" target="_blank">client area</a> where one of our support engineers will be able to assist you.');
+define('LNG_Upgrade_Errors_Message', 'Something went wrong during the upgrade process. Please copy &amp; paste the text in the box below and create a support ticket from our <a href="https://www.interspire.com/support/" target="_blank">support area</a> where one of our support engineers will be able to assist you.');

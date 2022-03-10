@@ -24,7 +24,7 @@ define('LNG_Menu_Support_KnowledgeBase_Description', 'Get help on common questio
 define('LNG_Menu_Support_Forum', 'Community Forum');
 define('LNG_Menu_Support_Forum_Description', 'Discuss '.LNG_ApplicationTitle.' with customers and partners.');
 define('LNG_Menu_Support_SupportTicket', 'Support Ticket');
-define('LNG_Menu_Support_SupportTicket_Description', 'Post a support ticket through the Interspire client area.');
+define('LNG_Menu_Support_SupportTicket_Description', 'Post a support ticket through the Interspire support area.');
 define('LNG_SubscriberActivity_Last7Days', 'Contact Activity for the Last 7 Days');
 define('LNG_VersionIsOutOfDate', '&nbsp;You are running version %s. A new version (%s) is available for download.');
 define('LNG_VersionNumber', '&nbsp;You are currently running the latest version (%s).');
