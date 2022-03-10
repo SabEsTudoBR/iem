@@ -1158,7 +1158,7 @@ class Forms extends SendStudio_Functions
 					$GLOBALS['ThanksPageHTML'] = GetLang('FormThanksPageHTML_Subscribe');
 				break;
 				case 'u':
-					$GLOBALS['ThanksSubject'] = GetLang('FormThanksPage_Unubscribe_Subject');
+					$GLOBALS['ThanksSubject'] = GetLang('FormThanksPage_Unsubscribe_Subject');
 					$htmlvalue = GetLang('FormThanksPage_Unsubscribe_Email_HTML');
 					$GLOBALS['TextContent'] = GetLang('FormThanksPage_Unsubscribe_Email_Text');
 					$GLOBALS['ThanksPageHTML'] = GetLang('FormThanksPageHTML_Unsubscribe');
