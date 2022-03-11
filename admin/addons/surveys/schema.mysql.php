@@ -2,10 +2,10 @@
 
 // an array of tables that are created.
 // we need this so if the addon is uninstalled, we know what we need to clean up.
-$tables = array('surveys', 'surveys_fields', 'surveys_widgets', 'surveys_response', 'surveys_response_value');
+$tables = ['surveys', 'surveys_fields', 'surveys_widgets', 'surveys_response', 'surveys_response_value'];
 
 // the actual queries we're going to run.
-$queries = array();
+$queries = [];
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys (
 	  	id int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
@@ -26,7 +26,7 @@ $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys (
 	  	show_uri text NOT NULL,
 	  	error_message text NOT NULL,
 	  	submit_button_text tinytext NOT NULL
-		) CHARACTER SET=UTF8 ENGINE=INNODB';
+		) CHARACTER SET=utf8mb4 ENGINE=INNODB';
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys_fields (
 		  id int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
@@ -37,7 +37,7 @@ $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys_fields (
 		  other_label_text tinytext NOT NULL,
 		  display_order int(11) unsigned NOT NULL default 0,
 		  KEY surveys_widget_id (surveys_widget_id)
-		  ) CHARACTER SET=UTF8 ENGINE=INNODB';
+		  ) CHARACTER SET=utf8mb4 ENGINE=INNODB';
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys_widgets (
 	  	id int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
@@ -51,14 +51,14 @@ $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys_widgets (
 	  	allowed_file_types text,
 	  	display_order int(11) unsigned NOT NULL default 0,
 		KEY surveys_id (surveys_id)
-		) CHARACTER SET=UTF8 ENGINE=INNODB';
+		) CHARACTER SET=utf8mb4 ENGINE=INNODB';
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys_response (
 	  	id int(11) unsigned NOT NULL auto_increment PRIMARY KEY,
 	  	surveys_id int(11) unsigned NOT NULL default 0,
 	  	datetime datetime NOT NULL,
 		KEY surveys_id (surveys_id)
-		) CHARACTER SET=UTF8 ENGINE=INNODB';
+		) CHARACTER SET=utf8mb4 ENGINE=INNODB';
 
 
 $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys_response_value (
@@ -70,7 +70,7 @@ $queries[] = 'CREATE TABLE %%TABLEPREFIX%%surveys_response_value (
 	  	file_value varchar(64),
 	  	KEY surveys_response_id (surveys_response_id),
 	  	KEY surveys_widgets_id (surveys_widgets_id)
-		) CHARACTER SET=UTF8 ENGINE=INNODB';
+		) CHARACTER SET=utf8mb4 ENGINE=INNODB';
 
 
 // $queries[] = 'CREATE UNIQUE INDEX %%TABLEPREFIX%%surveys_response_value ON %%TABLEPREFIX%%surveys_response_value(surveys_response_id, surveys_widgets_id)';
