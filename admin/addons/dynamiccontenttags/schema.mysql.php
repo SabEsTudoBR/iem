@@ -2,10 +2,10 @@
 
 // an array of tables that are created.
 // we need this so if the addon is uninstalled, we know what we need to clean up.
-$tables = array('list_tags', 'dynamic_content_tags', 'dynamic_content_block');
+$tables = ['list_tags', 'dynamic_content_tags', 'dynamic_content_block'];
 
 // the actual queries we're going to run.
-$queries = array();
+$queries = [];
 
 $queries[] = '
 CREATE TABLE %%TABLEPREFIX%%dynamic_content_tags (
@@ -14,7 +14,7 @@ CREATE TABLE %%TABLEPREFIX%%dynamic_content_tags (
   createdate INTEGER(11) UNSIGNED NOT NULL,
   ownerid INTEGER(11) UNSIGNED NOT NULL,
   PRIMARY KEY(tagid)
-) CHARACTER SET=UTF8 ENGINE=INNODB
+) CHARACTER SET=utf8mb4 ENGINE=INNODB
 	';
 
 $queries[] = '
@@ -26,7 +26,7 @@ CREATE TABLE %%TABLEPREFIX%%dynamic_content_block (
   activated CHAR(1) NULL,
   sortorder INTEGER(4) UNSIGNED NOT NULL,
   PRIMARY KEY(blockid)
-) CHARACTER SET=UTF8 ENGINE=INNODB
+) CHARACTER SET=utf8mb4 ENGINE=INNODB
 	';
 
 $queries[] = '
@@ -34,5 +34,5 @@ CREATE TABLE %%TABLEPREFIX%%list_tags (
   tagid INTEGER(11) UNSIGNED NOT NULL,
   listid INTEGER(11) UNSIGNED NOT NULL,
   PRIMARY KEY (tagid, listid)
-) CHARACTER SET=UTF8 ENGINE=INNODB
+) CHARACTER SET=utf8mb4 ENGINE=INNODB
 	';
