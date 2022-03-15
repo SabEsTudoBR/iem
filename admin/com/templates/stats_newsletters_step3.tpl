@@ -9,6 +9,7 @@
 </script>
 
 <div>
+%%GLOBAL_Message_Export%%
 	<br>
 
 	<ul id="tabnav">
@@ -108,7 +109,7 @@
 							/
 							<a href="%%GLOBAL_UniqueOpensURL%%" title="%%LNG_Stats_TotalUniqueOpens_Description%%">%%GLOBAL_UniqueOpens%%</a>
 						</td>
-					</tr>
+					</tr> 
 					<tr class="GridRow">
 						<td width="30%" height="22" nowrap align="left" valign="top">
 							&nbsp;%%LNG_OpenRate%%

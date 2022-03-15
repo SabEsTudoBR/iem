@@ -82,7 +82,50 @@ class Stats extends SendStudio_Functions
 		$GLOBALS['Loading_Indicator'] = $this->ParseTemplate('Loading_Indicator', true);
 
 		$this->PrintHeader($popup);
-
+		$id = 0;
+		if(isset($_GET['id'])){
+		   $id = $_GET['id'];
+		}
+		if(isset($_GET['auto'])){
+		   $id = $_GET['auto'];
+		}
+		if(isset($_GET['list'])){
+		   $id = $_GET['list'];
+		}
+		if(isset($_GET['Action']) && $_GET['Action'] =='List'){ 
+			$GLOBALS['ExportOpened'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=openExport&list='.$id.'&tab=2';	
+			$GLOBALS['ExportClickedLink'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=linkExport&list='.$id.'&tab=3';
+		}  
+		if(isset($_GET['Action']) && $_GET['Action'] =='Autoresponders'){
+			$GLOBALS['ExportOpened'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=openExport&id='.$id.'&auto='.$id.'&tab=2';	
+			$GLOBALS['ExportClickedLink'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=linkExport&auto='.$id.'&tab=3';
+			$GLOBALS['ExportUnsub'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=unsubExport&id='.$id.'&tab=5';
+			$GLOBALS['ExportBounces'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=bouncesexport&id='.$id.'&tab=5';	
+		}
+		if(isset($_GET['Action']) && $_GET['Action'] =='Newsletters'){
+			
+			$GLOBALS['ExportOpened'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=openExport&id='.$id.'&tab=2';	
+			$GLOBALS['ExportClickedLink'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=linkExport&id='.$id.'&tab=3';
+			$GLOBALS['ExportUnsub'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=unsubExport&id='.$id.'&tab=5';
+			$GLOBALS['ExportBounces'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=bouncesexport&id='.$id.'&tab=5';
+			
+		}
+		if(isset($_GET['Action']) && $_GET['Action'] =='TriggerEmails'){			 
+			$GLOBALS['ExportOpened'] = 'Stats&Action='.$_GET['Action'].'&SubAction=view&SelectAction=openExport&id='.$id.'&triggerId='.$id.'&tab=2';	
+			$GLOBALS['ExportClickedLink'] = 'Stats&Action='.$_GET['Action'].'&SubAction=view&SelectAction=linkExport&id='.$id.'&triggerId='.$id.'&tab=3';
+			$GLOBALS['ExportUnsub'] = 'Stats&Action='.$_GET['Action'].'&SubAction=view&SelectAction=unsubExport&id='.$id.'&triggerId='.$id.'&tab=5';
+			$GLOBALS['ExportBounces'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=bouncesexport&id='.$id.'&tab=5';
+			 
+		}
+		if(isset($GLOBALS['ExportBounces']) and isset($GLOBALS['ExportUnsub']) and isset($GLOBALS['ExportOpened']) and isset($GLOBALS['ExportClickedLink'])){
+			IEM::sessionSet('ExportOpened',$GLOBALS['ExportOpened']);
+			IEM::sessionSet('ExportClickedLink',$GLOBALS['ExportClickedLink']);
+			IEM::sessionSet('ExportUnsub',$GLOBALS['ExportUnsub']);
+		}else{
+			IEM::sessionSet('ExportOpened','');
+			IEM::sessionSet('ExportClickedLink','');
+			IEM::sessionSet('ExportUnsub','');
+		}
 		// Print the loading indicator for the charts
 		$GLOBALS['TableType'] = 'chart';
 		$this->ParseTemplate('Loading_Indicator', false);
@@ -132,13 +175,46 @@ class Stats extends SendStudio_Functions
 				switch ($subaction) {
 					case 'step2':
 					case 'viewsummary':
-					
+						
 						$listid = 0;
 						if (isset($_GET['list'])) {
 							$listid = (int)$_GET['list'];
 						}
-
-						$this->PrintListStats_Step2($listid);
+						if (isset($_GET['id'])) {
+							$listid = (int)$_GET['id'];
+						}
+						$newsletterapi = $this->GetApi('Newsletters');
+						$statsapi = $this->GetApi();					  
+						$summary = $statsapi->GetListSummary($listid);					
+						$statid =   $summary['statids'];					 
+						if(isset($_REQUEST['SelectAction'])){
+							$newsletterapi = $this->GetApi('Newsletters');
+							$statsapi = $this->GetApi('Stats');		
+						 switch (strtolower($_REQUEST['SelectAction'])) {												 
+							case 'openexport': 
+								$opens = $statsapi->GetOpens($summary['statids'],0, 'all', false, '',false,false,'opentime','DESC');							 
+								$this->ExportStats($opens,'open',$summary['statids']);							 
+								break; // export 							 
+							case 'linkexport': 							
+								$linkclicks = $statsapi->GetClicks($summary['statids'], 0, 'all','a','',false,  'clicktime','DESC');						
+								$this->ExportStats($linkclicks,'clicked_link',$summary['statids']);									 
+								break; // export links
+							case 'bouncesexport':
+								$calendar_restrictions = $this->CalendarRestrictions['bounces'];
+								$bounces = $statsapi->GetBounces($summary['statid'], 0, 10, $calendar_restrictions);
+								$this->ExportStats($bounces,'bounces', $summary['statid']);
+								break;	
+							 default:							 
+								if (!$this->CanAccessStats($statids, 'n')) {
+									$this->DenyAccess();
+								}
+								$this->PrintListStats_Step2($listid);
+								break;
+						 }
+						 
+						}else{ 
+							 $this->PrintListStats_Step2($listid);
+						}
 					break;
 
 					default:
@@ -154,7 +230,57 @@ class Stats extends SendStudio_Functions
 			break;
 
 			case 'triggeremails':
-				$this->TriggerEmailsStats($subaction);
+				if(isset($_REQUEST['SelectAction'])){
+						$triggerId = 0;
+						if (isset($_GET['list'])) {
+							$triggerId = (int)$_GET['list'];
+						}
+						if (isset($_GET['triggerId'])) {
+							$triggerId = (int)$_GET['triggerId'];
+						}
+					$newsletterapi = $this->GetApi('Newsletters');
+					$statsapi = $this->GetApi();					  
+					$summary = $statsapi->GetTriggerEmailsStatsRecord($triggerId);					 					
+					$statid =   $summary['statid'];						 
+						$newsletterapi = $this->GetApi('Newsletters');
+						$statsapi = $this->GetApi('Stats');		
+					 switch (strtolower($_REQUEST['SelectAction'])) {												 
+						case 'openexport':
+							$opens = $statsapi->GetOpens($summary['statid'],0, 'all', false, '',false,false,'opentime','DESC');
+							$this->ExportStats($opens,'open',$summary['statid']);	
+							 break; // export 							 
+						case 'linkexport': 							
+						    $linkclicks = $statsapi->GetClicks($summary['statid'], 0, 'all','a','',false,  'clicktime','DESC');						
+						    $this->ExportStats($linkclicks,'clicked_link',$summary['statid']);									 
+							break; // export links
+						case 'unsubexport':
+							$calendar_restrictions = $this->CalendarRestrictions['unsubscribes'];
+							$unsubscribes = $statsapi->GetUnsubscribes($summary['statid'], 0, 10, $calendar_restrictions);
+							$this->ExportStats($unsubscribes,'unsub', $summary['statid']);
+					 		break; // export links
+						case 'bouncesexport':
+							$calendar_restrictions = $this->CalendarRestrictions['bounces'];
+							$bounces = $statsapi->GetBounces($summary['statid'], 0, 10, $calendar_restrictions);
+							$this->ExportStats($bounces,'bounces', $summary['statid']);
+					 		break;
+						case 'export':  					    
+							 $record = $statsapi->FetchStats($summary['statid'],'newsletter');
+							$this->ExportStats($record ,'export',$summary['statid']);									 
+							 break; 
+						 default:
+							 
+							if (!$this->CanAccessStats($statid, 'n')) {
+								$this->DenyAccess();
+							}
+
+							$this->TriggerEmailsStats($subaction);
+							break;
+					 }
+					 
+					}else{ 
+						$this->TriggerEmailsStats($subaction);
+					}
+				 
 			break;
 
 			case 'user':
@@ -190,6 +316,111 @@ class Stats extends SendStudio_Functions
 				switch ($subaction) {
 					case 'doselect':
 						switch (strtolower($_REQUEST['SelectAction'])) {
+							case 'export':							 
+								$autorespondersapi = $this->GetApi('Autoresponders');
+								$statsapi = $this->GetApi('Stats');
+								$autorespondersapi->Load($_REQUEST['auto']); 
+								$name = '';							 
+								if (count($_REQUEST['auto']) == 1) {
+									$a = $statsapi->GetAutoresponderSummary($_REQUEST['auto'], true, $perpage);
+									$autorespondersapi->Load($_REQUEST['auto']);
+									if (!$this->IsOwner($autorespondersapi->ownerid)) {
+										$this->DenyAccess();
+									}
+									$name = preg_replace('/[^a-z0-9]/i','_',$autorespondersapi->name) . "_";
+								}
+								$name .= "stats_" . $this->PrintDate(time(),'dmy');
+
+								while (is_file(TEMP_DIRECTORY . "/{$name}.csv")) {
+									$name .= "_" . rand(10,99);
+								}
+								$name .= ".csv";
+
+								$local = TEMP_DIRECTORY . "/$name";
+								$http = SENDSTUDIO_TEMP_URL . "/$name";
+								
+								if (is_writable(TEMP_DIRECTORY)) {
+									$fh = fopen($local,'wb');
+
+									$header = [
+										GetLang('Stats_Export_Header_Subject'),
+										GetLang('Stats_Export_Header_Recipients'),
+										GetLang('Stats_Export_Header_Unique_Opened'),
+										GetLang('Stats_Export_Header_Total_Opened'),
+										GetLang('Stats_Export_Header_Percent_Opened'),
+										GetLang('Stats_Export_Header_Recipients_who_Clicked_Links'),
+										GetLang('Stats_Export_Header_Percent_Recipients_who_Clicked'),
+										GetLang('Stats_Export_Header_Total_Links_Clicked'),
+										GetLang('Stats_Export_Header_Hard_Bounced'),
+										GetLang('Stats_Export_Header_Soft_Bounced'),
+										GetLang('Stats_Export_Header_Total_Bounced'),
+										GetLang('Stats_Export_Header_Percent_Bounced'),
+										GetLang('Stats_Export_Header_Unsubscribed'),
+										GetLang('Stats_Export_Header_Percent_Unsubscribed'),
+										GetLang('Stats_Export_Header_Forwarded'),
+										GetLang('Stats_Export_Header_Recipients_who_Forwarded'),
+										GetLang('Stats_Export_Header_Percent_Recipients_who_Forwarded')
+									];
+
+									$header = '"' . implode('","',$header) . '"';
+									fwrite($fh,"$header\r\n");
+									$statsapi = $this->GetApi('Stats');
+									$autorespondersapi1 = $this->GetApi('Newsletters');
+									$f = $statsapi->FetchStats( $_REQUEST['stats'][0],'autoresponder');
+									$row = array();
+									$autorespondersapi->Load($f['autoresponderid']);
+									if (!$this->IsOwner($autorespondersapi->ownerid)) {
+										$this->DenyAccess();
+									}
+									$calendar_restrictions = $this->CalendarRestrictions['recipients'];
+									$recipients = $f['htmlrecipients'] + $f['textrecipients'] + $f['multipartrecipients'];
+									$emailopens = (int)$statsapi->GetOpens($f['statid'], $start=0, $perpage=10, $only_unique=false, $calendar_restrictions='', $count_only=true);    
+									$emailopens_unique = (int)$statsapi->GetOpens($f['statid'], $start=0, $perpage=10, $only_unique=true, $calendar_restrictions='', $count_only=true);
+									$bounces = $f['bouncecount_hard'] + $f['bouncecount_soft'];
+									$unique_clicks = (int)$statsapi->GetUniqueClickRecipients($f['statid']);
+									$unique_forwards = (int)$statsapi->GetForwardsRecipients($f['statid']);
+									if ($recipients == 0) {
+										$open_percent = $click_percent = $bounce_percent =
+										$unsub_percent = $forward_percent = 0;
+									} else {   
+										$open_percent = round($emailopens_unique / $recipients * 100,2);
+										$click_percent = round($unique_clicks / $recipients * 100,2);
+										$bounce_percent = round($bounces / $recipients * 100,2);
+										$unsub_percent = round($f['unsubscribecount'] / $recipients * 100,2);
+										$forward_percent = round($unique_forwards / $recipients * 100,2);
+										 
+									  }
+
+									$row = [
+										str_replace('"','_',$autorespondersapi->subject),
+										$recipients,											
+										$emailopens_unique,
+										$emailopens,
+										$open_percent,
+										$unique_clicks,
+										$click_percent,
+										$f['linkclicks'],
+										$f['bouncecount_hard'],
+										$f['bouncecount_soft'],
+										$bounces,
+										$bounce_percent,
+										$f['unsubscribecount'],
+										$unsub_percent,
+										$f['emailforwards'],
+										$unique_forwards,
+										$forward_percent
+									];     
+									 
+									$entry = '"' . implode('","',$row) . '"';
+									fwrite($fh,"$entry\r\n");
+									fclose($fh); 
+									$GLOBALS['Message'] = $this->PrintSuccess('Export_Newsletter_Statistics',$http);
+									$this->PrintAutoresponderStats_Step1($GLOBALS['Message']);
+								} else {
+									$GLOBALS['Message'] = $this->PrintWarning('Export_Not_Writable',TEMP_DIRECTORY);
+									$this->PrintAutoresponderStats_Step1($GLOBALS['Message']);
+								}
+							break; // export
 							case 'delete':
 								$stats_api = $this->GetApi('Stats');
 								$stats_to_delete = array();
@@ -270,10 +501,49 @@ class Stats extends SendStudio_Functions
 					if (isset($_GET['auto'])) {
 						$autoid = (int)$_GET['auto'];
 					}
-					if (!$this->CanAccessAutoresponder($autoid)) {
-						$this->DenyAccess();
-					}
-					$this->PrintAutoresponderStats_Step2($autoid);
+					$newsletterapi = $this->GetApi('Newsletters');
+					$statsapi = $this->GetApi('Stats');					 
+					$summary = $statsapi->GetAutoresponderSummary($autoid, true, 'all');
+					$statid =   $summary['statid'];
+					if(isset($_REQUEST['SelectAction'])){						 
+						$statsapi = $this->GetApi('Stats');		
+					 switch (strtolower($_REQUEST['SelectAction'])) {												 
+						case 'openexport':						 
+							$opens = $statsapi->GetOpens($summary['statid'],0, 'all', false, '',false,false,'opentime','DESC');
+							$this->ExportStats($opens,'open',$summary['statid']);							  
+							break; // export 							 
+						case 'linkexport':							
+						    $linkclicks = $statsapi->GetClicks($summary['statid'], 0, 'all','a','',false,  'clicktime','DESC');						
+						    $this->ExportStats($linkclicks,'clicked_link',$summary['statid']);			  
+							break; // export links
+						case 'unsubexport': 
+							$calendar_restrictions = $this->CalendarRestrictions['unsubscribes'];
+							$unsubscribes = $statsapi->GetUnsubscribes($summary['statid'], 0, 10, $calendar_restrictions);
+							$this->ExportStats($unsubscribes,'unsub', $summary['statid']);
+					 		break;
+						case 'bouncesexport':
+							$calendar_restrictions = $this->CalendarRestrictions['bounces'];
+							$bounces = $statsapi->GetBounces($summary['statid'], 0, 10, $calendar_restrictions);
+							$this->ExportStats($bounces,'bounces', $summary['statid']);
+					 		break;							
+						 default:		 
+
+							if (!$this->CanAccessStats($statid, 'n')) {
+								$this->DenyAccess();
+							}
+
+							$this->PrintNewsletterStats_Step2($autoid);
+							break;
+					 }
+					 
+					}else{
+						  
+						if (!$this->CanAccessAutoresponder($autoid)) {
+							$this->DenyAccess();
+						}
+						$this->PrintAutoresponderStats_Step2($autoid);
+						}
+					 
 				break;
 
 				default:
@@ -487,6 +757,34 @@ class Stats extends SendStudio_Functions
 
 					case 'viewsummary':
 					
+						$statid =$_REQUEST['id'];	     
+					if(isset($_REQUEST['SelectAction'])){
+						$newsletterapi = $this->GetApi('Newsletters');
+						$statsapi = $this->GetApi('Stats');		
+					 switch (strtolower($_REQUEST['SelectAction'])) {												 
+						case 'openexport':							 
+							$opens = $statsapi->GetOpens($_REQUEST['id'],0, 'all', false, '',false,false,'opentime','DESC');
+							$this->ExportStats($opens,'open',$_REQUEST['id']);							 
+							break; // export 
+						case 'linkexport':							
+						    $linkclicks = $statsapi->GetClicks($_REQUEST['id'], 0, 'all','a','',false,  'clicktime','DESC');						
+						    $this->ExportStats($linkclicks,'clicked_link',$_REQUEST['id']);  
+							break; // export links
+						case 'unsubexport': 
+							$calendar_restrictions = $this->CalendarRestrictions['unsubscribes'];
+							$unsubscribes = $statsapi->GetUnsubscribes($_REQUEST['id'], 0, 10, $calendar_restrictions);
+							$this->ExportStats($unsubscribes,'unsub', $_REQUEST['id']);
+					 			  
+						break; // export links
+						 default:
+							 $statid = IEM::requestGetGET('id', 0, 'intval');
+							if (!$this->CanAccessStats($statid, 'n')) {
+								$this->DenyAccess();
+							}
+							$this->PrintNewsletterStats_Step2($statid);
+							break;
+					 }
+					}else{
 						$statid = IEM::requestGetGET('id', 0, 'intval');
 
 						if (!$this->CanAccessStats($statid, 'n')) {
@@ -494,6 +792,8 @@ class Stats extends SendStudio_Functions
 						}
 
 						$this->PrintNewsletterStats_Step2($statid);
+					}	
+					 
 					break;
 
 					default:
@@ -504,7 +804,296 @@ class Stats extends SendStudio_Functions
 		$this->PrintFooter($popup);
 	}
 
+	/**
+	* PrintNewsletterStats_Step1
+	* This will show a list of newsletters that have been sent out according to which lists the user has access to.
+	*
+	* @see User_API::GetLists
+	* @see Stats_API::GetNewsletterStats
+	*
+	* @return Void Doesn't return anything. Prints out a list of the newsletters sent to the lists that the user has access to.
+	*/
+	function ExportStats($stats_query,$stats_type,$statid)
+	{       
+		$newsletterapi = $this->GetApi('Newsletters');		 
+		$statsapi = $this->GetApi('Stats');	
+		$name = '';
+		$id ='';	
+		
+		 if (!empty($statid)) {			 
+			 //for newsletter
+		 if (isset($_REQUEST['id'])) {			 
+				$id = $_REQUEST['id'];
+				$table ="newsletter";
+				// When exporting for just one campaign, use the campaign name in the file name
+				$f = $statsapi->FetchStats($id ,$table);				  
+				$newsletterapi->Load($f['newsletterid']);
+				$name=$newsletterapi->name;
+		 }
+		 if (isset($_REQUEST['triggerId'])) {
+			$triggeremailsapi = $this->GetApi('TriggerEmails');
+            		$id = $_REQUEST['triggerId'];
+			$table ="triggeremails";
+			$triggeremailsapi->Load($id);
+			$name=  $triggeremailsapi->name;    
+		 }
+		if (isset($_REQUEST['auto'])) {
+			$autoresponderapi = $this->GetApi('Autoresponders');
+            		$id = $_REQUEST['auto'];
+			$table ="autoresponder";
+			$autoresponderapi->Load($id); 
+			$name=$autoresponderapi->name;
+		 }	
+			 if (isset($_REQUEST['list'])) {
+				 $listapi = $this->GetApi('Lists');
+				$id = $_REQUEST['list'];
+				$table ="list";
+				$listapi->Load($id);
+				$name=$listapi->name;
+			 }
+				$name = preg_replace('/[^a-z0-9]/i','_',$name) . "_";
+			}
+			
+			$name .= $stats_type."_stats_" . $this->PrintDate(time(),'dmy');
+				
+			while (is_file(TEMP_DIRECTORY . "/{$name}.csv")) {
+				$name .= "_" . rand(10,99);
+			}
+			$name .= ".csv";
 
+			$local = TEMP_DIRECTORY . "/$name";
+			$http = SENDSTUDIO_TEMP_URL . "/$name";
+
+			if (is_writable(TEMP_DIRECTORY)) {
+				 
+				$fh = fopen($local,'wb');
+               			if($stats_type  == 'open'){
+					$header = array(
+						GetLang('Stats_EmailAdress_Header_Address'),
+						GetLang('Stats_opened_Header_Date'),
+						 GetLang('Stats_Email_As_Header_Opened'),
+						 
+					);
+				} elseif(isset($_REQUEST['triggerId']) && $stats_type  == 'export'){
+					  $header = [
+							GetLang('Stats_Export_Header_Subject'),
+							GetLang('Stats_Export_Header_Date'),
+							GetLang('Stats_Export_Header_Time'),
+							GetLang('Stats_Export_Header_Recipients'),										 
+							GetLang('Stats_Export_Header_Unique_Opened'),
+							GetLang('Stats_Export_Header_Total_Opened'),
+							GetLang('Stats_Export_Header_Percent_Opened'),
+							GetLang('Stats_Export_Header_Recipients_who_Clicked_Links'),
+							GetLang('Stats_Export_Header_Percent_Recipients_who_Clicked'),
+							GetLang('Stats_Export_Header_Total_Links_Clicked'),
+							GetLang('Stats_Export_Header_Hard_Bounced'),
+							GetLang('Stats_Export_Header_Soft_Bounced'),
+							GetLang('Stats_Export_Header_Total_Bounced'),
+							GetLang('Stats_Export_Header_Percent_Bounced'),
+							GetLang('Stats_Export_Header_Unsubscribed'),
+							GetLang('Stats_Export_Header_Percent_Unsubscribed'),
+							GetLang('Stats_Export_Header_Forwarded'),
+							GetLang('Stats_Export_Header_Recipients_who_Forwarded'),
+							GetLang('Stats_Export_Header_Percent_Recipients_who_Forwarded')
+					  ];
+
+				 
+				}elseif($stats_type  == 'unsub'){
+					$header = array(
+						GetLang('Stats_EmailAdress_Header_Address'),
+						GetLang('UnsubscribeDate'),
+					);
+				}elseif($stats_type  == 'bounces'){
+					$header = array(
+						GetLang('Stats_EmailAdress_Header_Address'),						
+						GetLang('BounceRule'),
+						GetLang('BounceDate'),
+						GetLang('BounceType'),
+					);
+				}else{
+					$header = array(
+							GetLang('Stats_EmailAdress_Header_Address'),
+							GetLang('LinkClicked'),
+							 GetLang('LinkClickTime'),
+							 
+						);
+				}
+				 
+				$header = '"' . implode('","',$header) . '"';
+				fwrite($fh,"$header\r\n");
+				 
+					$row = array();
+					
+				if($stats_type  == 'open'){
+					
+					foreach ($stats_query as $k => $opendetails) {
+								$GLOBALS['EmailAddress'] = htmlspecialchars($opendetails['emailaddress'], ENT_QUOTES, SENDSTUDIO_CHARSET);
+								
+								$GLOBALS['DateOpened'] = $this->PrintTime($opendetails['opentime'], true);
+								$GLOBALS['OpenedEmailAsType'] = GetLang('OpenedEmailAs_Unknown');
+
+						switch (strtolower($opendetails['opentype'])) {
+							case 'h':
+								$GLOBALS['OpenedEmailAsType'] = GetLang('OpenedEmailAs_HTML');
+							break;
+
+							case 't':
+								$GLOBALS['OpenedEmailAsType'] = GetLang('OpenedEmailAs_Text');
+							break;
+						}
+							$row = [
+								 
+								 $GLOBALS['EmailAddress'],
+								 $GLOBALS['DateOpened'],
+								 $GLOBALS['OpenedEmailAsType']
+								 
+							];
+
+							
+							$entry = '"' . implode('","',$row) . '"';
+							fwrite($fh,"$entry\r\n");
+						}
+						
+						fclose($fh);
+				 
+				 $GLOBALS['Message_Export'] = $this->PrintSuccess('Export_Newsletter_Open_Statistics',$http);
+				 
+				}elseif(isset($_REQUEST['triggerId']) && $stats_type  == 'export'){
+					 				 
+				    $f = $statsapi->GetTriggerEmailsStatsRecord($_REQUEST['triggerId']);
+					$newsletterapi = $this->GetApi('Newsletters');
+					$statsapi = $this->GetApi('Stats');	
+					$row = array();
+					$newsletterapi->Load($f['newsletterid']);
+					if (!$this->IsOwner($newsletterapi->ownerid)) {
+						$this->DenyAccess();
+					}
+
+					$recipients =  $f['htmlrecipients'] + $f['textrecipients'] + $f['multipartrecipients'];
+					$bounces = $f['bouncecount_hard'] + $f['bouncecount_soft'];
+					$unique_clicks = (int)$statsapi->GetUniqueClickRecipients($statid);
+					$unique_forwards = (int)$statsapi->GetForwardsRecipients($statid);
+					$emailopens = (int)$statsapi->GetOpens($statid, $start=0, $perpage=10, $only_unique=false, $calendar_restrictions='', $count_only=true);    
+					$emailopens_unique = (int)$statsapi->GetOpens($statid, $start=0, $perpage=10, $only_unique=true, $calendar_restrictions='', $count_only=true);
+					 
+					if ($recipients == 0) {
+						$open_percent = $click_percent = $bounce_percent =
+						$unsub_percent = $forward_percent = 0;
+					} else {
+						$open_percent = round($emailopens_unique / $recipients * 100,2);
+						$click_percent = round($unique_clicks / $recipients * 100,2);
+						$bounce_percent = round($bounces / $recipients * 100,2);
+						$unsub_percent = round($f['unsubscribecount'] / $recipients * 100,2);
+						$forward_percent = round($unique_forwards / $recipients * 100,2);
+					}
+
+					$row = [
+						str_replace('"','_',$f['triggeremailsname']),
+						$this->PrintDate($f['starttime'],'d/m/y'),
+						$this->PrintDate($f['starttime'],'H:i'),						
+						$recipients,						 
+						$emailopens_unique,
+						$emailopens,
+						$open_percent,
+						$unique_clicks,
+						$click_percent,						 
+						$f['linkclicks'],
+						$f['bouncecount_hard'],
+						$f['bouncecount_soft'],
+						$bounces,
+						$bounce_percent,
+						$f['unsubscribecount'],
+						$unsub_percent,
+						$f['emailforwards'],
+						$unique_forwards,
+						$forward_percent
+					];
+
+					$entry = '"' . implode('","',$row) . '"';
+					fwrite($fh,"$entry\r\n");			 
+				    fclose($fh);
+				    $GLOBALS['Message_Export'] = $this->PrintSuccess('Export_Newsletter_Open_Statistics',$http);
+				 
+				}elseif($stats_type  == 'bounce'){
+					 
+					foreach ($stats_query as $k => $details) {
+								$GLOBALS['EmailAddress'] = htmlspecialchars($details['emailaddress'], ENT_QUOTES, SENDSTUDIO_CHARSET);
+								$GLOBALS['BounceTime'] = $this->PrintTime($details['bouncetime'], true);
+								$GLOBALS['BounceRule'] = $details['bouncerule'];
+								$GLOBALS['BounceType'] = $details['bouncetype'];
+								
+							$row = [								 
+								 $GLOBALS['EmailAddress'],
+								 $GLOBALS['BounceRule'],
+								 $GLOBALS['BounceTime'],
+								 $GLOBALS['BounceType'],															
+							];
+							$entry = '"' . implode('","',$row) . '"';
+							fwrite($fh,"$entry\r\n");
+						}
+						
+						fclose($fh);
+				 
+				 $GLOBALS['Message_Export'] = $this->PrintSuccess('Export_Newsletter_Open_Statistics',$http);
+				 
+				}elseif($stats_type  == 'unsub'){
+					 
+					foreach ($stats_query as $k => $details) {
+								$GLOBALS['EmailAddress'] = htmlspecialchars($details['emailaddress'], ENT_QUOTES, SENDSTUDIO_CHARSET);
+								$GLOBALS['UnsubscribeTime'] = $this->PrintTime($details['unsubscribetime'], true);
+							$row = array(								 
+								 $GLOBALS['EmailAddress'],
+								 $GLOBALS['UnsubscribeTime'],						 
+								 
+							);
+							$entry = '"' . implode('","',$row) . '"';
+							fwrite($fh,"$entry\r\n");
+						}
+						
+						fclose($fh);
+				 
+				 	$GLOBALS['Message_Export'] = $this->PrintSuccess('Export_Newsletter_Open_Statistics',$http);
+				 
+				}else{
+					  
+						foreach ($stats_query as $k => $linkClikeddetails) {
+							$GLOBALS['EmailAddress'] = htmlspecialchars($linkClikeddetails['emailaddress'], ENT_QUOTES, SENDSTUDIO_CHARSET);
+							$GLOBALS['LinkClickTime'] = $this->PrintTime($linkClikeddetails['clicktime'], true);
+							$GLOBALS['LinkClicked'] = strtolower($linkClikeddetails['url']);
+
+								$row = array(  
+									 
+									 $GLOBALS['EmailAddress'],
+									 $GLOBALS['LinkClicked'],
+									  $GLOBALS['LinkClickTime']
+									 
+								);
+								$entry = '"' . implode('","',$row) . '"';
+							fwrite($fh,"$entry\r\n");
+						}
+						fclose($fh);
+										
+						$GLOBALS['Message_Export'] = $this->PrintSuccess('Export_Newsletter_Link_Cliked_Statistics',$http);
+				}					
+			} else {
+				$GLOBALS['Message'] = $this->PrintWarning('Export_Not_Writable',TEMP_DIRECTORY);
+				
+			}
+			 
+			 if(isset($_REQUEST['auto'])){
+				return $this->PrintAutoresponderStats_Step2($_REQUEST['auto']);
+			 } elseif(isset($_REQUEST['triggerId'])){
+				return $this->TriggerEmailsStats($_REQUEST['SubAction']);
+			 }elseif(isset($_REQUEST['list'])){
+				 	
+				 return  $this->PrintListStats_Step2($_REQUEST['list']);
+				}
+				if(isset($_REQUEST['id'])){
+				return $this->PrintNewsletterStats_Step2($statid);
+			 }
+			
+		 
+	}
 	/**
 	* PrintNewsletterStats_Step1
 	* This will show a list of newsletters that have been sent out according to which lists the user has access to.
@@ -685,7 +1274,7 @@ class Stats extends SendStudio_Functions
 			$listname = current($summary['lists']);
 			$GLOBALS['MailingLists'] = htmlspecialchars($listname, ENT_QUOTES, SENDSTUDIO_CHARSET);
 		}
-
+		
 		$GLOBALS['UniqueOpens'] = sprintf(GetLang('EmailOpens_Unique'), $this->FormatNumber($summary['emailopens_unique']));
 		$GLOBALS['TotalOpens'] = sprintf(GetLang('EmailOpens_Total'), $this->FormatNumber($summary['emailopens']));
 
@@ -2317,7 +2906,8 @@ class Stats extends SendStudio_Functions
 			$GLOBALS['MailingList'] = htmlspecialchars($statsdetails['listname'], ENT_QUOTES, SENDSTUDIO_CHARSET);
 
 			$GLOBALS['StatsAction'] = '<a href="index.php?Page=Stats&Action=Autoresponders&SubAction=ViewSummary&auto=' . $statsdetails['autoresponderid'] . '">' . GetLang('ViewSummary') . '</a>&nbsp;&nbsp;';
-
+			$GLOBALS['StatsAction'] .= '<a href="index.php?Page=Stats&Action=Autoresponders&SubAction=DoSelect&SelectAction=export&auto%5B%5D='.$statsdetails['autoresponderid'].'&stats%5B%5D='.$statsdetails['statid'].'">' . GetLang('Export_Stats_Selected') . '</a>&nbsp;&nbsp;';
+			
                         $GLOBALS['StatsAction'] .= '<a href="remote_stats.php?height=420&width=420&overflow=none&statstype=a&Action=print&stats%5B%5D=' . $statsdetails['autoresponderid'] . '" class="thickbox" title="' . GetLang('PrintAutoresponderStatistics') . '">' . GetLang('Print_Stats_Selected') . '</a>&nbsp;&nbsp;';
 
 			if ($statsdetails['statid'] > 0) {

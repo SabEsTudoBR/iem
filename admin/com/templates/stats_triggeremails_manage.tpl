@@ -94,7 +94,7 @@
 		{if trim($PAGE.messages) != ''}
 			<div style="margin-top: 5px;">{$PAGE.messages}</div>
 		{/if}
-
+ 		%%GLOBAL_Message_Export%%
 		<div class="Page_Action">
 			<div style="{if trim($PAGE.messages) == ''}padding-top: 10px;{/if} padding-bottom: 10px;">
 				{* Contact Lists and Campaigns are available, print the "Add Trigger" button *}
@@ -205,6 +205,7 @@
 						</td>
 						<td style="white-space:nowrap;">
 							<a href="index.php?Page=Stats&Action=TriggerEmails&SubAction=view&id={$recordID}">{$lang.ViewSummary}</a>&nbsp;
+							<a href="index.php?Page=Stats&Action=TriggerEmails&SubAction=view&SelectAction=export&triggerId={$recordID}&stats[]={$statID}"  title="{$lang.TriggerEmails_Stats_Export}" class="StatsTriggerEmails_Row_Action_Export">{$lang.Export_Stats_Selected}</a>				
 							<a href="remote_stats.php?height=420&width=420&overflow=none&statstype=t&Action=print&stats[]={$statID}&triggerid[]={$recordID}" class="thickbox" title="{$lang.TriggerEmails_Stats_Print}">{$lang.Print_Stats_Selected}</a>&nbsp;
 							<a href="index.php?Page=Stats&Action=TriggerEmails&SubAction=Delete&id={$statID}" title="{$lang.TriggerEmails_Stats_Delete}" class="StatsTriggerEmails_Row_Action_Delete">{$lang.Delete}</a>
 						</td>
