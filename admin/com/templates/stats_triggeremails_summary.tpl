@@ -67,7 +67,7 @@
 		<div class="Heading1">{$lang.TriggerEmails_Stats_Title}</div>
 		<div class="Intro">{$lang.TriggerEamils_Stats_Page_Intro|sprintf,$record.triggeremailsname}</div>
 	</div>
-
+	%%GLOBAL_Message_Export%%
 	{* ----- Tab navigations *}
 		<div style="display: block; clear: both;">
 			<br>

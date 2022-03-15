@@ -9,6 +9,7 @@
 </script>
 
 <div>
+%%GLOBAL_Message_Export%%
 	<br>
 
 	<ul id="tabnav">
