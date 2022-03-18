@@ -570,11 +570,11 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%list_subscriber_events (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;";
 
 $queries[] = "create table %%TABLEPREFIX%%addons (
-	addon_id varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL primary key,
+	addon_id varchar(200) not null primary key,
 	installed int default 0,
 	configured int default 0,
 	enabled int default 0,
-	addon_version VARCHAR(10) varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL default '0',
+	addon_version VARCHAR(10) default '0',
 	settings text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
