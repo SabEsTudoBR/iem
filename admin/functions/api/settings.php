@@ -119,7 +119,9 @@ class Settings_API extends API
 		'CRON_TRIGGEREMAILS_S',
 		'CRON_TRIGGEREMAILS_P',
 		'CRON_MAINTENANCE',
-
+		'CRON_DELETEUNCONFIRMSUB',
+		'CRON_DELETEBOUNCED',
+		
 		'EMAILSIZE_WARNING',
 		'EMAILSIZE_MAXIMUM',
 
@@ -133,7 +135,13 @@ class Settings_API extends API
 		'SECURITY_WRONG_LOGIN_THRESHOLD_COUNT',
 		'SECURITY_WRONG_LOGIN_THRESHOLD_DURATION',
 		'SECURITY_BAN_DURATION',
-
+          
+		'SECURITY_AUTO_DELETE_UNCONFIRM',
+		'SECURITY_AUTO_DELETE_UNCONFIRM_DAYS',
+		
+		'SECURITY_AUTO_DELETE_BOUNCED',
+		'SECURITY_AUTO_DELETE_BOUNCED_DAYS',
+		
 		'CREDIT_INCLUDE_AUTORESPONDERS',
 		'CREDIT_INCLUDE_TRIGGERS',
 		'CREDIT_WARNINGS',
@@ -245,7 +253,37 @@ class Settings_API extends API
 		'540'		=> '9_hours',
 		'1440'		=> '1_day',
 	];
+/**
+	 * $deleteunconfirmsub_options
+	 * The option to set how often the unconfirmed subscribers auto-delete process can run. This is used by the settings page to work out which options to show.
+	 * 30days, 60days, 90days, 180days
+	 * @var array
+	 */
+	var $deleteunconfirmsub_options = [
+		'0'		=> 'disabled',
+		'1440'		=> '1_day',
+		'10080'		=> '7_day',
+		'43200'		=> '30_days',
+		'86400'		=> '60_days',
+		'129600'	=> '90_days',
+		'259200'	=> '180_days',  
+	];
+	/**
+	 * $deletebounced_options
+	 * The option to set how often the bounced auto-delete process can run. This is used by the settings page to work out which options to show.
+	 *
+	 * @var array
+	 */
+	var $deletebounced_options = [
+		'0'			=> 'disabled',
+		'1440'		=> '1_day',
+		'10080'		=> '7_day',
+		'43200'		=> '30_days',
+		'86400'		=> '60_days',
+		'129600'	=> '90_days',
+		'259200'	=> '180_days', 
 
+	];
 	/**
 	* If cron is enabled, this setting is checked to make sure it's working ok. This allows the settings page to show a warning about it being set up properly or not.
 	*
@@ -302,6 +340,13 @@ class Settings_API extends API
 			'lastrun' => -1
 		],
 		'maintenance' => [
+			'lastrun' => -1
+		],
+		 'deleteunconfirmsub' => [ 
+			'lastrun' => -1
+		],  
+		 
+		'deletebounced' => [
 			'lastrun' => -1
 		]
 	];
@@ -528,6 +573,14 @@ class Settings_API extends API
 			if (!defined('SENDSTUDIO_CRON_MAINTENANCE')) {
 				define('SENDSTUDIO_CRON_MAINTENANCE', 1440);
 			}
+			// Delete Uncofirmed will default to run once a day
+			if (!defined('SENDSTUDIO_CRON_DELETEUNCONFIRMSUB')) {
+				define('SENDSTUDIO_CRON_DELETEUNCONFIRMSUB', 1440);
+			}
+			// Delete Bounced will default to run once a day
+			if (!defined('SENDSTUDIO_CRON_DELETEBOUNCED')) {
+				define('SENDSTUDIO_CRON_DELETEBOUNCED', 1440);
+			}
 		// -----
 
 
@@ -648,7 +701,7 @@ class Settings_API extends API
 		if (!$this->CheckCron()) {
 			return true;
 		}
-		$expectedIntervalPool = [SENDSTUDIO_CRON_SEND, SENDSTUDIO_CRON_AUTORESPONDER, SENDSTUDIO_CRON_BOUNCE, SENDSTUDIO_CRON_TRIGGEREMAILS_S, SENDSTUDIO_CRON_TRIGGEREMAILS_P];
+		$expectedIntervalPool = [SENDSTUDIO_CRON_SEND,SENDSTUDIO_CRON_DELETEUNCONFIRMSUB,SENDSTUDIO_CRON_DELETEBOUNCED, SENDSTUDIO_CRON_AUTORESPONDER, SENDSTUDIO_CRON_BOUNCE, SENDSTUDIO_CRON_TRIGGEREMAILS_S, SENDSTUDIO_CRON_TRIGGEREMAILS_P];
 		$expectedInterval = -1;
 		$actualInterval = floor((time() - $this->cronrun2) / 60);
 

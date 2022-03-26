@@ -8,6 +8,8 @@
 * - Bounce processing
 * - Addons
 * - Trigger emails
+* - Bounced Subscribers delete
+* - Unconfirmed Subscribers delete
 *
 * @package interspire.iem.cron
 */
@@ -27,14 +29,17 @@ require_once $mydir . '/common.php';
  * - Trigger Emails
  * - any addons that have cron jobs
  * - maintaince is for all maintenance work
- */
-
+ * - Unconfirmed Subscribers delete
+ * - Bounced Addresses delete
+ */ 
 require_once $mydir . '/send.php';
 require_once $mydir . '/autoresponders.php';
 require_once $mydir . '/bounce.php';
 require_once $mydir . '/addons.php';
 require_once $mydir . '/triggeremails.php';
 require_once $mydir . '/maintenance.php';
+require_once $mydir . '/delete_unconfirmed_subscribers.php';  
+require_once $mydir . '/delete_bounced_addresses.php'; 
 
 /**
 * After everything has run, see if we need to keep the "logs" in check.

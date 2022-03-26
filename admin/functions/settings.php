@@ -1142,7 +1142,11 @@ class Settings extends SendStudio_Functions
 				'two_factor_auth_attempts' => SENDSTUDIO_SECURITY_TWO_FACTOR_AUTH_ATTEMPTS,
 				'threshold_login_count' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_COUNT,
 				'threshold_login_duration' => SENDSTUDIO_SECURITY_WRONG_LOGIN_THRESHOLD_DURATION / 60,
-				'ip_login_ban_duration' => SENDSTUDIO_SECURITY_BAN_DURATION / 60
+				'ip_login_ban_duration' => SENDSTUDIO_SECURITY_BAN_DURATION / 60,
+				'auto_delete_unconfirm' => SENDSTUDIO_SECURITY_AUTO_DELETE_UNCONFIRM,
+				'auto_delete_unconfirm_days' => SENDSTUDIO_SECURITY_AUTO_DELETE_UNCONFIRM_DAYS,
+				'auto_delete_bounced' => SENDSTUDIO_SECURITY_AUTO_DELETE_BOUNCED,
+				'auto_delete_bounced_days' => SENDSTUDIO_SECURITY_AUTO_DELETE_BOUNCED_DAYS,
 			];
 
 			// If security session timeout value is NULL in db, then the default value will be 60 minutes.

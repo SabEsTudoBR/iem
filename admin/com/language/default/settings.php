@@ -3,6 +3,25 @@ define('LNG_ForceHideSMTP', 'Force own SMTP sever');
 define('LNG_HLP_ForceHideSMTP', 'Force users to select and configure their own SMTP server. Do not let them use the default SMTP server.');
 define('LNG_ForceHideSMTPExplain', 'Yes, hide the default SMTP selection for users');
 define('LNG_SecuritySettings_Destroy_Session_Title', 'End Session After Inactivity');
+
+ 
+define('LNG_SecuritySettings_Auto_Delete_Unconfirm_Subscribers_Settings_Title', 'Auto-delete Unconfirmed Subscribers');
+define('LNG_SecuritySettings_Auto_Delete_Unconfirmed','Auto-delete Unconfirmed Subscribers');
+define('LNG_SecuritySettings_Auto_Delete_Unconfirm', 'Yes, enable auto-delete unconfirmed subscribers');  
+define('LNG_HLP_SecuritySettings_Auto_Delete_Unconfirmed', 'Delete the subscribers that did not confirm their subscriptions within the number of days specified below. <br> Double opt-in should always be on or make sure you set your contacts to Confirmed before turning this option on.');
+define('LNG_SecuritySettings_Auto_Delete_Unconfirm_Days', 'Delete Unconfirmed Subscribers');
+define('LNG_Max_Unconfirmed_Days', 'Days after subscirption request');
+define('LNG_SecuritySettings_List_Maintenance_Title', 'List Maintenance');
+
+
+define('LNG_SecuritySettings_Auto_Delete_Bounced_Subscribers_Settings_Title', 'Auto-delete Bounced Subscribers');
+define('LNG_SecuritySettings_Auto_Delete_Bounced_Addresses','Auto-Delete Bounced Addresses');
+define('LNG_SecuritySettings_Auto_Delete_Bounced', 'Yes, enable auto-delete bounced addresses');  
+define('LNG_HLP_SecuritySettings_Auto_Delete_Bounced_Addresses', 'Delete bounced contacts after the number of days specified below.');
+define('LNG_SecuritySettings_Auto_Delete_Bounced_Days', 'Delete Bounced Addresses');
+define('LNG_Max_Bounced_Days', 'Days after bounce');
+ 
+
 define('LNG_SecuritySettings_OTP_Settings_Title','Two-factor Authentication');
 define('LNG_SecuritySettings_OTP', 'Enable Two-factor Authentication '); 
 define('LNG_SecuritySettings_Two_Factor_Auth', 'Yes, enable Two-factor Authentication feature');  
@@ -184,6 +203,7 @@ define('LNG_Cron_Option_4_hours', '4 Hours');
 define('LNG_Cron_Option_6_hours', '6 Hours');
 define('LNG_Cron_Option_12_hours', '12 Hours');
 define('LNG_Cron_Option_1_day', 'Daily');
+define('LNG_Cron_Option_7_day', 'Weekly');
 
 define('LNG_Cron_DateFormat', 'g:i a, d M Y');
 
@@ -396,6 +416,13 @@ define('LNG_CreditSettings_Warnings_Alert_EnterEmailContents', 'Please enter the
  */
 
 define('LNG_Cron_Option_maintenance_Heading', 'Maintenance Process');
+define('LNG_Cron_Option_deleteunconfirmsub_Heading', 'Auto-delete Unconfirmed Subscribers');
+define('LNG_Cron_Option_deletebounced_Heading', 'Auto-delete Bounced Subscribers');
+define('LNG_Cron_Option_30_days', '30 Days');
+define('LNG_Cron_Option_60_days', '60 Days');
+define('LNG_Cron_Option_90_days', '90 Days');
+define('LNG_Cron_Option_180_days', '180 Days');  
+
 define('LNG_Cron_Option_3_hours', '3 Hours');
 define('LNG_Cron_Option_9_hours', '9 Hours');
 
