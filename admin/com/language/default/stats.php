@@ -1,6 +1,18 @@
 <?php
- 
+
+define('LNG_Export_Newsletter_Sub_Statistics','The Subscribed List statistics have been exported. <a href="%s">Click here</a> to download the data.');
+define('LNG_NewsletterStatistics_SubscriberInformation_Intro', 'View which contacts were sent the newsletter \'%s\'');
+
+
 define('LNG_Stats_PrintReport', 'Print Report');
+define('LNG_Export_Newsletter_Open_Statistics','The open statistics have been exported. <a href="%s">Click here</a> to download the data.');
+define('LNG_Export_Newsletter_Link_Cliked_Statistics','The Link clicked statistics  have been exported. <a href="%s">Click here</a> to download the data.');
+define('LNG_Stats_Export_Header_Subject','Subject');
+define('LNG_Stats_Export_Header_Date','Date');
+define('LNG_Stats_EmailAdress_Header_Address','Email Address');
+define('LNG_Stats_opened_Header_Date','Date Opened');
+define('LNG_Stats_Email_As_Header_Opened','Opened Email As ');
+define('LNG_TriggerEmails_Stats_Export', 'Export');
 define('LNG_Stats_ExportReport', 'Export Report');
 define('LNG_Stats_TotalDelivered', 'Total Delivered');
 define('LNG_Stats_TotalForwards', 'Total Forwards');
@@ -110,6 +122,7 @@ define('LNG_NewsletterStatistics_SendingTime', 'Sending Time');
 define('LNG_NewsletterStatistics_SentTo', 'Sent To');
 define('LNG_NewsletterStatistics_SentBy', 'Sent By');
 define('LNG_NewsletterStatistics_Opened', 'Opened');
+define('LNG_NewsletterSent', 'Sent');
 define('LNG_NotFinishedSending', 'Not finished sending');
 define('LNG_NewsletterStatistics_Snapshot_SendSize', '%s of %s');
 Define('LNG_EmailOpens_Unique', '%s Unique Opens');
@@ -219,6 +232,9 @@ define('LNG_NewsletterHasNotBeenBounced_CalendarProblem', 'No bounce reports hav
 define('LNG_NewsletterHasNotBeenBounced_CalendarProblem_BounceType', 'No %ss have occurred in the selected date range.');
 define('LNG_AutoresponderStatistics_Snapshot_BounceStats', 'Bounce Stats');
 define('LNG_AutoresponderStatistics_Bounced', 'Bounced');
+define('LNG_TriggerEmails_Stats_Title', 'Trigger Statistics');
+define('LNG_TriggerEmails_Stats_Intro', 'See statistics for date and link based triggers that you have setup.');
+
 define('LNG_AutoresponderStatistics_Snapshot_BounceHeading', 'View bounce statistics for autoresponder \'%s\'');
 define('LNG_AutoresponderHasNotBeenBounced', 'No bounce reports have been received for this autoresponder.');
 define('LNG_AutoresponderHasNotBeenBounced_BounceType', 'No %ss have been received for this autoresponder.');
@@ -318,8 +334,6 @@ define('LNG_Export_Stats_Selected','Export');
 define('LNG_Export_Not_Writable','Unable to export statistics: Could not write to %s');
 define('LNG_Export_Newsletter_Statistics','The statistics for the selected campaigns have been exported. <a href="%s">Click here</a> to download the data.');
 define('LNG_Print_Stats_Selected','Print');
-define('LNG_Stats_Export_Header_Subject','Subject');
-define('LNG_Stats_Export_Header_Date','Date');
 define('LNG_Stats_Export_Header_Time','Time');
 define('LNG_Stats_Export_Header_Duration','Duration (min)');
 define('LNG_Stats_Export_Header_Recipients','Recipients');
