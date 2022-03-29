@@ -1,7 +1,6 @@
 <?php
 
 define('LNG_Export_Newsletter_Sub_Statistics','The Subscribed List statistics have been exported. <a href="%s">Click here</a> to download the data.');
-define('LNG_NewsletterStatistics_Snapshot_SubscriberStats', 'Contact Information');
 define('LNG_NewsletterStatistics_SubscriberInformation_Intro', 'View which contacts were sent the newsletter \'%s\'');
 
 
@@ -335,8 +334,6 @@ define('LNG_Export_Stats_Selected','Export');
 define('LNG_Export_Not_Writable','Unable to export statistics: Could not write to %s');
 define('LNG_Export_Newsletter_Statistics','The statistics for the selected campaigns have been exported. <a href="%s">Click here</a> to download the data.');
 define('LNG_Print_Stats_Selected','Print');
-define('LNG_Stats_Export_Header_Subject','Subject');
-define('LNG_Stats_Export_Header_Date','Date');
 define('LNG_Stats_Export_Header_Time','Time');
 define('LNG_Stats_Export_Header_Duration','Duration (min)');
 define('LNG_Stats_Export_Header_Recipients','Recipients');
