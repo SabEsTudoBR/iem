@@ -1,5 +1,53 @@
 # Interspire Email Marketer Changelog
 
+Version: 6.5.0
+Released: 1st April, 2022
+- Auto-delte Unconfirmed and Bounced addresses
+- Fixed IEM API GetTemplates access issue 
+- Export Statistics (Open, Links, Bounce etc.)
+- Changed default Charset from utf8 to utf8mb4
+- Force version check on SSL site
+- Fixed Typo in unsub subject line constant
+- 
+
+Files Changed:
+-------------
+	admin/addons/dynamiccontenttags/schema.mysql.php
+	admin/addons/splittest/schema.mysql.php
+	admin/addons/splittest/splittest_stats.php
+	admin/addons/splittest/templates/splittest_campaign_stats.tpl
+	admin/addons/surveys/schema.mysql.php
+	admin/addons/updatecheck/templates/default.tpl
+	admin/com/install/schema.mysql.php
+	admin/com/language/default/settings.php
+	admin/com/lib/DeleteBounced.class.php
+	admin/com/lib/DeleteUnconfirmSub.class.php
+	admin/com/language/default/upgradenx.php
+	admin/com/language/default/whitelabel.php
+	admin/com/templates/settings.tpl
+	admin/com/templates/stats_autoresponders_step3.tpl
+	admin/com/templates/stats_newsletters_step3.tpl
+	admin/com/templates/stats_step3_links_table.tpl
+	admin/com/templates/stats_step3_opens_table.tpl
+	admin/com/templates/stats_triggeremails_manage.tpl
+	admin/com/templates/stats_triggeremails_summary.tpl
+	admin/com/xml.php
+	admin/cron/cron.php
+	admin/cron/delete_bounced_addresses.php
+	admin/cron/delete_unconfirmed_subscribers.php
+	admin/functions/api/settings.php
+	admin/functions/api/templates.php
+	admin/functions/forms.php
+	admin/functions/index.php
+	admin/functions/remote_stats.php
+	admin/functions/settings.php
+	admin/functions/stats.php
+	admin/functions/templates.php
+	admin/modules/tracker/_install/mysql.php
+	changelog.txt
+	version.txt
+
+
 Version: 6.4.3
 Released: 3rd March, 2022
 - Fixed default email footer doesn't display gif image
