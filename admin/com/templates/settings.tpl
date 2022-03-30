@@ -941,10 +941,10 @@
 							</td>
 							<td>
 								<img width="20" height="20" src="images/nodejoin.gif"/>
-								<label for="security_auto_delete_unconfirm_days">  
-									<input type="number" value="{$security_settings.auto_delete_unconfirm_days}"  name="security_auto_delete_unconfirm_days" id="security_auto_delete_unconfirm_days" style="width: 50px;">
+								<label for="security_auto_delete_unconfirm_days">    
+									<input type="number" min="0"  value="{$security_settings.auto_delete_unconfirm_days}"  name="security_auto_delete_unconfirm_days" id="security_auto_delete_unconfirm_days" style="width: 50px;" required>
 									 
-									{$lang.Max_Unconfirmed_Days}
+									{$lang.Max_Unconfirmed_Days}  
 								</label>
 							</td>
 						</tr>
@@ -970,7 +970,7 @@
 							<td>
 								<img width="20" height="20" src="images/nodejoin.gif"/>
 								<label for="security_auto_delete_bounced_days">  
-									<input type="number" value="{$security_settings.auto_delete_bounced_days}"  name="security_auto_delete_bounced_days" id="security_auto_delete_bounced_days" style="width: 50px;">
+									<input type="number" value="{$security_settings.auto_delete_bounced_days}"  min="0" name="security_auto_delete_bounced_days" id="security_auto_delete_bounced_days" style="width: 50px;" required>
 									 
 									{$lang.Max_Bounced_Days}
 								</label>
