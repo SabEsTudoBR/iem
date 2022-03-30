@@ -130,8 +130,8 @@
 		$(document.settings.security_wrong_login_threshold_enable).click(function() { $('tr.security_wrong_login_threshold_options').toggle(); });
 		$(document.settings.security_two_factor_auth).click(function() { $('tr.security_wrong_otp_wait_options').toggle(); });
 		
-		$(document.settings.security_auto_delete_unconfirm).click(function() { $('tr.security_auto_delete_unconfirm_options').toggle(); $('#security_auto_delete_unconfirm_days').val('15'); });
-	    $(document.settings.security_auto_delete_bounced).click(function() { $('tr.security_auto_delete_bounced_options').toggle(); $('#security_auto_delete_bounced_days').val('15'); });
+		$(document.settings.security_auto_delete_unconfirm).click(function() { $('tr.security_auto_delete_unconfirm_options').toggle(); $('#security_auto_delete_unconfirm_days').val('10'); });
+	    $(document.settings.security_auto_delete_bounced).click(function() { $('tr.security_auto_delete_bounced_options').toggle(); $('#security_auto_delete_bounced_days').val('10'); });
 		$(document.settings.credit_warnings).click(function() { $('div#credit_percentage_warnings_options', document.settings)[this.checked? 'show' : 'hide'](); });
 		$('input.percentage_credit_warning', document.settings).click(function() {
 			var index = this.id.match(/_(\d+)$/)[1];
