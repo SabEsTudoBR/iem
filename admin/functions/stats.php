@@ -117,14 +117,30 @@ class Stats extends SendStudio_Functions
 			$GLOBALS['ExportBounces'] = 'Stats&Action='.$_GET['Action'].'&SubAction=ViewSummary&SelectAction=bouncesexport&id='.$id.'&tab=5';
 			 
 		}
-		if(isset($GLOBALS['ExportBounces']) and isset($GLOBALS['ExportUnsub']) and isset($GLOBALS['ExportOpened']) and isset($GLOBALS['ExportClickedLink'])){
-			IEM::sessionSet('ExportOpened',$GLOBALS['ExportOpened']);
+
+		IEM::sessionSet('ExportOpened','');
+		IEM::sessionSet('ExportClickedLink','');
+		IEM::sessionSet('ExportBounces','');
+		IEM::sessionSet('ExportUnsub','');
+		IEM::sessionSet('ExportSub','');
+		
+		if( isset($GLOBALS['ExportOpened'])){			 
+			IEM::sessionSet('ExportOpened',$GLOBALS['ExportOpened']);			
+		}
+		if( isset($GLOBALS['ExportClickedLink'])){			 
 			IEM::sessionSet('ExportClickedLink',$GLOBALS['ExportClickedLink']);
-			IEM::sessionSet('ExportUnsub',$GLOBALS['ExportUnsub']);
-		}else{
-			IEM::sessionSet('ExportOpened','');
-			IEM::sessionSet('ExportClickedLink','');
-			IEM::sessionSet('ExportUnsub','');
+		}
+		if( isset($GLOBALS['ExportBounces'])){			 
+			IEM::sessionSet('ExportBounces',$GLOBALS['ExportBounces']);			
+		}
+		if( isset($GLOBALS['ExportUnsub'])){			 
+			IEM::sessionSet('ExportUnsub',$GLOBALS['ExportUnsub']);			
+		}
+		if( isset($GLOBALS['ExportUnsub'])){			 
+			IEM::sessionSet('ExportUnsub',$GLOBALS['ExportUnsub']);			
+		}		
+		if( isset($GLOBALS['ExportSub'])){			 
+			IEM::sessionSet('ExportSub',$GLOBALS['ExportSub']);			
 		}
 		// Print the loading indicator for the charts
 		$GLOBALS['TableType'] = 'chart';

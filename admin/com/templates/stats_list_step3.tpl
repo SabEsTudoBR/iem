@@ -10,6 +10,8 @@
 
 <div>
 	<br>
+	%%GLOBAL_Message_Export%%
+	<br>
 	<ul id="tabnav">
 		<li><a href="#" class="active" onClick="ShowTab(1)" id="tab1">%%LNG_ListStatistics_Snapshot%%</a></li>
 		<li><a href="#" onClick="ShowTab(7)" id="tab7">%%LNG_ListStatistics_Snapshot_PerDomain%%</a></li>
