@@ -130,8 +130,8 @@
 		$(document.settings.security_wrong_login_threshold_enable).click(function() { $('tr.security_wrong_login_threshold_options').toggle(); });
 		$(document.settings.security_two_factor_auth).click(function() { $('tr.security_wrong_otp_wait_options').toggle(); });
 		
-		$(document.settings.security_auto_delete_unconfirm).click(function() { $('tr.security_auto_delete_unconfirm_options').toggle(); });
-	    $(document.settings.security_auto_delete_bounced).click(function() { $('tr.security_auto_delete_bounced_options').toggle(); });
+		$(document.settings.security_auto_delete_unconfirm).click(function() { $('tr.security_auto_delete_unconfirm_options').toggle(); $('#security_auto_delete_unconfirm_days').val('10'); });
+	    $(document.settings.security_auto_delete_bounced).click(function() { $('tr.security_auto_delete_bounced_options').toggle(); $('#security_auto_delete_bounced_days').val('10'); });
 		$(document.settings.credit_warnings).click(function() { $('div#credit_percentage_warnings_options', document.settings)[this.checked? 'show' : 'hide'](); });
 		$('input.percentage_credit_warning', document.settings).click(function() {
 			var index = this.id.match(/_(\d+)$/)[1];
@@ -941,10 +941,10 @@
 							</td>
 							<td>
 								<img width="20" height="20" src="images/nodejoin.gif"/>
-								<label for="security_auto_delete_unconfirm_days">    
-									<input type="number" min="0"  value="{$security_settings.auto_delete_unconfirm_days}"  name="security_auto_delete_unconfirm_days" id="security_auto_delete_unconfirm_days" style="width: 50px;" required>
+								<label for="security_auto_delete_unconfirm_days">  
+									<input type="number" min="0" value="{$security_settings.auto_delete_unconfirm_days}"  name="security_auto_delete_unconfirm_days" id="security_auto_delete_unconfirm_days" style="width: 50px;">
 									 
-									{$lang.Max_Unconfirmed_Days}  
+									{$lang.Max_Unconfirmed_Days}
 								</label>
 							</td>
 						</tr>
@@ -970,7 +970,7 @@
 							<td>
 								<img width="20" height="20" src="images/nodejoin.gif"/>
 								<label for="security_auto_delete_bounced_days">  
-									<input type="number" value="{$security_settings.auto_delete_bounced_days}"  min="0" name="security_auto_delete_bounced_days" id="security_auto_delete_bounced_days" style="width: 50px;" required>
+									<input type="number" min="0" value="{$security_settings.auto_delete_bounced_days}"  name="security_auto_delete_bounced_days" id="security_auto_delete_bounced_days" style="width: 50px;">
 									 
 									{$lang.Max_Bounced_Days}
 								</label>
