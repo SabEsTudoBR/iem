@@ -2,13 +2,12 @@
 
 Version: 6.5.0
 Released: 1st April, 2022
-- Auto-delte Unconfirmed and Bounced addresses
-- Fixed IEM API GetTemplates access issue 
-- Export Statistics (Open, Links, Bounce etc.)
-- Changed default Charset from utf8 to utf8mb4
+- Added export statistics (Open, Links, Bounce, Unsubscribe, etc.)
+- Added configurable auto-delete of unconfirmed and bounced addresses
+- Changed default charset from utf8 to utf8mb4
 - Force version check on SSL site
-- Fixed Typo in unsub subject line constant
-- 
+- Fixed API GetTemplates access issue
+- Fixed typo in unsub subject line constant
 
 Files Changed:
 -------------
