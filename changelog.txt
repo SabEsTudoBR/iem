@@ -6,7 +6,7 @@ Released: 1st April, 2022
 - Added configurable auto-delete of unconfirmed and bounced addresses
 - Changed default charset from utf8 to utf8mb4
 - Force version check on SSL site
-- Fixed IEM API GetTemplates access issue 
+- Fixed API GetTemplates access issue
 - Fixed typo in unsub subject line constant
 
 Files Changed:
