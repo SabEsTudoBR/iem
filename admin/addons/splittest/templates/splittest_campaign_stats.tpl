@@ -1,12 +1,90 @@
 <script>
 	var TabSize = 5;
 </script>
+<script>
+	var PAGE = {
+		init: function() {
+	 
+			Application.Ui.CheckboxSelection(
+				'table#SplittestStatisticList',
+				'input.UICheckboxToggleSelector',
+				'input.UICheckboxToggleRows'
+			);
+
+			$('.disabledlink').click(function() {
+				alert('{$lang.Addon_splittest_Stats_NotFinished}');
+				return false;
+			});
+
+			$('.StatsDisplayDeleteStat').click(PAGE.deleteSplittestStat);
+			$('.StatsDisplayExportStat').click(PAGE.exportSplittestStat);
+			$('.StatsDisplayClickExportStat').click(PAGE.exportClickSplittestStat);
+			$('.StatsDisplayBounceExportStat').click(PAGE.exportBounceSplittestStat);
+			$('.StatsDisplayUnsubExportStat').click(PAGE.exportUnsubSplittestStat);
+			$('#StatsForm').submit(PAGE.selectSplittestAction);
+		},
+		
+		exportUnsubSplittestStat: function(e) {
+		 
+			var jobID = $(this).attr('id').match(/hrefStatsDisplayExportJob_(\d*)/);
+			var splitID = $(this).attr('splitid').match(/hrefStatsDisplayExportJob_(\d*)/);
+			 
+			Application.Util.submitPost('index.php?Page=Addons&Addon=splittest&Action=Stats&Export=ExportUnsub',
+				{SubAction : 'Export', jobid: jobID[1], splitid: splitID[1]}
+			);
+			e.stopPropagation();
+			e.preventDefault();
+		} ,
+		exportClickSplittestStat: function(e) {
+		 
+			var jobID = $(this).attr('id').match(/hrefStatsDisplayExportJob_(\d*)/);
+			var splitID = $(this).attr('splitid').match(/hrefStatsDisplayExportJob_(\d*)/);
+			 
+			Application.Util.submitPost('index.php?Page=Addons&Addon=splittest&Action=Stats&SubAction=Export&Export=ExportClick',
+				{SubAction : 'Export', jobid: jobID[1], splitid: splitID[1]}
+			);
+			e.stopPropagation();
+			e.preventDefault();
+		} ,
+
+		exportBounceSplittestStat: function(e) {
+		 
+			var jobID = $(this).attr('id').match(/hrefStatsDisplayExportJob_(\d*)/);
+			var splitID = $(this).attr('splitid').match(/hrefStatsDisplayExportJob_(\d*)/);
+			 
+			Application.Util.submitPost('index.php?Page=Addons&Addon=splittest&Action=Stats&Export=ExportBounce',
+				{SubAction : 'Export', jobid: jobID[1], splitid: splitID[1]}
+			);
+			e.stopPropagation();
+			e.preventDefault();
+		} ,
+
+		exportSplittestStat: function(e) {
+		 
+			var jobID = $(this).attr('id').match(/hrefStatsDisplayExportJob_(\d*)/);
+			var splitID = $(this).attr('splitid').match(/hrefStatsDisplayExportJob_(\d*)/);
+			alert('testing'); 		
+			Application.Util.submitPost('index.php?Page=Addons&Addon=splittest&Action=Stats&Export=ExportOpen',
+				{SubAction : 'Export', jobid: jobID[1], splitid: splitID[1]}
+			);
+			e.stopPropagation();
+			e.preventDefault();
+		}
+	};
+
+	$(function() {
+		PAGE.init();
+	});
+
+	 
+</script>
 
 <h2 class="Heading1" style="margin:0; padding:0;">Split Test Statistics for &quot;{$statsDetails.splitname}&quot;</h2>
 
 <div>
+	<br> 
+	%%GLOBAL_Message_Export%%
 	<br>
-
 	<ul id="tabnav">
 		<li><a href="#" class="active" onClick="ShowTab(1); return false;" id="tab1">%%LNG_NewsletterStatistics_Snapshot%%</a></li>
 		<li><a href="#" onClick="ShowTab(2); return false;" id="tab2">%%LNG_NewsletterStatistics_Snapshot_OpenStats%%</a></li>
@@ -156,7 +234,12 @@
 
 		<tr>
 		  <td valign="top" width="100%">
-			  <table border="0" cellspacing="0" cellpadding="0" width="100%" class="Text">
+		  &nbsp;
+			<form name="customDateForm" method="post" action="index.php?Page=Addons&Addon=splittest&Action=Stats&splitid={$statsDetails.splitid}&jobid={$statsDetails.jobid}&SubAction=Export&Export=ExportOpen" style="margin: 0px;">
+				<input type="submit" value="{$lang.Addon_splittest_Stats_Export}" class="Text" style="margin-bottom:5px; margin-left:5px;">
+				</form> 
+			 
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" class="Text">
 				<tr class="Heading3">
 					<td width="200" height="22" align="left" valign="top">
 						<b>{$lang.Addon_splittest_Stats_EmailCampaigns}</b>
@@ -211,7 +294,11 @@
 
 			<tr>
 			  <td width="100%">
-				<table border="0" cellspacing="0" cellpadding="0" width="100%" class="Text">
+			    &nbsp;
+				<form name="customDateForm" method="post" action="index.php?Page=Addons&Addon=splittest&Action=Stats&splitid={$statsDetails.splitid}&jobid={$statsDetails.jobid}&SubAction=Export&Export=ExportClick"" style="margin: 0px;">
+				<input type="submit" value="{$lang.Addon_splittest_Stats_Export}" class="Text" style="margin-bottom:5px; margin-left:5px;">
+				</form>
+				 <table border="0" cellspacing="0" cellpadding="0" width="100%" class="Text">
 					<tr class="Heading3">
 						<td width="200" height="22" align="left" valign="top">
 							<b>{$lang.Addon_splittest_Stats_EmailCampaigns}</b>
@@ -265,6 +352,11 @@
 
 		<tr>
 			<td>
+			  &nbsp; 
+			  <form name="customDateForm" method="post" action="index.php?Page=Addons&Addon=splittest&Action=Stats&splitid={$statsDetails.splitid}&jobid={$statsDetails.jobid}&SubAction=Export&Export=ExportBounce" style="margin: 0px;">
+				<input type="submit" value="{$lang.Addon_splittest_Stats_Export}" class="Text" style="margin-bottom:5px; margin-left:5px;">
+			  </form>
+			  
 			  <table border="0" cellspacing="0" cellpadding="0" width="100%" class="Text">
 				<tr class="Heading3">
 					<td width="200" height="22" align="left" valign="top">
@@ -320,6 +412,11 @@
 
 		<tr>
 			<td>
+			 	 &nbsp; 
+				<form name="customDateForm" method="post" action="index.php?Page=Addons&Addon=splittest&Action=Stats&splitid={$statsDetails.splitid}&jobid={$statsDetails.jobid}&SubAction=Export&Export=ExportUnsub"  style="margin: 0px;">
+					<input type="submit" value="{$lang.Addon_splittest_Stats_Export}" class="Text {$active_status}" style="margin-bottom:5px; margin-left:5px;">
+				</form>
+				  
 				<table border="0" cellspacing="0" cellpadding="0" width="100%" class="Text">
 					<tr class="Heading3">
 						<td width="200" height="22" align="left" valign="top">

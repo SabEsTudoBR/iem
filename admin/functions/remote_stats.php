@@ -107,7 +107,7 @@ class RemoteStats extends SendStudio_Functions
 		$statstype = $this->_getGETRequest('statstype', null);
 		$subaction = $this->_getGETRequest('subaction', '');
  
-
+        
 		if (isset($_GET['PerPageDisplay'])) {
 			$perpage = $this->SetPerPage($_GET['PerPageDisplay']);
 		} else {
@@ -115,7 +115,7 @@ class RemoteStats extends SendStudio_Functions
 		}
 
 		$statsapi = $this->GetApi('Stats');
-
+ 
 		switch ($action) {
 			case 'get_linkstats':
 				$linksjson = array();
@@ -1064,6 +1064,10 @@ class RemoteStats extends SendStudio_Functions
 
 				// Tables:
 				header("Content-type: text/html; charset=" . SENDSTUDIO_DEFAULTCHARSET);
+				$GLOBALS['ExportOpened'] = IEM::sessionGet("ExportOpened");
+				$GLOBALS['ExportClickedLink'] = IEM::sessionGet("ExportClickedLink");
+				$GLOBALS['ExportUnsub'] =  IEM::sessionGet("ExportUnsub");
+						
 				switch ($this->type) {
 					case 'newsletter_opens':
 						$opens = array();
@@ -1081,11 +1085,11 @@ class RemoteStats extends SendStudio_Functions
 
 						$GLOBALS['CurrentPage'] = (int)$DisplayPage;
 						$this->_SetupPaging($opencount, $DisplayPage, $perpage, '', 'newsletter_opens', $_GET['token']);
-
+				
 						$paging = $this->ParseTemplate('Stats_Remote_Paging', true, false);
 
 						$GLOBALS['Paging'] = $paging;
-
+						 
 						$open_list = '';
 						foreach ($opens as $k => $opendetails) {
 							$GLOBALS['EmailAddress'] = htmlspecialchars($opendetails['emailaddress'], ENT_QUOTES, SENDSTUDIO_CHARSET);
@@ -1110,7 +1114,7 @@ class RemoteStats extends SendStudio_Functions
 							$GLOBALS['PagingBottom'] = $GLOBALS['Paging'] = '';
 						}
 
-						echo $this->ParseTemplate('Stats_Step3_Opens_Table', true, false);
+						echo $this->ParseTemplate('Stats_Step3_Opens_Table', true, false); 
 					break; //newsletter_opens
 
 					case 'newsletter_links':
@@ -1172,7 +1176,8 @@ class RemoteStats extends SendStudio_Functions
 						if (isset($_GET['pagination']) && $_GET['pagination'] == 'false') {
 							$GLOBALS['PagingBottom'] = $GLOBALS['Paging'] = ''; $GLOBALS['StatsLinkDropDown'] = '';
 						}
-
+						$GLOBALS['ExportClickedLink'] = IEM::sessionGet("ExportClickedLink");
+ 
 						echo $this->ParseTemplate('Stats_Step3_Links_Table');
 					break; // newsletter_links
 
@@ -1235,7 +1240,7 @@ class RemoteStats extends SendStudio_Functions
 
 					case 'newsletter_unsubscribes':
 						$unsubscribes = array();
-
+						
 						$listid = 0;
 						$token_request = IEM::requestGetGET('token', '');
 						$token = IEM::sessionGet($token_request);
@@ -1360,7 +1365,8 @@ class RemoteStats extends SendStudio_Functions
 						if (isset($_GET['pagination']) && $_GET['pagination'] == 'false') {
 							$GLOBALS['PagingBottom'] = $GLOBALS['Paging'] = '';
 						}
-
+						$GLOBALS['ExportOpened'] = IEM::sessionGet("ExportOpened");
+						
 						echo $this->ParseTemplate('Stats_Step3_Opens_Table', true, false);
 					break; //triggeremails_opens
 
@@ -1424,7 +1430,8 @@ class RemoteStats extends SendStudio_Functions
 							$GLOBALS['PagingBottom'] = $GLOBALS['Paging'] = '';
 							$GLOBALS['StatsLinkDropDown'] = '';
 						}
-
+						$GLOBALS['ExportClickedLink'] = 'Stats&Action=Newsletters&SubAction=ViewSummary&SelectAction=linkExport&id=' . $statid . '&tab=3';
+ 
 						echo $this->ParseTemplate('Stats_Step3_Links_Table');
 					break; // triggeremails_links
 
@@ -1486,10 +1493,9 @@ class RemoteStats extends SendStudio_Functions
 					break; // triggeremails_bounces
 
 					case 'triggeremails_unsubscribes':
-						$unsubscribes = array();;
-
+						$unsubscribes = [];
 						$statid = $token_data['statid'];
-
+						 
 						if ($summary['unsubscribecount'] > 0) {
 							$unsubscribes = $statsapi->GetUnsubscribes($statid, $start, $perpage, $token_data['calendar_restrictions']['unsubscribes'], false, $this->column, $this->sort);
 						}

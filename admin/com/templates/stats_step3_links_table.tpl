@@ -13,6 +13,9 @@
 							</td>
 						</tr>
 					</table>
+					 <form name="customDateForm" method="post" action="index.php?Page=%%GLOBAL_ExportClickedLink%%" style="margin: 0px;">
+				<input type="submit" value="%%LNG_Export_Stats_Selected%%" class="Text" style="margin-bottom:5px; margin-left:5px;">
+				</form>	
 				</td>
 			</tr>
 			<tr class="Heading3">

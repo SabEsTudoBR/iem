@@ -723,8 +723,8 @@ class Templates extends SendStudio_Functions
 				$activetitle = GetLang('Template_Title_Enable');
 			}
 			$GLOBALS['id'] = $templateid;
-
-			if (($templatedetails['ownerid'] == $user->userid) || ($user->HasAccess('Templates', 'Approve', $templateid))) {
+			
+			if ($user->HasAccess('Templates', 'Approve')) {
 				$GLOBALS['ActiveAction'] = '<a href="index.php?Page=Templates&Action=' . $statusaction . '&id=' . $templateid . '" title="' . $activetitle . '"><img src="images/' . $activeicon . '.gif" border="0"></a>';
 			} else {
 				$GLOBALS['ActiveAction'] = '<span><img src="images/' . $activeicon . '.gif" border="0"></span>';
@@ -741,14 +741,18 @@ class Templates extends SendStudio_Functions
 			}
 
 			if (($templatedetails['ownerid'] == $user->userid) || ($user->HasAccess('Templates', 'Global', $templateid))) {
-				$GLOBALS['IsGlobalAction'] = '<a href="index.php?Page=Templates&Action=' . $statusaction . '&id=' . $templateid . '" title="' . $activetitle . '"><img src="images/' . $activeicon . '.gif" border="0"></a>';
+				if ($user->HasAccess('Templates', 'Global')) { 
+				 	$GLOBALS['IsGlobalAction'] = '<a href="index.php?Page=Templates&Action=' . $statusaction . '&id=' . $templateid . '" title="' . $activetitle . '"><img src="images/' . $activeicon . '.gif" border="0"></a>';
+				}else{
+					$GLOBALS['IsGlobalAction'] = '<span><img src="images/' . $activeicon . '.gif" border="0"></span>';
+				}
 			} else {
 				$GLOBALS['IsGlobalAction'] = '<span><img src="images/' . $activeicon . '.gif" border="0"></span>';
 			}
 
 			$GLOBALS['TemplateAction']  = '<a href="index.php?Page=Templates&Action=View&id=' . $templateid . '" target="_blank">' . GetLang('View') . '</a>';
 
-			if ($this->_haveTemplateAccess($templatedetails, 'Edit')) {
+			if ($user->HasAccess('Templates', 'Edit')) {
 				$GLOBALS['TemplateAction'] .= '&nbsp;&nbsp;<a href="index.php?Page=Templates&Action=Edit&id=' . $templateid . '">' . GetLang('Edit') . '</a>';
 			} else {
 				$GLOBALS['TemplateAction'] .= $this->DisabledItem('Edit');
@@ -760,7 +764,7 @@ class Templates extends SendStudio_Functions
 				$GLOBALS['TemplateAction'] .= $this->DisabledItem('Copy');
 			}
 
-			if ($this->_haveTemplateAccess($templatedetails, 'Delete')) {
+			if ($user->HasAccess('Templates', 'Delete')) {
 				$GLOBALS['TemplateAction'] .= '&nbsp;&nbsp;<a href="javascript: ConfirmDelete(' . $templateid . ');">' . GetLang('Delete') . '</a>';
 			} else {
 				$GLOBALS['TemplateAction'] .= $this->DisabledItem('Delete');

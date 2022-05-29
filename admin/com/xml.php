@@ -233,6 +233,7 @@ class xmlController
         }
 
         $this->userRecord = $userRecord;
+		$GLOBALS['userid'] = $userRecord['userid'];
     }
 
     protected function isOldApiClass()

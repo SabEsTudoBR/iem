@@ -129,7 +129,9 @@
 		$(document.settings.security_wrong_login_wait_enable).click(function() { $('tr.security_wrong_login_wait_options').toggle(); });
 		$(document.settings.security_wrong_login_threshold_enable).click(function() { $('tr.security_wrong_login_threshold_options').toggle(); });
 		$(document.settings.security_two_factor_auth).click(function() { $('tr.security_wrong_otp_wait_options').toggle(); });
-
+		
+		$(document.settings.security_auto_delete_unconfirm).click(function() { $('tr.security_auto_delete_unconfirm_options').toggle(); $('#security_auto_delete_unconfirm_days').val('10'); });
+	    $(document.settings.security_auto_delete_bounced).click(function() { $('tr.security_auto_delete_bounced_options').toggle(); $('#security_auto_delete_bounced_days').val('10'); });
 		$(document.settings.credit_warnings).click(function() { $('div#credit_percentage_warnings_options', document.settings)[this.checked? 'show' : 'hide'](); });
 		$('input.percentage_credit_warning', document.settings).click(function() {
 			var index = this.id.match(/_(\d+)$/)[1];
@@ -913,6 +915,70 @@
 								{$lang.Minute(s)}
 							</td>
 						</tr>
+						<tr>
+						<td colspan="2" class="EmptyRow">&nbsp;</td></tr>
+						<td colspan="2" class="Heading2">
+						 	{template="Not_Required"}{$lang.SecuritySettings_List_Maintenance_Title}
+						</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
+								{$lang.SecuritySettings_Auto_Delete_Unconfirmed}						
+							</td>
+							<td>
+								<label for="security_auto_delete_unconfirm">
+								<input type="checkbox" name="security_auto_delete_unconfirm" id="security_auto_delete_unconfirm" value="1" {if $security_settings.auto_delete_unconfirm != 0}checked="checked"{/if} />
+								 {$lang.SecuritySettings_Auto_Delete_Unconfirm} 
+								 </label>
+								 {$lnghlp.SecuritySettings_Auto_Delete_Unconfirmed}
+							</td>
+						</tr>
+						<tr class="security_auto_delete_unconfirm_options" {if $security_settings.auto_delete_unconfirm == 0}style="display:none;"{/if}>
+							<td class="FieldLabel">
+								{template="Required"} 
+								{$lang.SecuritySettings_Auto_Delete_Unconfirm_Days}
+							</td>
+							<td>
+								<img width="20" height="20" src="images/nodejoin.gif"/>
+								<label for="security_auto_delete_unconfirm_days">  
+									<input type="number" min="0" value="{$security_settings.auto_delete_unconfirm_days}"  name="security_auto_delete_unconfirm_days" id="security_auto_delete_unconfirm_days" style="width: 50px;">
+									 
+									{$lang.Max_Unconfirmed_Days}
+								</label>
+							</td>
+						</tr>
+						  
+						<tr>
+							<td class="FieldLabel">
+								{template="Not_Required"}
+								{$lang.SecuritySettings_Auto_Delete_Bounced_Addresses}						
+							</td>
+							<td>
+								<label for="security_auto_delete_bounced">
+								<input type="checkbox" name="security_auto_delete_bounced" id="security_auto_delete_bounced" value="1" {if $security_settings.auto_delete_bounced != 0}checked="checked"{/if} />
+								 {$lang.SecuritySettings_Auto_Delete_Bounced} 
+								 </label>
+								 {$lnghlp.SecuritySettings_Auto_Delete_Bounced_Addresses}
+							</td>
+						</tr>
+						<tr class="security_auto_delete_bounced_options" {if $security_settings.auto_delete_bounced == 0}style="display:none;"{/if}>
+							<td class="FieldLabel">
+								{template="Required"}
+								{$lang.SecuritySettings_Auto_Delete_Bounced_Days}
+							</td>
+							<td>
+								<img width="20" height="20" src="images/nodejoin.gif"/>
+								<label for="security_auto_delete_bounced_days">  
+									<input type="number" min="0" value="{$security_settings.auto_delete_bounced_days}"  name="security_auto_delete_bounced_days" id="security_auto_delete_bounced_days" style="width: 50px;">
+									 
+									{$lang.Max_Bounced_Days}
+								</label>
+							</td>
+						</tr>
+						
+						 
+						
 					</table>
 				</div>
 				{if !$DisplayPrivateLabel}<div style="display:none;">{/if}

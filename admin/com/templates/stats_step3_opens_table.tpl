@@ -1,5 +1,10 @@
 	<table width="100%" cellpadding="5" border="0" cellspacing="1" class="Text" style="padding-top: 0px; margin-top: 0px;">
 			<tr>
+				<td width="100%" colspan="2">
+					 <form name="customDateForm" method="post" action="index.php?Page=%%GLOBAL_ExportOpened%%" style="margin: 0px;">
+						<input type="submit" value="%%LNG_Export_Stats_Selected%%" class="Text" style="margin-bottom:5px; margin-left:5px;">
+					 </form>
+				</td>
 				<td width="100%" colspan="3">
 					<table width="100%" border="0" cellspacing="0" cellpadding="0">
 						<tr>

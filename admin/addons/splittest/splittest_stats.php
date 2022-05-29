@@ -15,6 +15,10 @@ if (!class_exists('Addons_splittest', false)) {
 }
 
 /**
+* Include the base sendstudio functions.
+*/
+require_once(dirname(dirname(dirname(__FILE__))). '/functions/sendstudio_functions.php');
+/**
  * Addons_splittest_Stats
  * This handles all processing/displaying etc of stats for split tests.
  *
@@ -75,7 +79,64 @@ class Addons_splittest_Stats extends Addons_splittest
         $ssf = new SendStudio_Functions();
         $ssf->LoadLanguageFile('stats');
 		$split_id = $this->_getGetRequest('splitid', null);
+		$subAction = $this->_getGetRequest('SubAction', null);
+		$GLOBALS['ShowTab'] =1; 
 		if (!is_null($split_id)) {
+			$stats_api = $this->GetApi('Splittest_Stats');
+			$this->GetApi();
+			if (in_array($subAction, ['Export', 'MultiExport'])) {
+			$user = IEM::getCurrentUser();
+			$lists = $user->GetLists();
+			$listids = array_keys($lists);		
+			$jobid = $this->_getGetRequest('jobid', null);
+		  	$exportFileName = $this->_getGETRequest('exportFileName', null);  
+		
+			if ($subAction == 'MultiExport') {
+				$jobids = $this->_getGetRequest('jobids', null);
+				$splitName = 'splittests';
+			} else {
+				
+				$jobids = [$jobid];
+				$splitName = null;
+			    $splitName = 'splittests';
+			}
+			 
+			$exportOpen = $this->_getGETRequest('Export', null);
+			
+			switch (strtolower($exportOpen)) {
+				case 'exportopen':				
+					$stats = $stats_api->GetStats($listids, [], false, 0, 1, false, $jobid);					
+				    $exportFileName = self::ExportStats($stats, $jobids, $splitName,'openedSplit');
+					$GLOBALS['ShowTab'] = 2; 
+				break;
+				case 'exportbounce':				
+					$stats = $stats_api->GetStats($listids, [], false, 0, 1, false, $jobid);
+					$exportFileName = self::ExportStats($stats, $jobids, $splitName,'bounceSplit');					 				
+					$GLOBALS['ShowTab'] = 4; 
+				break;
+				case 'exportunsub':
+					$stats = $stats_api->GetStats($listids, [], false, 0, 1, false, $jobid);
+					$exportFileName = self::ExportStats($stats, $jobids, $splitName,'unsubSplit');
+					$GLOBALS['ShowTab'] = 5; 
+				break;
+				case 'exportclick':				 
+					$stats = $stats_api->GetStats($listids, [], false, 0, 1, false, $jobid);
+					$exportFileName = self::ExportStats($stats, $jobids, $splitName,'clickedSplit');
+					$GLOBALS['ShowTab'] = 3; 
+				break;				 
+				default:
+					$exportFileName = self::ExportStats($stats, $jobids, $splitName,null);
+					$GLOBALS['ShowTab'] =1;
+				break;
+			}	
+ 			
+			 $ssf = new SendStudio_Functions ( );
+			 $http = SENDSTUDIO_APPLICATION_URL . "/admin/temp/$exportFileName"; 
+			 
+			 $GLOBALS['Message_Export'] =  $ssf->PrintSuccess('Export_Newsletter_Open_Statistics',$http);
+			 
+			} 
+		  
 			return $this->ShowStats($split_id);
 		}
 		return $this->ManageStats();
@@ -164,21 +225,19 @@ class Addons_splittest_Stats extends Addons_splittest
 				FlashMessage(GetLang('NoAccess'), SS_FLASH_MSG_ERROR, $this->base_url);
 				return;
 			}
-			$exportFileName = self::ExportStats($stats, $jobids, $splitName);
+			 $exportFileName = self::ExportStats($stats, $jobids, $splitName,null);
 			FlashMessage(sprintf(GetLang('Addon_splittest_Stats_DownloadExportedFile'), $exportFileName), SS_FLASH_MSG_SUCCESS, $this->base_url);
 		}
 
 		foreach ($stats as $stats_id => $stats_details) {
 			$stats[$stats_id]['splitname'] = htmlspecialchars($stats_details['splitname'], ENT_QUOTES, SENDSTUDIO_CHARSET);
 			$stats[$stats_id]['campaign_names'] = htmlspecialchars($stats_details['campaign_names'], ENT_QUOTES, SENDSTUDIO_CHARSET);
-			//$stats[$stats_id]['list_names'] = htmlspecialchars($stats_details['list_names'], ENT_QUOTES, SENDSTUDIO_CHARSET);
 		}
 
 		if ($exportFileName != null) {
 			$this->template_system->Assign('exportFileName', $exportFileName);
 		}
-
-		//$this->template_system->Assign('SplitTest_Send_Button', $send_button, false);
+  
 		$this->template_system->Assign('AdminUrl', $this->admin_url, false);
 		$this->template_system->Assign('ApplicationUrl', $this->application_url, false);
 		$this->template_system->Assign('Paging', $paging, false);
@@ -228,7 +287,7 @@ class Addons_splittest_Stats extends Addons_splittest
 		foreach ($charts as $type=>$data) {
 			$stats[$type] = $data;
 		}
-
+		$this->template_system->Assign('ShowTab', $GLOBALS['ShowTab']);
 		$this->template_system->Assign('AdminUrl', $this->admin_url, false);
 		$this->template_system->Assign('ApplicationUrl', $this->application_url, false);
 		$this->template_system->Assign('DateFormat', $date_format);
@@ -345,10 +404,9 @@ class Addons_splittest_Stats extends Addons_splittest
 	 *
 	 * @return String $exportFileName The name of the file written to disk.
 	 */
-	private static function ExportStats($stats, $jobids, $splitName=null)
-	{
-		$dateFormat = self::getDateFormat();
-
+	private static function ExportStats($stats, $jobids, $splitName=null,$splitStatus)
+	{  
+		$dateFormat = self::getDateFormat(); 
 		// if no split campaign name has been passed use the name of the first one we find
 		$filename = ($splitName == null) ? $stats[$jobids[0]]['splitname'] : $splitName;
 
@@ -362,48 +420,132 @@ class Addons_splittest_Stats extends Addons_splittest
 		}
 		$exportFileName = $filenameSafe . '__' . $dateStr . '.csv';
 		$path = TEMP_DIRECTORY . '/';
-
-		$headers = implode(',', [
-				'Newsletter Name', 'Split Test Name', 'Split Type', 'Start Sending', 'Finished Sending', 'Recipients', 'Total Opened', 'Unique Opened', '% Opened', 'Recipients who Clicked Links','% Recipients who Clicked','Hard Bounced','Soft Bounced','Total Bounced','% Bounced','Unsubscribed','% Unsubscribed']
-				);
-
-		$file = $path . $exportFileName;
+		switch (strtolower($splitStatus)) {
+				case 'openedsplit':				 
+					$headers = implode(',', [
+					'Email Campaigns',  'Opens', 'Unique Opens', 'Unique Opens (%)', 'Recipients','Recipients (%)','Send Size']
+					);
+					$exportFileName= "opened_".$exportFileName;
+				break;
+				case 'clickedsplit':
+					$headers = implode(',', [
+					'Email Campaigns',  'Unique Clicks', 'Unique Clicks (%)', 'Clicks', 'Recipients','Recipients (%)','Send Size']
+					);
+					$exportFileName= "clicked_".$exportFileName;
+				break;
+				case 'unsubsplit':
+					$headers = implode(',', [
+					'Newsletter Name',  'Unsubscribes', 'Total Unsubscribes (%)', 'Recipients','Recipients (%)','Send Size']
+					);
+					$exportFileName= "unsub_".$exportFileName;
+				break;
+				case 'bouncesplit':				 
+					 $headers = implode(',', [
+					'Newsletter Name',  'Soft', 'Hard', 'Unknown', 'Bounces (%)','Recipients','Recipients (%)','Send Size']
+					);
+					$exportFileName= "bounce_".$exportFileName;
+					
+				break;
+				default:
+					$headers = implode(',', [
+					'Newsletter Name', 'Split Test Name', 'Split Type', 'Start Sending', 'Finished Sending', 'Recipients', 'Total Opened', 'Unique Opened', '% Opened', 'Recipients who Clicked Links','% Recipients who Clicked','Hard Bounced','Soft Bounced','Total Bounced','% Bounced','Unsubscribed','% Unsubscribed']
+					);
+					
+				break;
+			}        
+		
+			$file = $path . $exportFileName;
 
 		// we shouldn't be overwriting anything becuase there is a timestamp in the filename - but just in case so as we don't create a fatal error
 		if (file_exists($file)) {
 			unlink($file);
 		}
+		
 		$f = fopen($file, 'w');
 		fwrite($f, $headers);
 		fwrite($f, "\n");
-		      		$sendStudio_Functions = new SendStudio_Functions;
-		foreach ($stats as $job_id=>$statistics) {
-					 		
-			if (in_array($job_id, $jobids, false)) {
-				foreach ($statistics['campaigns'] as $id=>$data) {
-								    
-					fwrite($f, $data['campaign_name'] . ',');
-					fwrite($f, $statistics['splitname'] . ',');
-					fwrite($f, $statistics['splittype'] . ',');
-					fwrite($f, $sendStudio_Functions->PrintDate($statistics['starttime'], $dateFormat) . ',');
-					fwrite($f, $sendStudio_Functions->PrintDate($statistics['finishtime'], $dateFormat) . ',');
-					fwrite($f, $data['stats_newsletters']['recipients'] . ',');
-					fwrite($f, $data['stats_newsletters']['emailopens'] . ',');
-					fwrite($f, $data['stats_newsletters']['emailopens_unique'] . ',');
-					fwrite($f, $data['stats_newsletters']['percent_emailopens_unique'] . ',');
-					fwrite($f, $data['stats_newsletters']['linkclicks_unique'] . ',');
-					fwrite($f, $data['stats_newsletters']['percent_linkclicks_unique'] . ',');
-					fwrite($f, $data['stats_newsletters']['bouncecount_hard'] . ',');
-					fwrite($f, $data['stats_newsletters']['bouncecount_soft'] . ',');
-					fwrite($f, $data['stats_newsletters']['bouncecount_total'] . ',');
-					fwrite($f, $data['stats_newsletters']['percent_bouncecount_total'] . ',');
-					fwrite($f, $data['stats_newsletters']['unsubscribecount'] . ',');
-					fwrite($f, $data['stats_newsletters']['percent_unsubscribecount']);
-					fwrite($f, "\n");
+		$sendStudio_Functions = new SendStudio_Functions;		 
+		foreach ($stats as $job_id=>$statistics) {					 		
+			if (in_array($job_id, $jobids, false)) {				
+				switch (strtolower($splitStatus)) {
+					case 'openedsplit':
+						foreach ($statistics['campaigns'] as $id=>$data) {								    
+							fwrite($f, $data['campaign_name'] . ',');
+							fwrite($f, $data['stats_newsletters']['emailopens'] . ',');
+							fwrite($f, $data['stats_newsletters']['emailopens_unique'] . ',');
+							fwrite($f, $data['stats_newsletters']['percent_emailopens_unique'] . ',');
+							fwrite($f, $data['stats_newsletters']['recipients'] . ',');
+							fwrite($f, $data['stats_newsletters']['final_percent_emailopens'] . ',');
+							fwrite($f, $data['stats_newsletters']['final_total_recipient_count'] . ',');
+							
+							fwrite($f, "\n");
+						}
+					break;
+					case 'clickedsplit':
+						foreach ($statistics['campaigns'] as $id=>$data) {								    
+							fwrite($f, $data['campaign_name'] . ',');					 
+							fwrite($f, $data['stats_newsletters']['linkclicks_unique'] . ',');
+							fwrite($f, $data['stats_newsletters']['percent_linkclicks_unique'] . ',');
+							fwrite($f, $data['stats_newsletters']['linkclicks'] . ',');
+							fwrite($f, $data['stats_newsletters']['recipients'] . ',');
+							fwrite($f, $data['stats_newsletters']['final_percent_linkclicks_unique'] . ',');					 
+							fwrite($f, $data['stats_newsletters']['final_total_recipient_count'] . ',');							
+							fwrite($f, "\n");
+						}
+					break;
+					case 'unsubsplit':
+						foreach ($statistics['campaigns'] as $id=>$data) {								    
+							fwrite($f, $data['campaign_name'] . ',');					 
+							fwrite($f, $data['stats_newsletters']['unsubscribecount'] . ',');
+							fwrite($f, $data['stats_newsletters']['percent_unsubscribecount'] . ',');
+							fwrite($f, $data['stats_newsletters']['recipients'] . ',');
+							fwrite($f, $data['stats_newsletters']['final_percent_unsubscribecount'] . ',');
+							fwrite($f, $data['stats_newsletters']['final_total_recipient_count'] . ',');								
+							fwrite($f, "\n");
+						}
+					break;
+					case 'bouncesplit':
+					
+						foreach ($statistics['campaigns'] as $id=>$data) {								    
+							fwrite($f, $data['campaign_name'] . ',');					 
+							fwrite($f, $data['stats_newsletters']['bouncecount_soft'] . ',');
+							fwrite($f, $data['stats_newsletters']['bouncecount_hard'] . ',');
+							fwrite($f, $data['stats_newsletters']['bouncecount_unknown'] . ',');
+							fwrite($f, $data['stats_newsletters']['percent_bouncecount_total'] . ',');
+							fwrite($f, $data['stats_newsletters']['recipients'] . ',');
+							fwrite($f, $data['stats_newsletters']['final_percent_bouncecount_total'] . ','); 
+							fwrite($f, $data['stats_newsletters']['final_total_recipient_count'] . ','); 
+							fwrite($f, "\n");
+						}
+					break;
+					default:
+					foreach ($statistics['campaigns'] as $id=>$data) {								    
+						fwrite($f, $data['campaign_name'] . ',');
+						fwrite($f, $statistics['splitname'] . ',');
+						fwrite($f, $statistics['splittype'] . ',');
+						fwrite($f, $sendStudio_Functions->PrintDate($statistics['starttime'], $dateFormat) . ',');
+						fwrite($f, $sendStudio_Functions->PrintDate($statistics['finishtime'], $dateFormat) . ',');
+						fwrite($f, $data['stats_newsletters']['recipients'] . ',');
+						fwrite($f, $data['stats_newsletters']['emailopens'] . ',');
+						fwrite($f, $data['stats_newsletters']['emailopens_unique'] . ',');
+						fwrite($f, $data['stats_newsletters']['percent_emailopens_unique'] . ',');
+						fwrite($f, $data['stats_newsletters']['linkclicks_unique'] . ',');
+						fwrite($f, $data['stats_newsletters']['percent_linkclicks_unique'] . ',');
+						fwrite($f, $data['stats_newsletters']['bouncecount_hard'] . ',');
+						fwrite($f, $data['stats_newsletters']['bouncecount_soft'] . ',');
+						fwrite($f, $data['stats_newsletters']['bouncecount_total'] . ',');
+						fwrite($f, $data['stats_newsletters']['percent_bouncecount_total'] . ',');
+						fwrite($f, $data['stats_newsletters']['unsubscribecount'] . ',');
+						fwrite($f, $data['stats_newsletters']['percent_unsubscribecount']);
+						fwrite($f, "\n");
+					}	
+					break;
 				}
+				 
 			}
 		}
 		fclose($f);
-		return $exportFileName;
+ 
+		return  $exportFileName;
 	}
 }
