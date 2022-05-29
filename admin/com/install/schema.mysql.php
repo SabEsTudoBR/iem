@@ -158,10 +158,14 @@ $queries[] = "CREATE TABLE %%TABLEPREFIX%%customfields (
   isglobal char(1) default '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-
+// field id cannot FK to %%TABLEPREFIX%%customfields(fieldid) cuz we store
+// references to 'e'
+// 'cl' choose list
+// 'cf' choose format 
+// in this table as well
 $queries[] = "CREATE TABLE %%TABLEPREFIX%%form_customfields (
   formid int(11) default 0 references %%TABLEPREFIX%%forms(formid),
-  fieldid varchar(10) default 0 references %%TABLEPREFIX%%customfields(fieldid),
+  fieldid varchar(10),
   fieldorder int default 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
