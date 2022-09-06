@@ -4,6 +4,7 @@
 *
 * @version     $Id: subscribers_add.php,v 1.39 2007/10/10 07:41:43 chris Exp $
 * @author Chris <chris@interspire.com>
+* @author Imran Khan <imran.khan@interspire.com>
 *
 * @package SendStudio
 * @subpackage SendStudio_Functions
@@ -188,6 +189,14 @@ class Subscribers_Add extends Subscribers
 					$fieldid = $data['fieldid'];
 					$postdata = (isset($_POST['CustomFields'][$fieldid])) ? $_POST['CustomFields'][$fieldid] : '';
 					$subscriber->SaveSubscriberCustomField($subscriberid, $fieldid, $postdata);
+				}
+				
+				if($subscriberid > 0) {
+					// Webhook event='Subscribe'
+					require_once('api/webhooks.php');
+					$webhook_api = new Webhooks_API();
+					$event_type_id = 1;
+					$subscribe_webhook = $webhook_api->PostListWebhook($listid, $subscriberid, $event_type_id);
 				}
 
 				if ($action == 'saveadd' || sizeof($user_lists) == 1) {

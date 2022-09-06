@@ -157,6 +157,17 @@ class Send extends SendStudio_Functions
 				}
 
 				$send_details = IEM::sessionGet('SendDetails');
+				
+				/**
+				 * PostCampaignWebhook() - CampaignSent
+				 */
+				require_once(dirname(__FILE__) . '/api/webhooks.php');
+				$webhook_api = new Webhooks_API();
+				$event_type_id = 5;
+				$webhook_api->PostCampaignWebhook($event_type_id);
+				/**
+				 * -----------------------------------------
+				 */
 
 				$statsapi = $this->GetApi('Stats');
 
@@ -288,6 +299,16 @@ class Send extends SendStudio_Functions
 				$send_api->SetupCustomFields($recipients);
 
 				$sent_ok = false;
+				/**
+				 * PostCampaignWebhook() - ScheduleCampaign
+				 */
+				require_once(dirname(__FILE__) . '/api/webhooks.php');
+				$webhook_api = new Webhooks_API();
+				$event_type_id = 4;
+				$webhook_api->PostCampaignWebhook($event_type_id);
+				/**
+				 * -----------------------------
+				 */
 
 				foreach ($recipients as $p => $recipientid) {
 					$send_results = $send_api->SendToRecipient($recipientid, $sendqueue);

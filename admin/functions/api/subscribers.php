@@ -5,6 +5,7 @@
  * @version     $Id: subscribers.php,v 1.133 2008-02-25 06:24:52 chris Exp $
  * @author Chris <chris@interspire.com>
  * @author Fredrick Gabelmann <fredrick.gabelmann@interspire.com>
+ * @author Imran Khan <imran.khan@interspire.com>
  *
  * @package API
  * @subpackage Subscribers_API
@@ -1969,7 +1970,16 @@ class Subscribers_API extends API
 		}
 
 		$query = "INSERT INTO " . SENDSTUDIO_TABLEPREFIX . "list_subscribers_unsubscribe (subscriberid, unsubscribetime, listid, unsubscribeip, unsubscriberequesttime, unsubscriberequestip, statid, unsubscribearea) VALUES ('" . $subscriberid . "', " . $this->Db->Quote($unsubscribetime) . ", '" . $listid . "', '" . $this->Db->Quote($this->unsubscribeip) . "', '" . $unsub_requestdate . "', '" . $this->Db->Quote($unsub_requestip) . "', '" . (int)$statid . "', '" . $this->Db->Quote(strtolower(substr($statstype, 0, 1))) . "')";
-		$this->Db->Query($query);
+		
+		if($this->Db->Query($query)) {
+			//Webhook event='Unsubscribe'
+			require_once(dirname(__FILE__) . '/webhooks.php');
+			$webhook_api = new Webhooks_API();
+			$webhook_api->eventdate = $unsubscribetime;
+			$event_type_id = 2;
+			$webhook_api->PostListWebhook($listid, $subscriberid, $event_type_id);
+		}
+		
 
 		return array(true, false);
 	}
@@ -2025,8 +2035,16 @@ class Subscribers_API extends API
 		}
 
 		$query = "UPDATE " . SENDSTUDIO_TABLEPREFIX . "lists SET bouncecount=bouncecount + 1, subscribecount=subscribecount - 1 WHERE listid=" . intval($listid);
-		$this->Db->Query($query);
-
+		
+		if($this->Db->Query($query)) {
+			//Webhook event='Bounce'
+			require_once(dirname(__FILE__) . '/webhooks.php');
+			$webhook_api = new Webhooks_API();
+			$webhook_api->eventdate = $bouncetime;
+			$event_type_id = 3;
+			$webhook_api->PostListWebhook($listid, $subscriberid, $event_type_id);
+		}
+			
 		return array(true, false);
 	}
 
@@ -2156,7 +2174,14 @@ class Subscribers_API extends API
 		$this->Db->Query($query);
 
 		$query = "UPDATE " . SENDSTUDIO_TABLEPREFIX . "list_subscribers SET bounced=0, unsubscribed=0 WHERE listid=" . intval($listid) . " AND subscriberid=" . intval($subscriberid);
-		$this->Db->Query($query);
+		
+		if($this->Db->Query($query)) {
+			//Webhook event='Subscribe' i.e. activate subscriber
+			require_once(dirname(__FILE__) . '/webhooks.php');
+			$webhook_api = new Webhooks_API();
+			$event_type_id = 1;
+			$webhook_api->PostListWebhook($listid, $subscriberid, $event_type_id);
+		}
 
 		return array(true, false);
 
@@ -3141,6 +3166,7 @@ class Subscribers_API extends API
 		$this->Db->Query($query);
 
 		if ($this->unsubscribeconfirmed) {
+
 			$result = $this->UnsubscribeSubscriber(false, $listid, $subscriberid, true);
 			if ($result[0] == true) {
 				return true;

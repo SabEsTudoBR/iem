@@ -2,7 +2,74 @@
 <script src="includes/js/jquery/form.js"></script>
 <script src="includes/js/jquery/thickbox.js"></script>
 <link rel="stylesheet" type="text/css" href="includes/styles/thickbox.css" />
+<style>
+.element{
+    margin-bottom: 15px;
+}
+
+.add{
+    border: 1px solid gray;
+    padding: 2px 10px;
+	position: relative;
+	margin-left: 310px;
+}
+
+.remove{
+    border: 1px solid gray;
+    padding: 2px 10px;
+	margin-left: 10px;
+}
+
+.add:hover,.remove:hover{
+    cursor: pointer;
+}
+</style>
+
 <script>
+	// Add new element
+	var items = [];
+	function AddWebhook() {
+		// Finding total number of elements added
+		var total_element = $(".element").length;
+	
+		// last <div> with element class id
+		var lastid = $(".element:last").attr("id");
+
+		if(lastid) {
+			var split_id = lastid.split("_");
+			var nextindex = Number(split_id[1]) + 1;
+		} else {
+			var nextindex = 1;
+		}
+		
+		var max = 25;
+		$('#total_webhooks').val(nextindex);
+		// Check total number elements
+		if(total_element < max ){
+			if(total_element == 0) {
+				$(".add").after("<div class='element' id='div_"+ nextindex +"'></div>");
+			}  else {
+				// Adding new div container after last occurance of element class
+				$(".element:last").after("<div class='element' id='div_"+ nextindex +"'></div>");
+			}			
+			// Adding element to <div>
+			var webhook_html = 'URL: <input type="text" name="WebhookUrl_' + nextindex + '" class="Field250 form_text" value=""> <br> Events to Fire :<input type="radio" name="webhook_event_' + nextindex + '" id="WebhookSubscribe" value="1">Subscribe, <input type="radio" name="webhook_event_' + nextindex + '" id="WebhookUnsubscribe" value="2">Unsubscribe, <input type="radio" name="webhook_event_' + nextindex + '" id="WebhookBounce" value="3">Bounce ';
+			$("#div_" + nextindex).append(webhook_html +"&nbsp; <span id='remove_" + nextindex + "' onclick='remove("+ nextindex +")' class='remove'>X</span>");
+					
+		}
+	}
+
+	function remove(id) {
+
+	  var deleteindex = id;
+	  //var total_element = $('#total_webhooks').val();
+	 // $('#total_webhooks').val(total_element - 1);
+	  
+	  // Remove <div> with id
+	  $("#div_" + deleteindex).remove();
+
+	}	
+
 	$(function() {
 		$(document.frmListEditor).submit(function(event) {
 			try {
@@ -166,6 +233,17 @@
 						</td>
 						<td>
 							<label for="NotifyOwner"><input type="checkbox" name="NotifyOwner" id="NotifyOwner" value="1" %%GLOBAL_NotifyOwner%%>%%LNG_NotifyOwnerExplain%%</label> %%LNG_HLP_NotifyOwner%%
+						</td>
+					</tr>
+					<tr>
+						<td class="FieldLabel">
+							&nbsp;&nbsp; Webhook(s):
+						</td>
+						<td>
+							<div class="container">
+								%%GLOBAL_webhook_data%%
+							</div>
+							
 						</td>
 					</tr>
 

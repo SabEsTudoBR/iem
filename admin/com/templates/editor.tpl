@@ -18,7 +18,7 @@ if (tinymce.get('{$editor.ElementId}'))
 setTimeout(function() {
 tinymce.init({
 		  mode : "exact",
-	      inline_styles : false,
+	      inline_styles : true,
 		  selector: '#{$editor.ElementId}',
 		  width : "{$editor.Width}",
 		  height : "{$editor.Height}",
@@ -45,7 +45,7 @@ tinymce.init({
 			'help quickbars responsive_filemanager'
 		  ],
 		  convert_urls : false,
-		  paste_as_text: true,
+		  paste_as_text: false,
 		  remove_script_host : false,
 		  cleanup : true,
 		  cleanup_on_startup : true,

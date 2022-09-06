@@ -4,6 +4,7 @@
  *
  * @version     $Id: lists.php,v 1.59 2008/03/05 04:49:00 chris Exp $
  * @author Chris <chris@interspire.com>
+ * @author Imran Khan <imran.khan@interspire.com>
  *
  * @package SendStudio
  * @subpackage SendStudio_Functions
@@ -219,11 +220,28 @@ class Lists extends SendStudio_Functions
 
 		$id = (isset($_GET['id'])) ? (int)$_GET['id'] : 0;
 		$api = $this->GetApi();
+		$oldlistid = $id;
+
 		list($result, $newid) = $api->Copy($id);
 
 		if (!$result) {
 			FlashMessage(GetLang('ListCopyFail'), SS_FLASH_MSG_ERROR, IEM::urlFor('Lists'));
 		} else {
+			/**
+			 * CopyWebhook() - Copy Webhook
+			 */
+			require_once('api/webhooks.php');
+			$webhook_api = new Webhooks_API();
+			$webhook_api->id = $oldlistid;
+			$webhook_api->webhook_type_id = '1';
+
+			$webhook_api->ownerid = $param['user']->userid;
+			
+			$copied = $webhook_api->CopyWebhook($newid);
+			/**
+			 * ------------------------
+			 */
+					
 			$param['user']->LoadPermissions($param['user']->userid);
 			$param['user']->GrantListAccess($newid);
 			$param['user']->SavePermissions();
@@ -451,6 +469,7 @@ class Lists extends SendStudio_Functions
 	 */
 	private function EditList($param)
 	{
+
 		$listid = (isset($_GET['id'])) ? (int)$_GET['id'] : 0;
 		if ($listid <= 0) {
 			$GLOBALS['ErrorMessage'] = GetLang('ListDoesntExist');
@@ -487,6 +506,61 @@ class Lists extends SendStudio_Functions
 		$GLOBALS['CompanyPhone'] = htmlspecialchars($list->companyphone, ENT_QUOTES, SENDSTUDIO_CHARSET);
 
 		$GLOBALS['NotifyOwner'] = ($list->notifyowner) ? ' CHECKED' : '';
+		
+		/**
+		 * List Webhooks loading - When editing a list the webhooks are being loaded.
+		 */
+		require_once('api/webhooks.php');
+		$webhook_api = new Webhooks_API();
+		$webhook_api->webhook_type_id = '1'; 
+		$webhook_api->id = $listid;
+		$webhook_record = $webhook_api->GetWebhooks($listid);
+
+		if(!empty($webhook_record)) {
+	
+			$ctr = 0;
+			$webhook_html = '';
+			foreach($webhook_record as $webhook ) {
+				$ctr++;
+
+				$webhook_url = ($webhook['webhook_url']) ? $webhook['webhook_url'] : '';
+				$webhook_subscribed = ($webhook['webhook_event_type_id'] == 1) ? 'CHECKED' : '';
+				$webhook_unsubscribed = ($webhook['webhook_event_type_id'] == 2) ? 'CHECKED' : '';
+				$webhook_bounced = ($webhook['webhook_event_type_id'] == 3) ? 'CHECKED' : ''; 
+				
+				$add_webhook_btn = '';
+				$webhook_html .= 
+					'<div class="element" id="div_'.$ctr.'">	
+						URL: <input type="text" name="WebhookUrl_'.$ctr.'" class="Field250 form_text" value="'.$webhook_url.'"> <br> 
+						Events to Fire :
+						<input type="radio" name="webhook_event_'.$ctr.'" id="WebhookSubscribe" value="1" '.$webhook_subscribed.'>Subscribe, 
+						<input type="radio" name="webhook_event_'.$ctr.'" id="WebhookUnsubscribe" value="2" '.$webhook_unsubscribed.'>Unsubscribe, 
+						<input type="radio" name="webhook_event_'.$ctr.'" id="WebhookBounce" value="3" '.$webhook_bounced.'>Bounce
+						&nbsp;<span id="remove_'.$ctr.'" onclick="remove('.$ctr.')" class="remove">X</span>
+					</div>';
+			}
+
+			$add_webhook_btn = '<span class="add" onclick="AddWebhook();" >Add Webhook</span>';
+			$total_webhooks = '<input type="hidden" name="total_webhooks" id="total_webhooks" value="'.$ctr.'" style="width:20px;">';
+			$GLOBALS['webhook_data'] = $add_webhook_btn.$webhook_html.$total_webhooks;
+			
+		} else {
+			$webhook_html = 
+				'<div class="element" id="div_1">
+					URL: <input type="text" name="WebhookUrl_1" class="Field250 form_text" value=""> <br> 
+					Events to Fire :
+					<input type="radio" name="webhook_event_1" id="WebhookSubscribe" value="1" >Subscribe, 
+					<input type="radio" name="webhook_event_1" id="WebhookUnsubscribe" value="2" >Unsubscribe, 
+					<input type="radio" name="webhook_event_1" id="WebhookBounce" value="3" >Bounce
+					&nbsp;<span id="remove_1" onclick="remove(1)" class="remove">X</span>
+				</div>';
+			$add_webhook_btn = '<span class="add" onclick="AddWebhook();" >Add Webhook</span>';
+			$total_webhooks = '<input type="hidden" name="total_webhooks" id="total_webhooks" value="1" style="width:20px;">';
+			$GLOBALS['webhook_data'] = $add_webhook_btn.$webhook_html.$total_webhooks;
+		}
+		/**
+		 * ------------------------
+		 */
 
 		if ($user->HasAccess('Lists', 'BounceSettings')) {
 			$GLOBALS['ShowBounceInfo'] = '';
@@ -592,6 +666,9 @@ class Lists extends SendStudio_Functions
 	private function UpdateList($param)
 	{
 		$list = $this->GetApi();
+		
+		$user =& $param['user'];
+		$userid = $user->userid;
 
 		$subscriber_api = $this->GetApi('Subscribers');
 
@@ -619,9 +696,38 @@ class Lists extends SendStudio_Functions
 			}
 			$list->Set(strtolower($field), $value);
 		}
-
+		
 		$list->notifyowner = (isset($_POST['NotifyOwner'])) ? 1 : 0;
+		
+		/**
+		 * CreateWebhook() - Create List Webhooks
+		 */ 
+		for($ctr =1; $ctr <= $_POST['total_webhooks']; $ctr++) {
+			if(isset($_POST['WebhookUrl_'.$ctr]) && isset($_POST['webhook_event_'.$ctr])) {
+				$webhook_data[] = ['url' => $_POST['WebhookUrl_'.$ctr], 'event' => $_POST['webhook_event_'.$ctr]];
+			}	
+		}
 
+		if(!empty($webhook_data)) {
+			require_once('api/webhooks.php');
+			$webhook_api = new Webhooks_API();		
+			$webhook_api->webhook_type_id = '1'; 
+			$webhook_api->id = $listid;
+			$webhook_api->ownerid = $user->userid;
+												
+			$webhook = $webhook_api->GetWebhookById();
+
+			if(isset($webhook['webhookid']) && $webhook['webhookid'] > 0) {
+				$webhook_api->DeleteWebhook();
+			}	
+			
+			$webhook_api->webhookdata = $webhook_data;
+			$webhook_api->active = 1;
+			$WebhookCreated = $webhook_api->CreateWebhook();
+		}
+		/**
+		 * --------------------------
+		 */ 
 
 		/**
 		 * If user cannot modify bounce details, we will need to use the default bounce details instead of the one passed in
@@ -818,12 +924,28 @@ class Lists extends SendStudio_Functions
 		$listapi = $this->GetApi();
 
 		$GLOBALS['NotifyOwner'] = 'CHECKED';
+		
+		// Webhook contents
+		$webhook_html = 
+				'<div class="element" id="div_1">
+					URL: <input type="text" name="WebhookUrl_1" class="Field250 form_text" value=""> <br> 
+					Events to Fire :
+					<input type="radio" name="webhook_event_1" id="WebhookSubscribe" value="1" >Subscribe, 
+					<input type="radio" name="webhook_event_1" id="WebhookUnsubscribe" value="2" >Unsubscribe, 
+					<input type="radio" name="webhook_event_1" id="WebhookBounce" value="3" >Bounce
+					&nbsp;<span id="remove_1" onclick="remove(1)" class="remove">X</span>
+				</div>';
+		$add_webhook_btn = '<span class="add" onclick="AddWebhook();" >Add Webhook</span>';
+		$total_webhooks = '<input type="hidden" name="total_webhooks" id="total_webhooks" value="1" style="width:20px;">';
+		$GLOBALS['webhook_data'] = $add_webhook_btn.$webhook_html.$total_webhooks;
+		// End of webhook contents
 
 		// if these variables aren't in the post array, then they have been unticked. Try to remember the options.
 		if (!empty($_POST)) {
 			if (!isset($_POST['NotifyOwner'])) {
 				$GLOBALS['NotifyOwner'] = '';
 			}
+			
 			if (!isset($_POST['bounce_imap']) || (isset($_POST['bounce_imap']) && $_POST['bounce_imap'] == 0)) {
 				$GLOBALS['Imap_Selected'] = ' ';
 				$GLOBALS['Pop3_Selected'] = ' SELECTED ';
@@ -880,6 +1002,7 @@ class Lists extends SendStudio_Functions
 	 */
 	private function AddList($param)
 	{
+		
 		$user =& $param['user'];
 		$list = $this->GetApi();
 
@@ -912,8 +1035,7 @@ class Lists extends SendStudio_Functions
 		}
 
 		$list->notifyowner = (isset($_POST['NotifyOwner'])) ? 1 : 0;
-
-
+		
 		/**
 		 * If user cannot modify bounce details, we will need to use the default bounce details instead of the one passed in
 		 */
@@ -1031,6 +1153,35 @@ class Lists extends SendStudio_Functions
 			$GLOBALS['Message'] = $this->ParseTemplate('ErrorMsg', true, false);
 			return $this->CreateList($param);
 		}
+		
+		
+		/**
+		 * CreateWebhook a List Webhook
+		 */
+		$listid = $create;
+		$webhook_data = [];
+		for($ctr =1; $ctr <= $_POST['total_webhooks']; $ctr++) {
+			if(isset($_POST['WebhookUrl_'.$ctr]) && isset($_POST['webhook_event_'.$ctr])) {
+				$webhook_data[] = ['url' => $_POST['WebhookUrl_'.$ctr], 'event' => $_POST['webhook_event_'.$ctr]];
+			}	
+		}
+
+		if(!empty($webhook_data)) {
+			require_once('api/webhooks.php');
+			$webhook_api = new Webhooks_API();
+			
+			$webhook_api->webhook_type_id = '1'; // 1 is for 'List'
+			$webhook_api->id = $listid;
+			$webhook_api->ownerid = $user->userid;
+			$webhook_api->webhookdata = $webhook_data;
+			$webhook_api->active = 1;
+			
+			$webhook_api->CreateWebhook();
+		}
+		
+		/**
+		 * -----
+		 */
 
 		$user->LoadPermissions($user->userid);
 		$user->GrantListAccess($create);
@@ -1166,6 +1317,24 @@ class Lists extends SendStudio_Functions
                                     // -----
                                     $status = $listApi->Delete($list, $user->Get('userid'));
                                     if ($status) {
+											/**
+											 * DeleteWebhook() - Delete a Webhook
+											 */
+											require_once('api/webhooks.php');
+											$webhook_api = new Webhooks_API();
+											$webhook_api->webhook_type_id = '1'; 
+											$webhook_api->id = $list;
+											
+											$webhook = $webhook_api->GetWebhookById();
+											
+											if(isset($webhook['webhookid']) && $webhook['webhookid'] > 0) {
+												$webhook_deleted = $webhook_api->DeleteWebhook();
+											}	
+											
+											/**
+											 * ----------------------------
+											 */
+											
                                             $lists_deleted_success++;
                                             $user->RevokeListAccess($list);
                                             $user->SavePermissions();
@@ -1368,6 +1537,23 @@ class Lists extends SendStudio_Functions
 		$status = $listApi->Delete($list, $param['user']->Get('userid'));
 
 		if ($status) {
+			/**
+			 * DeleteWebhook() - Delete a Webhook
+			 */
+			require_once('api/webhooks.php');
+			$webhook_api = new Webhooks_API();
+			$webhook_api->webhook_type_id = '1'; 
+			$webhook_api->id = $list;
+			
+			$webhook = $webhook_api->GetWebhookById();
+			
+			if($webhook['webhookid'] > 0) {
+				$webhook_deleted = $webhook_api->DeleteWebhook();
+			}	
+			/**
+			 * ----------------------------
+			 */
+
 			$param['user']->LoadPermissions($param['user']->userid);
 			$param['user']->RevokeListAccess($list);
 			$param['user']->SavePermissions();

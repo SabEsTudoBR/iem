@@ -76,7 +76,8 @@ class Upgrade_API extends API
 		'20211022' => '6.4.1',
 		'20211123' => '6.4.2',
 		'20220303' => '6.4.3',
-		'20220401' => '6.5.0'
+		'20220401' => '6.5.0',
+		'20220908' => '6.5.1'
 	];
 
 	/**
@@ -726,6 +727,13 @@ class Upgrade_API extends API
 			'update_db_version'
         ],
 		'20220401' => [
+			'update_db_version'
+        ],
+		'20220908' => [
+			'add_webhook_logs_table',
+			'add_webhooks_table',
+			'add_webhook_types_table',
+			'add_webhook_event_types_table',
 			'update_db_version'
         ]
 	];
