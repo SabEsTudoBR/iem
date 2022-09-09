@@ -2,10 +2,11 @@
 
 Version: 6.5.1
 Released: 8th Semptember, 2022
-- Added Webhooks integration (Lists & Campaigns)
-- Fixed Security Vulnerability in Survey addon
+- Added webhooks integration (Lists & Campaigns)
 - Added return_format 'xml' option in GetCustomFields function request
+- Fixed a security vulnerability in the survey addon
 - Changed the default paste behavior of TinyMCE
+- Fixed a bug in the dynamic content tags
 
 Files Changed:
 -------------
