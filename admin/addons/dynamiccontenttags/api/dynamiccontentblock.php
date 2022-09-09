@@ -205,6 +205,7 @@ class DynamicContentTag_Api_Block {
      * @return void This function only set the block rules set
      */
     public function setRules($newVal) {
+		$newVal = str_ireplace("<!DOCTYPE html>", "", $newVal);
         $this->rules=str_ireplace(array('<html><head></head><body>', '</body></html>'), array(), $newVal);
     }
 
