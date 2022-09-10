@@ -6,8 +6,84 @@
 
 <link rel="stylesheet" href="includes/js/imodal/imodal.css" type="text/css" media="screen" />
 
+<style>
+.container {
+	padding: 20px !important;
+}
+
+.element{
+    margin-bottom: 15px;
+}
+
+.add{
+    border: 1px solid gray;
+    padding: 2px 10px;
+	  position: relative;
+	  margin-left: 310px;
+}
+
+.remove{
+    border: 1px solid gray;
+    padding: 2px 10px;
+	  margin-left: 10px;
+}
+
+.add:hover,.remove:hover{
+    cursor: pointer;
+}
+
+.sp-light{
+    left:75% !important;
+    top:0% !important; 
+    position: absolute !important; 
+}
+</style>
+
 
 <script>
+	// Add new element
+	var items = [];
+	function AddWebhook() {
+		// Finding total number of elements added
+		var total_element = $(".element").length;
+	
+		// last <div> with element class id
+		var lastid = $(".element:last").attr("id");
+
+		if(lastid) {
+			var split_id = lastid.split("_");
+			var nextindex = Number(split_id[1]) + 1;
+		} else {
+			var nextindex = 1;
+		}
+		
+		var max = 25;
+		$('#total_webhooks').val(nextindex);
+		// Check total number elements
+		if(total_element < max ){
+			if(total_element == 0) {
+				$(".add").after("<div class='element' id='div_"+ nextindex +"'></div>");
+			}  else {
+				// Adding new div container after last occurance of element class
+				$(".element:last").after("<div class='element' id='div_"+ nextindex +"'></div>");
+			}			
+			// Adding element to <div>
+			var webhook_html = 'URL: <input type="text" name="WebhookUrl_' + nextindex + '" class="Field250 form_text" value=""> <br> Events to Fire :<input type="radio" name="webhook_event_' + nextindex + '" id="WebhookSchedule" value="4">Schedule Campaign, <input type="radio" name="webhook_event_' + nextindex + '" id="WebhookSent" value="5">Campaign Sent ';
+			$("#div_" + nextindex).append(webhook_html +"&nbsp; <span id='remove_" + nextindex + "' onclick='remove("+ nextindex +")' class='remove'>X</span>");
+					
+		}
+	}
+
+	function remove(id) {
+
+	  var deleteindex = id;
+	  //var total_element = $('#total_webhooks').val();
+	 // $('#total_webhooks').val(total_element - 1);
+	  
+	  // Remove <div> with id
+	  $("#div_" + deleteindex).remove();
+	}	
+
 
 	var newsletterData = '';
 	
@@ -173,6 +249,16 @@
 					<tr>
 						<td colspan="2" class="EmptyRow">
 							&nbsp;
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="Heading2">
+							Webhook Events
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="left" class="container">
+							%%GLOBAL_webhook_data%%
 						</td>
 					</tr>
 					<tr>

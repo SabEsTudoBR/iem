@@ -892,7 +892,7 @@ class Lists_API extends API
 	*
 	* @return Array Custom field information for the list provided.
 	*/
-	function GetCustomFields($listids=array(), $type="")
+	function GetCustomFields($listids=array(), $type="", $return_format="")
 	{
 		if (!is_array($listids)) {
 			$listid = (int)$listids;
@@ -928,6 +928,9 @@ class Lists_API extends API
 
 		$result = $this->Db->Query($qry);
 		while ($row = $this->Db->Fetch($result)) {
+			if($return_format == 'xml') {
+				$row['fieldsettings'] = unserialize($row['fieldsettings']);
+			}
 			$fieldlist[$row['fieldid']] = $row;
 		}
 		return $fieldlist;

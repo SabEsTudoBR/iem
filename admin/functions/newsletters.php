@@ -252,6 +252,24 @@ class Newsletters extends SendStudio_Functions {
                     $GLOBALS['Error'] = GetLang('NewsletterCopyFail');
                     $GLOBALS['Message'] = $this->ParseTemplate('ErrorMsg', true, false);
                 } else {
+
+					/**
+					 * CopyWebhook() - Copy Webhook
+					 */
+					require_once('api/webhooks.php');
+					$webhook_api = new Webhooks_API();
+					$oldid = $id;
+					
+					$webhook_api->webhook_type_id = '2'; 
+					$webhook_api->id = $oldid;
+					$webhook_api->ownerid = $user->userid;
+
+					$webhook_copied = $webhook_api->CopyWebhook($api->newsletterid);
+			
+					/**
+					 * ------------------------
+					 */
+			
                     $changed = false;
                     // check the permissions.
                     // if we can't make archive a newsletter, disable this aspect of it.
@@ -318,6 +336,39 @@ class Newsletters extends SendStudio_Functions {
                     case 'save':
                     case 'complete':
                         $session_newsletter = IEM::sessionGet('Newsletters');
+						$newsletterid = $id;
+						
+						/**
+						 * CreateWebhook() - Campaign Edit Webhooks
+						 */
+						$webhook_data = [];
+						for($ctr =1; $ctr <= $_POST['total_webhooks']; $ctr++) {
+							if(isset($_POST['WebhookUrl_'.$ctr]) && isset($_POST['webhook_event_'.$ctr])) {
+								$webhook_data[] = ['url' => $_POST['WebhookUrl_'.$ctr], 'event' => $_POST['webhook_event_'.$ctr]];
+							}	
+						}
+
+						if(!empty($webhook_data)) {
+							require_once('api/webhooks.php');
+							$webhook_api = new Webhooks_API();		
+							$webhook_api->webhook_type_id = '2'; 
+							$webhook_api->id = $newsletterid;
+							$webhook_api->ownerid = $user->userid;
+																
+							$webhook = $webhook_api->GetWebhookById();
+
+							if(isset($webhook['webhookid']) && $webhook['webhookid'] > 0) {
+								$webhook_api->DeleteWebhook();
+							}	
+							
+							$webhook_api->webhookdata = $webhook_data;
+							$webhook_api->active = 1;
+							$WebhookCreated = $webhook_api->CreateWebhook();
+						}
+						/**
+						 * ----------------------------
+						 */
+						
 
                         $text_unsubscribelink_found = true;
                         $html_unsubscribelink_found = true;
@@ -646,6 +697,38 @@ class Newsletters extends SendStudio_Functions {
                         
                         if(is_dir(TEMP_DIRECTORY . "/newsletters/".$user->userid."_tmp")){remove_directory(TEMP_DIRECTORY . "/newsletters/".$user->userid."_tmp");}
                         
+						
+						/**
+						 * CreateWebhook - Create a Campaign Webhook
+						 */
+						
+						for($ctr =1; $ctr <= $_POST['total_webhooks']; $ctr++) {
+							if(isset($_POST['WebhookUrl_'.$ctr]) && isset($_POST['webhook_event_'.$ctr])) {
+								$webhook_data[] = ['url' => $_POST['WebhookUrl_'.$ctr], 'event' => $_POST['webhook_event_'.$ctr]];
+							}	
+						}
+						
+						if(!empty($webhook_data)) {
+							require_once('api/webhooks.php');
+							$webhook_api = new Webhooks_API();		
+							$webhook_api->webhook_type_id = '2'; 
+							$webhook_api->id = $result;
+							$webhook_api->ownerid = $user->userid;
+																
+							$webhook = $webhook_api->GetWebhookById();
+
+							if(isset($webhook['webhookid']) && $webhook['webhookid'] > 0) {
+								$webhook_api->DeleteWebhook();
+							}	
+							
+							$webhook_api->webhookdata = $webhook_data;
+							$webhook_api->active = 1;
+							$WebhookCreated = $webhook_api->CreateWebhook();
+						}
+						/**
+						 * -----------------------------
+						 */
+						 
                         if ($subaction == 'save') {
                             $this->DisplayEditNewsletter($result);
                         } else {
@@ -1188,6 +1271,22 @@ class Newsletters extends SendStudio_Functions {
 
         if ($delete_ok > 0) {
             if ($delete_ok == 1) {
+				/**
+				 * DeleteWebhook() - Delete a Webhook
+				 */
+				require_once('api/webhooks.php');
+				$webhook_api = new Webhooks_API();
+				$webhook_api->id = $newsletterid;
+				$webhook_api->webhook_type_id = '2'; 
+				$webhook = $webhook_api->GetWebhookById();
+				
+				if(isset($webhook['webhookid']) && $webhook['webhookid'] > 0) {
+					$webhook_deleted = $webhook_api->DeleteWebhook($webhook['webhookid'] , $user->Get('userid'));
+				}
+				/**
+				 * ----------------------------
+				 */
+											
                 $msg .= $this->PrintSuccess('Newsletter_Deleted');
             } else {
                 $msg .= $this->PrintSuccess('Newsletters_Deleted', $this->FormatNumber($delete_ok));
@@ -1371,6 +1470,73 @@ class Newsletters extends SendStudio_Functions {
         // if we do though, it segfaults! so we get and then set the contents.
         $session_newsletter = IEM::sessionGet('Newsletters');
         $session_newsletter['id'] = (int) $newsletterid;
+		
+		/**
+		 * Campaign Webhook Loading - when editing newsletter the webhooks are being loaded.
+		 */
+		if ($newsletterid > 0) {
+			
+			require_once('api/webhooks.php');
+			$webhook_api = new Webhooks_API();
+			$webhook_api->webhook_type_id = '2'; 
+			$webhook_api->id = $newsletterid;
+			$webhook_record = $webhook_api->GetWebhooks($newsletterid);
+
+			if(!empty($webhook_record)) {
+				
+				$ctr = 0;
+				$webhook_html = '';
+				foreach($webhook_record as $webhook ) {
+					$ctr++;
+			
+					$webhook_url = ($webhook['webhook_url']) ? $webhook['webhook_url'] : '';
+					$webhook_schedule_campaign = ($webhook['webhook_event_type_id'] == '4') ? 'CHECKED' : '';
+					$webhook_campaign_sent = ($webhook['webhook_event_type_id'] == '5') ? 'CHECKED' : '';
+					
+					$add_webhook_btn = '';
+					$webhook_html .= 
+						'<div class="element" id="div_'.$ctr.'">	
+							URL: <input type="text" name="WebhookUrl_'.$ctr.'" class="Field250 form_text" value="'.$webhook_url.'"> <br> 
+							Events to Fire :
+							<input type="radio" name="webhook_event_'.$ctr.'" id="WebhookSchedule" value="4" '.$webhook_schedule_campaign.'>Schedule Campaign, 
+							<input type="radio" name="webhook_event_'.$ctr.'" id="WebhookSent" value="5" '.$webhook_campaign_sent.'>Campaign Sent
+							&nbsp;<span id="remove_'.$ctr.'" onclick="remove('.$ctr.')" class="remove">X</span>
+						</div>';
+				}
+
+				$add_webhook_btn = '<span class="add" onclick="AddWebhook();" >Add Webhook</span>';
+				$total_webhooks = '<input type="hidden" name="total_webhooks" id="total_webhooks" value="'.$ctr.'" style="width:20px;">';
+				$GLOBALS['webhook_data'] = $add_webhook_btn.$webhook_html.$total_webhooks;
+			} else {
+				$webhook_html = 
+				'<div class="element" id="div_1">
+					URL: <input type="text" name="WebhookUrl_1" class="Field250 form_text" value=""> <br> 
+					Events to Fire :
+					<input type="radio" name="webhook_event_1" id="WebhookSchedule" value="4" >Schedule Campaign, 
+					<input type="radio" name="webhook_event_1" id="WebhookSent" value="5" >Campaign Sent
+					&nbsp;<span id="remove_1" onclick="remove(1)" class="remove">X</span>
+				</div>';
+				$add_webhook_btn = '<span class="add" onclick="AddWebhook();" >Add Webhook</span>';
+				$total_webhooks = '<input type="hidden" name="total_webhooks" id="total_webhooks" value="1" style="width:20px;">';
+				$GLOBALS['webhook_data'] = $add_webhook_btn.$webhook_html.$total_webhooks;
+			}
+			
+		} else {
+			$webhook_html = 
+				'<div class="element" id="div_1">
+					URL: <input type="text" name="WebhookUrl_1" class="Field250 form_text" value=""> <br> 
+					Events to Fire :
+					<input type="radio" name="webhook_event_1" id="WebhookSchedule" value="4" >Schedule Campaign, 
+					<input type="radio" name="webhook_event_1" id="WebhookSent" value="5" >Campaign Sent
+					&nbsp;<span id="remove_1" onclick="remove(1)" class="remove">X</span>
+				</div>';
+			$add_webhook_btn = '<span class="add" onclick="AddWebhook();" >Add Webhook</span>';
+			$total_webhooks = '<input type="hidden" name="total_webhooks" id="total_webhooks" value="1" style="width:20px;">';
+			$GLOBALS['webhook_data'] = $add_webhook_btn.$webhook_html.$total_webhooks;
+		}
+		/**
+		 * ------------------------
+		 */
 
         if (isset($session_newsletter['TemplateID'])) {
             $templateApi = $this->GetApi('Templates');

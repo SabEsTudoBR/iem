@@ -125,15 +125,38 @@ class surveySubmit extends Interspire_Addons {
 		// get validated and entered into the response values in the same manner. Uploads will be
 		// handled separately.
 
+		$invalidFileExtension = false;
+		
 		if (isset($_FILES['widget'])) {
 			foreach ($_FILES['widget']['name'] as $widgetId => $widget) {
 				foreach ($widget as $fields) {
 					foreach ($fields as $fieldId => $field) {
+						// 'Not allowed' extension to be prevented
+						if(isset($field['value']) && !empty($field['value'])) {
+							$parts = explode('.', $field['value']);
+							$ext   = strtolower(end($parts));
+							
+							if (in_array($ext, $not_allowed_ext)) {
+								$invalidFileExtension = true;
+							}
+						}
+						//---------------------
 						$postWidgets[$widgetId]['field'][$fieldId]['value'] = 'file_' . $field['value'];
 					}
 				}
 			}
 		}
+
+		if($invalidFileExtension == true) {
+			// set LNG_Addon_surveys_Settings_ErrorMessage a global error message to alert the user to the specific errors
+			IEM::sessionSet('survey.addon.' . $formId . '.errorMessage', GetLang('Addon_Surveys_ErrorNotAllowedFileType'));
+
+			// set the widget errors so we can retrieve them for the user
+			IEM::sessionSet('survey.addon.' . $formId . '.widgetErrors', $widgetErrors);
+
+			$this->redirectToReferer();
+		}
+		
 
 		// If the form and widgets weren't posted in the format we require then redirect back
 		if (!$formId) {

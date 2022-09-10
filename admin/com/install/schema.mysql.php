@@ -748,4 +748,61 @@ $queries[] = "
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ";
 
+
+$queries[] = "
+	CREATE TABLE %%TABLEPREFIX%%webhooks (
+	  webhookid 			int(11) 		NOT NULL AUTO_INCREMENT,
+	  webhook_type_id 		int(11) 		NOT NULL,
+	  webhook_event_type_id	int(11) 		NOT NULL,
+	  id 					int(11) 		DEFAULT 0 COMMENT '(listid or newsletterid)',
+	  webhook_url 			varchar(2048) 	NOT NULL,
+	  createdate 			int(11) 		NOT NULL,
+	  active 				int(1) 			NOT NULL DEFAULT 1,
+	  ownerid 				int(11) 		NOT NULL DEFAULT 0,
+	  PRIMARY KEY (webhookid)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+";
+
+$queries[] = "
+	CREATE TABLE %%TABLEPREFIX%%webhook_types (
+	  webhook_type_id 		int(11) 		NOT NULL,
+	  webhook_type_name 	varchar(100) 	NOT NULL,
+	  PRIMARY KEY (webhook_type_id)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+";
+$queries[] = "
+	 INSERT INTO %%TABLEPREFIX%%webhook_types (webhook_type_id, webhook_type_name) VALUES 
+		(1, 'List'), 
+		(2, 'Campaign');
+";
+
+$queries[] = "
+	CREATE TABLE %%TABLEPREFIX%%webhook_event_types (
+	  event_type_id 		int(11) 		NOT NULL,
+	  event_type_name 		varchar(100) 	NOT NULL,
+	  PRIMARY KEY (event_type_id)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+";
+
+$queries[] = "
+	INSERT INTO %%TABLEPREFIX%%webhook_event_types (event_type_id, event_type_name) VALUES
+		(1, 'Subscribe'),
+		(2, 'Unsubscribe'),
+		(3, 'Bounce'),
+		(4, 'ScheduleCampaign'),
+		(5, 'CampaignSent');
+";
+
+$queries[] = "
+	CREATE TABLE %%TABLEPREFIX%%webhook_logs (
+		  logid 					int(11) 		NOT NULL AUTO_INCREMENT,
+		  webhook_type_id 			int(11) 		NOT NULL,
+		  webhook_event_type_id  	int(11)			NOT NULL,
+		  logmsg 					text 			NOT NULL,
+		  webhook_response			VARCHAR(255)	NULL,
+		  logdate 					int(11)			DEFAULT 0,
+		  PRIMARY KEY (logid)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+";
+
 require(dirname(__FILE__) . '/schema.indexes.php');

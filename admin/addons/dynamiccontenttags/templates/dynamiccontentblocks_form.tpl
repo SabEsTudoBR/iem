@@ -207,7 +207,7 @@
 			}
 			
 			var BlockNameFiltered = $.trim(frm.dynamiccontenttags_block_name.value).replace(/\"/g, '`').replace(/\'/g, '`');
-			var blockContentFiltered = blockContent.replace(/\"/g, '`').replace(/\'/g, '`');
+			var blockContentFiltered = blockContent.replace(/\"/g, '\\"').replace(/\'/g, '`');
 			
 			var data = {
 				BlockID: frm.id_blockid.value,

@@ -5,6 +5,7 @@
 * @version     $Id: sendstudio_functions.php,v 1.211 2008/02/28 06:54:42 chris Exp $
 * @author Chris <chris@interspire.com>
 * @author Fredrick Gabelmann <fredrick.gabelmann@interspire.com>
+* @author Imran Khan <imran.khan@interspire.com>
 *
 * @package SendStudio
 * @subpackage SendStudio_Functions
@@ -2077,7 +2078,7 @@ class SendStudio_Functions
 				$editor = $this->ParseTemplate('Editor_Text', true, true);
 			break;
 		}
-		return $editor;
+		return html_entity_decode($editor);
 	}
 
 	/**
@@ -2158,8 +2159,8 @@ class SendStudio_Functions
 		$editor['FullUrl']        = SENDSTUDIO_APPLICATION_URL . '/admin/includes/js/tiny_mce/';
 		$editor['ElementId']      = $elementId;
 		$editor['AppUrl']         = SENDSTUDIO_APPLICATION_URL;
-		$editor['HtmlContent']    = $htmlContent;
-
+		$editor['HtmlContent']    =   html_entity_decode($htmlContent);
+			
 		$tpl->Assign('plugins', $plugins);
 		$tpl->Assign('editor', $editor);
 

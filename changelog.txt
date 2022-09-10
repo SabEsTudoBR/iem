@@ -1,5 +1,34 @@
 # Interspire Email Marketer Changelog
 
+Version: 6.5.1
+Released: 8th Semptember, 2022
+- Added webhooks integration (Lists & Campaigns)
+- Added return_format 'xml' option in GetCustomFields function request
+- Fixed a security vulnerability in the survey addon
+- Changed the default paste behavior of TinyMCE
+- Fixed a bug in the dynamic content tags
+
+Files Changed:
+-------------
+	admin/addons/dynamiccontenttags/templates/dynamiccontentblocks_form.tpl
+	admin/com/install/schema.mysql.php
+	admin/com/lib/IEM.class.php
+	admin/com/templates/editor.tpl
+	admin/com/templates/lists_form.tpl
+	admin/com/templates/newsletter_form_step2.tpl
+	admin/functions/api/lists.php
+	admin/functions/api/subscribers.php
+	admin/functions/api/upgrade.php
+	admin/functions/lists.php
+	admin/functions/newsletters.php
+	admin/functions/send.php
+	admin/functions/sendstudio_functions.php
+	admin/functions/subscribers_add.php
+	surveys_submit.php
+	changelog.txt
+	version.txt
+
+
 Version: 6.5.0
 Released: 1st April, 2022
 - Added export statistics (Open, Links, Bounce, Unsubscribe, etc.)
